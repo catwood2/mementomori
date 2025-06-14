@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit?module';
-import { AIRTABLE_BASE_ID, AIRTABLE_API_KEY, AIRTABLE_TABLE_NAME } from '../config.js';
 
 class QuoteList extends LitElement {
   static properties = {
@@ -166,14 +165,12 @@ class QuoteList extends LitElement {
 
   async _load() {
     try {
-      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+      const { baseId, apiKey, tableName } = window.AIRTABLE_CONFIG;
+      const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
       console.log('API URL:', url);
-      console.log('Base ID:', AIRTABLE_BASE_ID);
-      console.log('Table Name:', AIRTABLE_TABLE_NAME);
-      console.log('API Key:', AIRTABLE_API_KEY ? 'Present' : 'Missing');
       
       const res = await fetch(`${url}?sort[0][field]=CreatedAt&sort[0][direction]=desc`, {
-        headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` }
+        headers: { 'Authorization': `Bearer ${apiKey}` }
       });
       if (!res.ok) {
         const errorData = await res.json();

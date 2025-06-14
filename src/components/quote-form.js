@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit?module';
-import { AIRTABLE_BASE_ID, AIRTABLE_API_KEY, AIRTABLE_TABLE_NAME } from '../config.js';
 
 class QuoteForm extends LitElement {
   static styles = css`
@@ -192,41 +191,52 @@ class QuoteForm extends LitElement {
   async _onSubmit(e) {
     e.preventDefault();
     const form = e.target;
-    if (!form.reportValidity()) return;
-
-    const payload = { fields: {
-      Quote: form.quote.value.trim(),
-      Category: form.category.value,
-      SourceLink: form.link.value.trim() || 'No source provided'
-    }};
+    const { baseId, apiKey, tableName } = window.AIRTABLE_CONFIG;
+    
+    const payload = {
+      fields: {
+        Quote: form.quote.value,
+        Category: form.category.value,
+        SourceLink: form.link.value || 'No source provided'
+      }
+    };
 
     try {
-      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`;
-      const res = await fetch(url, {
+      const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${AIRTABLE_API_KEY}`
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw await res.text();
-      
-      // Show success message
-      this.showSuccess = true;
-      this.requestUpdate();
-      
-      setTimeout(() => {
-        this.showSuccess = false;
-        this.requestUpdate();
-      }, 3000);
 
-      this.dispatchEvent(new CustomEvent('quote-added', { bubbles: true }));
+      if (!res.ok) {
+        const error = await res.json();
+        throw error;
+      }
+
       form.reset();
+      this._showSuccess();
+      this.dispatchEvent(new CustomEvent('quote-added'));
     } catch (err) {
       console.error('Airtable error:', err);
-      alert('Could not save quote. See DevTools → Network & Console for details.');
+      this._showError();
     }
+  }
+
+  _showSuccess() {
+    this.showSuccess = true;
+    this.requestUpdate();
+    
+    setTimeout(() => {
+      this.showSuccess = false;
+      this.requestUpdate();
+    }, 3000);
+  }
+
+  _showError() {
+    alert('Could not save quote. See DevTools → Network & Console for details.');
   }
 }
 
