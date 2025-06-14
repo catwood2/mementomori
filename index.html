@@ -178,23 +178,32 @@
       }
     }
   </style>
-  <script type="module" src="./src/main.js"></script>
+  <script type="module" src="./src/components/quote-list.js"></script>
+  <script type="module" src="./src/components/quote-form.js"></script>
   <script>
-    const quoteList = document.querySelector('quote-list');
-    const searchInput = document.getElementById('search-input');
-    const categoryFilter = document.getElementById('category-filter');
+    // Wait for custom elements to be defined
+    customElements.whenDefined('quote-list').then(() => {
+      const quoteList = document.querySelector('quote-list');
+      const searchInput = document.getElementById('search-input');
+      const categoryFilter = document.getElementById('category-filter');
 
-    searchInput.addEventListener('input', (e) => {
-      quoteList.searchTerm = e.target.value.toLowerCase();
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          quoteList.searchTerm = e.target.value.toLowerCase();
+        });
+      }
+
+      if (categoryFilter) {
+        categoryFilter.addEventListener('change', (e) => {
+          quoteList.filterCategory = e.target.value;
+        });
+      }
     });
 
-    categoryFilter.addEventListener('change', (e) => {
-      quoteList.filterCategory = e.target.value;
-    });
-
+    // Register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('./sw.js')
           .then(registration => {
             console.log('ServiceWorker registration successful');
           })
