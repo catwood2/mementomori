@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "sed -i 's/%AIRTABLE_BASE_ID%/$AIRTABLE_BASE_ID/g; s/%AIRTABLE_API_KEY%/$AIRTABLE_API_KEY/g; s/%AIRTABLE_TABLE_NAME%/$AIRTABLE_TABLE_NAME/g' index.html"
+  command = "echo 'export const AIRTABLE_BASE_ID = \"$AIRTABLE_BASE_ID\"; export const AIRTABLE_API_KEY = \"$AIRTABLE_API_KEY\"; export const AIRTABLE_TABLE_NAME = \"$AIRTABLE_TABLE_NAME\";' > src/config.js"
 
 [[redirects]]
   from = "/*"
