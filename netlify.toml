@@ -5,6 +5,12 @@
   from = "/api/*"
   to = "/.netlify/edge-functions/airtable-proxy/:splat"
   status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [[edge_functions]]
   path = "/.netlify/edge-functions/airtable-proxy/*"
