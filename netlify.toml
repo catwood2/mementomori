@@ -1,9 +1,10 @@
 [build]
   publish = "."
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/edge-functions/airtable-proxy/:splat"
+  to = "/.netlify/functions/airtable-proxy/:splat"
   status = 200
   force = true
 
@@ -11,10 +12,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-[[edge_functions]]
-  path = "/.netlify/edge-functions/airtable-proxy/*"
-  function = "airtable-proxy"
 
 [build.processing]
   skip_processing = false
