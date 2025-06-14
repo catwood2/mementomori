@@ -166,12 +166,7 @@ class QuoteList extends LitElement {
 
   async _load() {
     try {
-      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
-      console.log('API URL:', url);
-      
-      const res = await fetch(`${url}?sort[0][field]=CreatedAt&sort[0][direction]=desc`, {
-        headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` }
-      });
+      const res = await fetch('/.netlify/functions/airtable');
       if (!res.ok) {
         const errorData = await res.json();
         console.error('API Error:', errorData);

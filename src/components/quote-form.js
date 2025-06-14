@@ -202,11 +202,9 @@ class QuoteForm extends LitElement {
     };
 
     try {
-      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
-      const res = await fetch(url, {
+      const res = await fetch('/.netlify/functions/airtable', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)

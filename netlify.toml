@@ -1,9 +1,11 @@
 [build]
   publish = "."
-  command = "printf '// This file is generated during build\nexport const AIRTABLE_BASE_ID = \"%s\";\nexport const AIRTABLE_API_KEY = \"%s\";\nexport const AIRTABLE_TABLE_NAME = \"%s\";\n' \"$AIRTABLE_BASE_ID\" \"$AIRTABLE_API_KEY\" \"$AIRTABLE_TABLE_NAME\" > src/config.js"
+  command = ""
 
-[build.environment]
-  SECRETS_SCAN_OMIT_PATHS = "src/config.js"
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 [[redirects]]
   from = "/*"
