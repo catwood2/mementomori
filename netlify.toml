@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "node -e \"const fs=require('fs');fs.writeFileSync('src/config.js', \`// This file is generated during build\nexport const AIRTABLE_BASE_ID = '${process.env.AIRTABLE_BASE_ID}';\nexport const AIRTABLE_API_KEY = '${process.env.AIRTABLE_API_KEY}';\nexport const AIRTABLE_TABLE_NAME = '${process.env.AIRTABLE_TABLE_NAME}';\n\`);\""
+  command = "printf '// This file is generated during build\nexport const AIRTABLE_BASE_ID = \"%s\";\nexport const AIRTABLE_API_KEY = \"%s\";\nexport const AIRTABLE_TABLE_NAME = \"%s\";\n' \"$AIRTABLE_BASE_ID\" \"$AIRTABLE_API_KEY\" \"$AIRTABLE_TABLE_NAME\" > src/config.js"
 
 [[redirects]]
   from = "/*"
