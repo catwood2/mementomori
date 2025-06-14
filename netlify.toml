@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "echo 'Debug: Creating config.js with values:' && echo 'Base ID: $AIRTABLE_BASE_ID' && echo 'Table Name: $AIRTABLE_TABLE_NAME' && echo 'API Key: ${AIRTABLE_API_KEY:0:5}...' && echo 'export const AIRTABLE_BASE_ID = \"$AIRTABLE_BASE_ID\"; export const AIRTABLE_API_KEY = \"$AIRTABLE_API_KEY\"; export const AIRTABLE_TABLE_NAME = \"$AIRTABLE_TABLE_NAME\";' > src/config.js"
+  command = "node build.js"
 
 [[redirects]]
   from = "/*"
