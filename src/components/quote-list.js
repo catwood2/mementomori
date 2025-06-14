@@ -166,11 +166,11 @@ class QuoteList extends LitElement {
 
   async _load() {
     try {
-      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`;
+      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
       const res = await fetch(`${url}?sort[0][field]=CreatedAt&sort[0][direction]=desc`, {
         headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` }
       });
-      if (!res.ok) throw await res.text();
+      if (!res.ok) throw await res.json();
       const { records } = await res.json();
       this.quotes = records;
     } catch (err) {
