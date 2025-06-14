@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "find . -type f -name '*.html' -exec sed -i '' 's/%AIRTABLE_BASE_ID%/$AIRTABLE_BASE_ID/g; s/%AIRTABLE_API_KEY%/$AIRTABLE_API_KEY/g; s/%AIRTABLE_TABLE_NAME%/$AIRTABLE_TABLE_NAME/g' {} +"
+  command = "sed -i 's/%AIRTABLE_BASE_ID%/$AIRTABLE_BASE_ID/g; s/%AIRTABLE_API_KEY%/$AIRTABLE_API_KEY/g; s/%AIRTABLE_TABLE_NAME%/$AIRTABLE_TABLE_NAME/g' index.html"
 
 [[redirects]]
   from = "/*"
