@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit?module';
+import { AIRTABLE_BASE_ID, AIRTABLE_API_KEY, AIRTABLE_TABLE_NAME } from '../config.js';
 
 class QuoteForm extends LitElement {
   static styles = css`
@@ -201,9 +202,11 @@ class QuoteForm extends LitElement {
     };
 
     try {
-      const res = await fetch('/api', {
+      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
