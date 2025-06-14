@@ -1,0 +1,8 @@
+{
+  "name": "memento-mori",
+  "version": "1.0.0",
+  "description": "A collection of Memento Mori quotes",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+} 

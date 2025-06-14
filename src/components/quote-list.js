@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit?module';
-import { AIRTABLE_BASE_ID, AIRTABLE_API_KEY, AIRTABLE_TABLE_NAME } from '../config.js';
 
 class QuoteList extends LitElement {
   static properties = {

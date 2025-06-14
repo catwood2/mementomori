@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 const { AIRTABLE_BASE_ID, AIRTABLE_API_KEY, AIRTABLE_TABLE_NAME } = process.env;
 
 exports.handler = async function(event, context) {
