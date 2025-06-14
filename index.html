@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memento Mori</title>
+  <!-- Favicon -->
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="manifest" href="./manifest.json" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1A1A1A;
+      --accent-color: #9B2C2C;
+      --background-color: #121212;
+      --card-background: #1E1E1E;
+      --text-color: #E1E1E1;
+      --text-secondary: #A0A0A0;
+      --border-radius: 12px;
+      --spacing: 1rem;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --card-border: 1px solid rgba(155, 44, 44, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--primary-color);
+      color: #fff;
+      padding: var(--spacing);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+      border-bottom: 1px solid rgba(49, 151, 149, 0.2);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .app-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .app-title img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .app-title h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    main {
+      flex: 1;
+      padding: var(--spacing);
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing);
+    }
+
+    #install-btn {
+      background: var(--accent-color);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    #install-btn:hover {
+      transform: translateY(-1px);
+      background-color: #D88A1A;
+    }
+
+    .add-quote-section {
+      background: var(--card-background);
+      padding: var(--spacing);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      border: var(--card-border);
+    }
+
+    .add-quote-section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    .search-container {
+      background: var(--card-background);
+      padding: var(--spacing);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: calc(72px + var(--spacing));
+      z-index: 90;
+      border: var(--card-border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .search-container input,
+    .search-container select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(155, 44, 44, 0.3);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: var(--primary-color);
+      color: var(--text-color);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-container input:focus,
+    .search-container select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(155, 44, 44, 0.2);
+    }
+
+    .search-container select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B2C2C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem;
+    }
+
+    @media (max-width: 480px) {
+      :root {
+        --spacing: 0.75rem;
+      }
+      
+      .app-title h1 {
+        font-size: 1.25rem;
+      }
+
+      .search-container {
+        top: calc(64px + var(--spacing));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="app-title">
+        <img src="./icons/icon-192.png" alt="Memento Mori">
+        <h1>Memento Mori</h1>
+      </div>
+      <button id="install-btn" hidden>Add to Home Screen</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="add-quote-section">
+      <h2>Add New Quote</h2>
+      <quote-form></quote-form>
+    </div>
+
+    <div class="search-container">
+      <input id="search-input" placeholder="🔍 Search quotes..." />
+      <select id="category-filter">
+        <option value="" disabled selected>Select Category</option>
+        <option value="ALL">All Categories</option>
+        <option value="Life">Life</option>
+        <option value="Death">Death</option>
+        <option value="Humor">Humor</option>
+        <option value="Motivation">Motivation</option>
+      </select>
+    </div>
+
+    <quote-list></quote-list>
+  </main>
+
+  <script type="module" src="./src/main.js"></script>
+  <script>
+    const quoteList = document.querySelector('quote-list');
+    const searchInput = document.getElementById('search-input');
+    const categoryFilter = document.getElementById('category-filter');
+
+    searchInput.addEventListener('input', (e) => {
+      quoteList.searchTerm = e.target.value.toLowerCase();
+    });
+
+    categoryFilter.addEventListener('change', (e) => {
+      quoteList.filterCategory = e.target.value;
+    });
+  </script>
+</body>
+</html>
