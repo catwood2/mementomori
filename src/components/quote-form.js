@@ -191,7 +191,6 @@ class QuoteForm extends LitElement {
   async _onSubmit(e) {
     e.preventDefault();
     const form = e.target;
-    const { baseId, apiKey, tableName } = window.AIRTABLE_CONFIG;
     
     const payload = {
       fields: {
@@ -202,10 +201,9 @@ class QuoteForm extends LitElement {
     };
 
     try {
-      const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
+      const res = await fetch('/api', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)

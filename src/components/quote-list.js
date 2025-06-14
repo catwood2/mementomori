@@ -165,13 +165,10 @@ class QuoteList extends LitElement {
 
   async _load() {
     try {
-      const { baseId, apiKey, tableName } = window.AIRTABLE_CONFIG;
-      const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
+      const url = `/api?sort[0][field]=CreatedAt&sort[0][direction]=desc`;
       console.log('API URL:', url);
       
-      const res = await fetch(`${url}?sort[0][field]=CreatedAt&sort[0][direction]=desc`, {
-        headers: { 'Authorization': `Bearer ${apiKey}` }
-      });
+      const res = await fetch(url);
       if (!res.ok) {
         const errorData = await res.json();
         console.error('API Error:', errorData);
