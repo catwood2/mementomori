@@ -294,8 +294,10 @@
         // Update content
         contents.forEach(content => {
           if (content.id === `${tabId}-tab`) {
+            content.style.display = 'block';
             content.classList.add('active');
           } else {
+            content.style.display = 'none';
             content.classList.remove('active');
           }
         });
