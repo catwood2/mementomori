@@ -232,40 +232,63 @@
   <script>
     // Debug logging
     console.log('Script starting...');
-    
-    // Simple tab switching
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.onclick = () => {
-        // Update tabs
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        
-        // Update content
-        const tabId = tab.dataset.tab;
-        document.querySelectorAll('.tab-content').forEach(content => {
-          content.classList.remove('active');
-        });
-        document.getElementById(`${tabId}-tab`).classList.add('active');
-      };
-    });
 
-    // Quote list setup
-    customElements.whenDefined('quote-list').then(() => {
-      const quoteList = document.querySelector('quote-list');
-      const searchInput = document.getElementById('search-input');
-      const categoryFilter = document.getElementById('category-filter');
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM loaded');
+      
+      // Check if components are loaded
+      console.log('Quote list:', document.querySelector('quote-list'));
+      console.log('Quote form:', document.querySelector('quote-form'));
+      console.log('Memento calendar:', document.querySelector('memento-calendar'));
+      console.log('Death calculator:', document.querySelector('death-calculator'));
 
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          quoteList.searchTerm = e.target.value.toLowerCase();
+      // Direct tab switching
+      const tabs = document.querySelectorAll('.tab');
+      const contents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          console.log('Tab clicked:', tab.dataset.tab);
+          
+          // Remove active class from all tabs and contents
+          tabs.forEach(t => t.classList.remove('active'));
+          contents.forEach(c => c.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          tab.classList.add('active');
+          
+          // Show corresponding content
+          const contentId = `${tab.dataset.tab}-tab`;
+          const content = document.getElementById(contentId);
+          if (content) {
+            console.log('Showing content:', contentId);
+            content.classList.add('active');
+          } else {
+            console.error('Content not found:', contentId);
+          }
         });
-      }
+      });
 
-      if (categoryFilter) {
-        categoryFilter.addEventListener('change', (e) => {
-          quoteList.filterCategory = e.target.value;
-        });
-      }
+      // Quote list setup
+      customElements.whenDefined('quote-list').then(() => {
+        console.log('Quote list defined');
+        const quoteList = document.querySelector('quote-list');
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
+
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            quoteList.searchTerm = e.target.value.toLowerCase();
+          });
+        }
+
+        if (categoryFilter) {
+          categoryFilter.addEventListener('change', (e) => {
+            quoteList.filterCategory = e.target.value;
+          });
+        }
+      });
     });
 
     // Register service worker
