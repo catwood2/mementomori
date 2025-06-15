@@ -354,6 +354,7 @@ class DeathCalculator extends LitElement {
                                 <p>This calculator uses data from the Social Security Administration's actuarial tables to estimate your projected death date based on your age and gender.</p>
                                 <p>Once calculated, your death date will appear under the Memento Mori title as a daily reminder of your mortality - a modern take on the ancient practice of memento mori ("remember you must die").</p>
                                 <p>The calculation is based on statistical averages and should be taken as a thought-provoking reminder rather than a precise prediction.</p>
+                                <p><strong>Privacy & Security:</strong> Your birth date is used only for the calculation and is never stored. The only information saved is your projected death date, which is stored locally in your browser. No data is sent to any server or stored in any database.</p>
                             </div>
                         </div>
                     </div>
