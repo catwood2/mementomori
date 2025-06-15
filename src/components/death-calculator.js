@@ -1,186 +1,258 @@
-class DeathCalculator extends HTMLElement {
+import { LitElement, html, css } from 'https://unpkg.com/lit?module';
+
+class DeathCalculator extends LitElement {
+    static styles = css`
+        :host {
+            display: block;
+            background: var(--card-background, #1E1E1E);
+            padding: var(--spacing, 1rem);
+            border-radius: var(--border-radius, 12px);
+            box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
+            border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+        }
+
+        .calculator-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary, #A0A0A0);
+        }
+
+        input, select {
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid rgba(155, 44, 44, 0.3);
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            font-family: inherit;
+            background: var(--primary-color, #1A1A1A);
+            color: var(--text-color, #E1E1E1);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color, #9B2C2C);
+            box-shadow: 0 0 0 3px rgba(155, 44, 44, 0.2);
+        }
+
+        button {
+            background: var(--accent-color, #9B2C2C);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(155, 44, 44, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            background-color: #B83280;
+            box-shadow: 0 4px 8px rgba(155, 44, 44, 0.3);
+        }
+
+        .results {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(155, 44, 44, 0.2);
+        }
+
+        .result-item {
+            margin-bottom: 1rem;
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary, #A0A0A0);
+            margin-bottom: 0.25rem;
+        }
+
+        .result-value {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--accent-color, #9B2C2C);
+        }
+
+        .life-timeline {
+            margin-top: 2rem;
+            height: 40px;
+            background: var(--primary-color, #1A1A1A);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .life-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--accent-color, #9B2C2C);
+            transition: width 1s ease-out;
+        }
+
+        .life-marker {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 20px;
+            background: white;
+        }
+
+        .life-marker.current {
+            background: #4CAF50;
+        }
+
+        .life-marker.death {
+            background: #9B2C2C;
+        }
+    `;
+
+    static properties = {
+        age: { type: Number },
+        gender: { type: String },
+        lifeExpectancy: { type: Number },
+        deathDate: { type: String },
+        lifeProgress: { type: Number }
+    };
+
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
-        this.birthDate = localStorage.getItem('birthDate') ? new Date(localStorage.getItem('birthDate')) : null;
+        this.age = 0;
+        this.gender = 'male';
+        this.lifeExpectancy = 0;
+        this.deathDate = '';
+        this.lifeProgress = 0;
     }
 
-    connectedCallback() {
-        this.render();
-        this.setupEventListeners();
-    }
-
-    // Life expectancy based on US Social Security Administration data
-    getLifeExpectancy(birthDate) {
-        const age = this.calculateAge(birthDate);
-        const isMale = localStorage.getItem('gender') === 'male';
-        
-        // Base life expectancy at birth (2020 data)
-        let expectancy = isMale ? 74.2 : 79.9;
-        
-        // Adjust for current age (simplified calculation)
-        if (age > 0) {
-            expectancy += age * 0.1; // Each year lived adds about 0.1 years to life expectancy
+    // SSA Actuarial Table data (simplified for example)
+    static lifeExpectancyTable = {
+        male: {
+            0: 76.1,
+            20: 57.6,
+            30: 48.2,
+            40: 38.9,
+            50: 29.9,
+            60: 21.7,
+            70: 14.6,
+            80: 8.9,
+            90: 4.8
+        },
+        female: {
+            0: 81.1,
+            20: 61.8,
+            30: 52.2,
+            40: 42.7,
+            50: 33.3,
+            60: 24.5,
+            70: 16.8,
+            80: 10.4,
+            90: 5.6
         }
-        
-        return Math.round(expectancy);
-    }
-
-    calculateAge(birthDate) {
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        
-        return age;
-    }
-
-    calculateDeathDate(birthDate) {
-        const expectancy = this.getLifeExpectancy(birthDate);
-        const deathDate = new Date(birthDate);
-        deathDate.setFullYear(deathDate.getFullYear() + expectancy);
-        return deathDate;
-    }
-
-    formatDate(date) {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
+    };
 
     render() {
-        const style = `
-            :host {
-                display: block;
-                background: var(--card-background, #1E1E1E);
-                padding: 1.5rem;
-                border-radius: var(--border-radius, 12px);
-                box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
-                border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
-                margin-bottom: 1rem;
-            }
-
-            .calculator {
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .input-group {
-                display: flex;
-                gap: 1rem;
-                align-items: center;
-            }
-
-            label {
-                color: var(--text-color, #E1E1E1);
-                font-weight: 500;
-            }
-
-            input[type="date"] {
-                background: var(--primary-color, #1A1A1A);
-                color: var(--text-color, #E1E1E1);
-                border: 1px solid rgba(155, 44, 44, 0.3);
-                padding: 0.5rem;
-                border-radius: 8px;
-                font-family: inherit;
-            }
-
-            select {
-                background: var(--primary-color, #1A1A1A);
-                color: var(--text-color, #E1E1E1);
-                border: 1px solid rgba(155, 44, 44, 0.3);
-                padding: 0.5rem;
-                border-radius: 8px;
-                font-family: inherit;
-            }
-
-            .result {
-                margin-top: 1rem;
-                padding: 1rem;
-                background: rgba(155, 44, 44, 0.1);
-                border-radius: 8px;
-                text-align: center;
-            }
-
-            .death-date {
-                font-size: 1.5rem;
-                color: var(--accent-color, #9B2C2C);
-                font-weight: 600;
-                margin: 0.5rem 0;
-            }
-
-            .life-expectancy {
-                color: var(--text-secondary, #A0A0A0);
-                font-size: 0.9rem;
-            }
-
-            button {
-                background: var(--accent-color, #9B2C2C);
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background-color 0.2s;
-            }
-
-            button:hover {
-                background: #D88A1A;
-            }
-        `;
-
-        const deathDate = this.birthDate ? this.calculateDeathDate(this.birthDate) : null;
-        const lifeExpectancy = this.birthDate ? this.getLifeExpectancy(this.birthDate) : null;
-
-        this.shadowRoot.innerHTML = `
-            <style>${style}</style>
-            <div class="calculator">
-                <div class="input-group">
-                    <label for="birthdate">Birth Date:</label>
-                    <input type="date" id="birthdate" value="${this.birthDate ? this.birthDate.toISOString().split('T')[0] : ''}">
+        return html`
+            <div class="calculator-form">
+                <div class="form-group">
+                    <label for="age">Current Age</label>
+                    <input 
+                        type="number" 
+                        id="age" 
+                        min="0" 
+                        max="120" 
+                        .value=${this.age}
+                        @input=${this._onAgeChange}
+                    />
                 </div>
-                <div class="input-group">
-                    <label for="gender">Gender:</label>
-                    <select id="gender">
-                        <option value="male" ${localStorage.getItem('gender') === 'male' ? 'selected' : ''}>Male</option>
-                        <option value="female" ${localStorage.getItem('gender') === 'female' ? 'selected' : ''}>Female</option>
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select 
+                        id="gender" 
+                        .value=${this.gender}
+                        @change=${this._onGenderChange}
+                    >
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
                     </select>
                 </div>
-                <button id="calculate-btn">Calculate</button>
-                ${deathDate ? `
-                    <div class="result">
-                        <div>Your projected death date is:</div>
-                        <div class="death-date">${this.formatDate(deathDate)}</div>
-                        <div class="life-expectancy">Based on a life expectancy of ${lifeExpectancy} years</div>
+
+                <button @click=${this._calculate}>Calculate</button>
+
+                ${this.lifeExpectancy ? html`
+                    <div class="results">
+                        <div class="result-item">
+                            <div class="result-label">Life Expectancy</div>
+                            <div class="result-value">${this.lifeExpectancy.toFixed(1)} years</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-label">Projected Death Date</div>
+                            <div class="result-value">${this.deathDate}</div>
+                        </div>
+
+                        <div class="life-timeline">
+                            <div class="life-progress" style="width: ${this.lifeProgress}%"></div>
+                            <div class="life-marker current" style="left: ${(this.age / (this.age + this.lifeExpectancy)) * 100}%"></div>
+                            <div class="life-marker death" style="left: 100%"></div>
+                        </div>
                     </div>
                 ` : ''}
             </div>
         `;
     }
 
-    setupEventListeners() {
-        const calculateBtn = this.shadowRoot.querySelector('#calculate-btn');
-        const birthdateInput = this.shadowRoot.querySelector('#birthdate');
-        const genderSelect = this.shadowRoot.querySelector('#gender');
+    _onAgeChange(e) {
+        this.age = parseInt(e.target.value) || 0;
+    }
 
-        calculateBtn.addEventListener('click', () => {
-            const birthDate = new Date(birthdateInput.value);
-            const gender = genderSelect.value;
-            
-            if (birthDate && !isNaN(birthDate)) {
-                localStorage.setItem('birthDate', birthDate.toISOString());
-                localStorage.setItem('gender', gender);
-                this.birthDate = birthDate;
-                this.render();
-            }
+    _onGenderChange(e) {
+        this.gender = e.target.value;
+    }
+
+    _calculate() {
+        // Find the closest age in the table
+        const ages = Object.keys(DeathCalculator.lifeExpectancyTable[this.gender])
+            .map(Number)
+            .sort((a, b) => a - b);
+        
+        const closestAge = ages.reduce((prev, curr) => {
+            return Math.abs(curr - this.age) < Math.abs(prev - this.age) ? curr : prev;
         });
+
+        // Get life expectancy
+        this.lifeExpectancy = DeathCalculator.lifeExpectancyTable[this.gender][closestAge];
+
+        // Calculate death date
+        const today = new Date();
+        const deathYear = today.getFullYear() + Math.floor(this.lifeExpectancy);
+        const deathMonth = today.getMonth();
+        const deathDay = today.getDate();
+        this.deathDate = new Date(deathYear, deathMonth, deathDay).toLocaleDateString();
+
+        // Calculate life progress
+        this.lifeProgress = (this.age / (this.age + this.lifeExpectancy)) * 100;
     }
 }
 
