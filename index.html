@@ -210,13 +210,10 @@
 
     .tab-content {
       display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
     }
 
     .tab-content.active {
       display: block;
-      opacity: 1;
     }
 
     /* Debug styles */
@@ -236,71 +233,39 @@
     // Debug logging
     console.log('Script starting...');
     
-    // Tab switching function
-    function switchTab(tabId) {
-      console.log('Switching to tab:', tabId);
-      
-      // Update tab buttons
-      document.querySelectorAll('.tab').forEach(tab => {
-        if (tab.dataset.tab === tabId) {
-          tab.classList.add('active');
-        } else {
-          tab.classList.remove('active');
-        }
-      });
-      
-      // Update tab content
-      document.querySelectorAll('.tab-content').forEach(content => {
-        if (content.id === `${tabId}-tab`) {
-          content.classList.add('active');
-        } else {
+    // Simple tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.onclick = () => {
+        // Update tabs
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Update content
+        const tabId = tab.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(content => {
           content.classList.remove('active');
-        }
-      });
-    }
-    
-    // Wait for DOM to be fully loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM loaded');
-      
-      // Set up tab click handlers
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          switchTab(tab.dataset.tab);
         });
-      });
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      };
+    });
 
-      // Wait for custom elements to be defined
-      Promise.all([
-        customElements.whenDefined('quote-list'),
-        customElements.whenDefined('quote-form'),
-        customElements.whenDefined('memento-calendar'),
-        customElements.whenDefined('death-calculator')
-      ]).then(() => {
-        console.log('All components loaded successfully');
-      }).catch(error => {
-        console.error('Error loading components:', error);
-      });
+    // Quote list setup
+    customElements.whenDefined('quote-list').then(() => {
+      const quoteList = document.querySelector('quote-list');
+      const searchInput = document.getElementById('search-input');
+      const categoryFilter = document.getElementById('category-filter');
 
-      // Quote list setup
-      customElements.whenDefined('quote-list').then(() => {
-        console.log('Quote list defined');
-        const quoteList = document.querySelector('quote-list');
-        const searchInput = document.getElementById('search-input');
-        const categoryFilter = document.getElementById('category-filter');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          quoteList.searchTerm = e.target.value.toLowerCase();
+        });
+      }
 
-        if (searchInput) {
-          searchInput.addEventListener('input', (e) => {
-            quoteList.searchTerm = e.target.value.toLowerCase();
-          });
-        }
-
-        if (categoryFilter) {
-          categoryFilter.addEventListener('change', (e) => {
-            quoteList.filterCategory = e.target.value;
-          });
-        }
-      });
+      if (categoryFilter) {
+        categoryFilter.addEventListener('change', (e) => {
+          quoteList.filterCategory = e.target.value;
+        });
+      }
     });
 
     // Register service worker
@@ -326,7 +291,6 @@
       </div>
       <button id="install-btn" hidden>Add to Home Screen</button>
     </div>
-    <p>A collection of meaningful quotes about life and death</p>
   </header>
 
   <main>
