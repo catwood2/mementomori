@@ -249,6 +249,55 @@ class DeathCalculator extends LitElement {
         .hidden {
             display: none;
         }
+
+        .calculator-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calculate-button {
+            flex: 1;
+            text-align: center;
+            font-size: 1.1rem;
+            position: relative;
+            padding-right: 2.5rem;
+        }
+
+        .info-button {
+            background: none;
+            border: none;
+            color: var(--accent-color, #9B2C2C);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .info-button:hover {
+            color: #B83280;
+        }
+
+        .close-button {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary, #A0A0A0);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover {
+            color: var(--accent-color, #9B2C2C);
+        }
     `;
 
     static properties = {

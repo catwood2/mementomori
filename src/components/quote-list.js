@@ -5,7 +5,8 @@ class QuoteList extends LitElement {
     quotes: { type: Array },
     searchTerm: { type: String },
     filterCategory: { type: String },
-    likedQuotes: { type: Object }
+    likedQuotes: { type: Object },
+    isExpanded: { type: Boolean }
   };
 
   static styles = css`
@@ -185,6 +186,60 @@ class QuoteList extends LitElement {
         transform: translateY(0);
       }
     }
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-background, #1E1E1E);
+      padding: 1rem 1.5rem;
+      border-radius: var(--border-radius, 12px);
+      box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
+      border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+
+    .accordion-header:hover {
+      background: var(--card-background-hover, #252525);
+    }
+
+    .accordion-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-color, #E1E1E1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .accordion-icon {
+      transition: transform 0.2s;
+    }
+
+    .accordion-icon.expanded {
+      transform: rotate(180deg);
+    }
+
+    .quote-content {
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
   `;
 
   constructor() {
@@ -193,6 +248,7 @@ class QuoteList extends LitElement {
     this.searchTerm = '';
     this.filterCategory = undefined;
     this.likedQuotes = {};
+    this.isExpanded = true;
     this._loadLikedQuotes();
     this._load();
     this.addEventListener('quote-added', () => this._load());
@@ -283,6 +339,10 @@ class QuoteList extends LitElement {
     }
   }
 
+  _toggleAccordion() {
+    this.isExpanded = !this.isExpanded;
+  }
+
   render() {
     if (this.quotes.length === 0) {
       return html`<p class="placeholder">Loading quotes...</p>`;
@@ -297,31 +357,43 @@ class QuoteList extends LitElement {
     }
 
     return html`
-      <ul>
-        ${this.filteredQuotes.map(record => html`
-          <li>
-            <span class="category">${record.fields.Category}</span>
-            ${record.fields.SourceLink && record.fields.SourceLink !== 'No source provided' 
-              ? html`<a href="${record.fields.SourceLink}" target="_blank" class="quote-link">
-                  <p class="quote">${record.fields.Quote}</p>
-                </a>`
-              : html`<p class="quote">${record.fields.Quote}</p>`
-            }
-            <div class="quote-actions">
-              <button 
-                class="like-button ${this.likedQuotes[record.id] ? 'liked' : ''}"
-                @click=${() => this._toggleLike(record.id)}
-                title="${this.likedQuotes[record.id] ? 'Unlike' : 'Like'} this quote"
-              >
-                <svg viewBox="0 0 24 24" fill="${this.likedQuotes[record.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-                ${record.fields.Likes || 0}
-              </button>
-            </div>
-          </li>
-        `)}
-      </ul>
+      <div class="accordion">
+        <div class="accordion-header" @click=${this._toggleAccordion}>
+          <div class="accordion-title">
+            <svg class="accordion-icon ${this.isExpanded ? 'expanded' : ''}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+            Quotes
+          </div>
+        </div>
+        <div class="quote-content ${this.isExpanded ? '' : 'hidden'}">
+          <ul>
+            ${this.filteredQuotes.map(record => html`
+              <li>
+                <span class="category">${record.fields.Category}</span>
+                ${record.fields.SourceLink && record.fields.SourceLink !== 'No source provided' 
+                  ? html`<a href="${record.fields.SourceLink}" target="_blank" class="quote-link">
+                      <p class="quote">${record.fields.Quote}</p>
+                    </a>`
+                  : html`<p class="quote">${record.fields.Quote}</p>`
+                }
+                <div class="quote-actions">
+                  <button 
+                    class="like-button ${this.likedQuotes[record.id] ? 'liked' : ''}"
+                    @click=${() => this._toggleLike(record.id)}
+                    title="${this.likedQuotes[record.id] ? 'Unlike' : 'Like'} this quote"
+                  >
+                    <svg viewBox="0 0 24 24" fill="${this.likedQuotes[record.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    ${record.fields.Likes || 0}
+                  </button>
+                </div>
+              </li>
+            `)}
+          </ul>
+        </div>
+      </div>
     `;
   }
 }
