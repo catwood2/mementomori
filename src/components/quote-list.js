@@ -6,7 +6,8 @@ class QuoteList extends LitElement {
     searchTerm: { type: String },
     filterCategory: { type: String },
     likedQuotes: { type: Object },
-    isExpanded: { type: Boolean }
+    isExpanded: { type: Boolean },
+    showPopup: { type: Boolean }
   };
 
   static styles = css`
@@ -296,6 +297,68 @@ class QuoteList extends LitElement {
     .hidden {
       display: none;
     }
+
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: var(--card-background, #1E1E1E);
+      padding: 1.5rem;
+      border-radius: var(--border-radius, 12px);
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+      border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: none;
+      border: none;
+      color: var(--text-secondary, #A0A0A0);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .popup-close:hover {
+      color: var(--accent-color, #9B2C2C);
+    }
+
+    .popup-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--accent-color, #9B2C2C);
+      margin-bottom: 1rem;
+    }
+
+    .popup-text {
+      color: var(--text-color, #E1E1E1);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .popup-text p {
+      margin-bottom: 0.75rem;
+    }
+
+    .popup-text p:last-child {
+      margin-bottom: 0;
+    }
   `;
 
   constructor() {
@@ -305,6 +368,7 @@ class QuoteList extends LitElement {
     this.filterCategory = undefined;
     this.likedQuotes = {};
     this.isExpanded = true;
+    this.showPopup = false;
     this._loadLikedQuotes();
     this._load();
     this.addEventListener('quote-added', () => this._load());
@@ -399,6 +463,14 @@ class QuoteList extends LitElement {
     this.isExpanded = !this.isExpanded;
   }
 
+  _showPopup() {
+    this.showPopup = true;
+  }
+
+  _hidePopup() {
+    this.showPopup = false;
+  }
+
   render() {
     if (this.quotes.length === 0) {
       return html`<p class="placeholder">Loading quotes...</p>`;
@@ -471,6 +543,18 @@ class QuoteList extends LitElement {
           }
         </div>
       </div>
+      ${this.showPopup ? html`
+        <div class="popup-overlay" @click=${this._hidePopup}>
+          <div class="popup-content" @click=${e => e.stopPropagation()}>
+            <button class="popup-close" @click=${this._hidePopup}>×</button>
+            <div class="popup-title">About Quotes</div>
+            <div class="popup-text">
+              <p>This section contains a collection of quotes about death, mortality, and the meaning of life. You can search through them or filter by category.</p>
+              <p>Click on a quote to visit its source, or use the heart icon to save your favorites.</p>
+            </div>
+          </div>
+        </div>
+      ` : ''}
     `;
   }
 }
