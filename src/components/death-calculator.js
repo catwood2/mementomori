@@ -338,27 +338,13 @@ class DeathCalculator extends LitElement {
 
         if (!this.showForm) {
             return html`
-                <button class="init-button" @click=${this._showForm}>
-                    Add Your Projected Death Date
-                </button>
-                <div class="top-buttons">
-                    <button class="info-icon" @click=${e => { e.stopPropagation(); this._showPopup(); }} title="What is this?">ⓘ</button>
-                    <button class="close-button" @click=${this._hideCalculator}>×</button>
+                <div class="calculator-container">
+                    <button class="calculate-button" @click=${this._showForm}>
+                        Calculate the Day I Die
+                        <button class="close-button" @click=${this._hideCalculator}>×</button>
+                    </button>
+                    <button class="info-button" @click=${this._showInfo}>ⓘ</button>
                 </div>
-                ${this.showPopup ? html`
-                    <div class="popup-overlay" @click=${this._hidePopup}>
-                        <div class="popup-content" @click=${e => e.stopPropagation()}>
-                            <button class="popup-close" @click=${this._hidePopup}>×</button>
-                            <div class="popup-title">About the Death Date Calculator</div>
-                            <div class="popup-text">
-                                <p>This calculator uses data from the Social Security Administration's actuarial tables to estimate your projected death date based on your age and gender.</p>
-                                <p>Once calculated, your death date will appear under the Memento Mori title as a daily reminder of your mortality - a modern take on the ancient practice of memento mori ("remember you must die").</p>
-                                <p>The calculation is based on statistical averages and should be taken as a thought-provoking reminder rather than a precise prediction.</p>
-                                <p><strong>Privacy & Security:</strong> Your birth date is used only for the calculation and is never stored. The only information saved is your projected death date, which is stored locally in your browser. No data is sent to any server or stored in any database.</p>
-                            </div>
-                        </div>
-                    </div>
-                ` : ''}
             `;
         }
 
