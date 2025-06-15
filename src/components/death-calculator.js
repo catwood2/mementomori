@@ -262,7 +262,6 @@ class DeathCalculator extends LitElement {
             text-align: center;
             font-size: 1.1rem;
             position: relative;
-            padding-right: 2.5rem;
         }
 
         .info-button {
@@ -281,10 +280,6 @@ class DeathCalculator extends LitElement {
         }
 
         .close-button {
-            position: absolute;
-            right: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
             background: none;
             border: none;
             color: var(--text-secondary, #A0A0A0);
@@ -390,9 +385,11 @@ class DeathCalculator extends LitElement {
                 <div class="calculator-container">
                     <button class="calculate-button" @click=${this._showForm}>
                         Calculate the Day I Die
-                        <button class="close-button" @click=${this._hideCalculator}>×</button>
                     </button>
-                    <button class="info-button" @click=${this._showInfo}>ⓘ</button>
+                    <div class="top-buttons">
+                        <button class="info-button" @click=${this._showInfo}>ⓘ</button>
+                        <button class="close-button" @click=${this._hideCalculator}>×</button>
+                    </div>
                 </div>
             `;
         }
