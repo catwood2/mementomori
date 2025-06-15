@@ -1,15 +1,73 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit?module';
 
 class QuoteForm extends LitElement {
+  static properties = {
+    isExpanded: { type: Boolean },
+    showSuccess: { type: Boolean }
+  };
+
   static styles = css`
     :host {
       display: block;
+    }
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-background, #1E1E1E);
+      padding: 1rem 1.5rem;
+      border-radius: var(--border-radius, 12px);
+      box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
+      border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .accordion-header:hover {
+      background: var(--card-background-hover, #252525);
+    }
+
+    .accordion-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-color, #E1E1E1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .accordion-icon {
+      transition: transform 0.2s;
+    }
+
+    .accordion-icon.expanded {
+      transform: rotate(180deg);
     }
 
     form {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      background: var(--card-background, #1E1E1E);
+      padding: 1.5rem;
+      border-radius: 0 0 var(--border-radius, 12px) var(--border-radius, 12px);
+      box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
+      border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+      border-top: none;
+      margin-top: -1px;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .form-group {
@@ -136,48 +194,63 @@ class QuoteForm extends LitElement {
       width: 20px;
       height: 20px;
     }
-  `;
 
-  static properties = {
-    showSuccess: { type: Boolean }
-  };
+    .hidden {
+      display: none;
+    }
+  `;
 
   constructor() {
     super();
+    this.isExpanded = false;
     this.showSuccess = false;
+  }
+
+  _toggleAccordion() {
+    this.isExpanded = !this.isExpanded;
   }
 
   render() {
     return html`
-      <form @submit=${this._onSubmit} novalidate>
-        <div class="form-group">
-          <label for="quote">Quote</label>
-          <textarea id="quote" name="quote" placeholder="Hard choices, easy life. Easy choices, hard life." required></textarea>
+      <div class="accordion">
+        <div class="accordion-header" @click=${this._toggleAccordion}>
+          <div class="accordion-title">
+            <svg class="accordion-icon ${this.isExpanded ? 'expanded' : ''}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+            Add a Quote
+          </div>
         </div>
-        
-        <div class="form-group">
-          <label for="category">Category</label>
-          <select id="category" name="category" required>
-            <option value="" disabled selected>Select a category</option>
-            <option value="Life">Life</option>
-            <option value="Death">Death</option>
-            <option value="Humor">Humor</option>
-            <option value="Motivation">Motivation</option>
-          </select>
-        </div>
+        <form class="${this.isExpanded ? '' : 'hidden'}" @submit=${this._onSubmit} novalidate>
+          <div class="form-group">
+            <label for="quote">Quote</label>
+            <textarea id="quote" name="quote" placeholder="Hard choices, easy life. Easy choices, hard life." required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="" disabled selected>Select a category</option>
+              <option value="Life">Life</option>
+              <option value="Death">Death</option>
+              <option value="Humor">Humor</option>
+              <option value="Motivation">Motivation</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label for="link">Source Link</label>
-          <input type="url" id="link" name="link" placeholder="https://example.com" />
-        </div>
+          <div class="form-group">
+            <label for="link">Source Link</label>
+            <input type="url" id="link" name="link" placeholder="https://example.com" />
+          </div>
 
-        <button type="submit">
-          <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14"></path>
-          </svg>
-          Add Quote
-        </button>
-      </form>
+          <button type="submit">
+            <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Add Quote
+          </button>
+        </form>
+      </div>
 
       <div class="success-message ${this.showSuccess ? 'visible' : ''}">
         <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
