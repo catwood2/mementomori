@@ -9,6 +9,7 @@ class DeathCalculator extends LitElement {
             border-radius: var(--border-radius, 12px);
             box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
             border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+            position: relative;
         }
 
         .calculator-form {
@@ -137,6 +138,25 @@ class DeathCalculator extends LitElement {
             width: 100%;
             text-align: center;
             font-size: 1.1rem;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary, #A0A0A0);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover {
+            color: var(--accent-color, #9B2C2C);
         }
 
         .hidden {
@@ -230,13 +250,15 @@ class DeathCalculator extends LitElement {
         if (!this.showForm) {
             return html`
                 <button class="init-button" @click=${this._showForm}>
-                    Calculate Your Death Date
+                    Add Your Projected Death Date
                 </button>
+                <button class="close-button" @click=${this._hideCalculator}>×</button>
             `;
         }
 
         return html`
             <div class="calculator-form">
+                <button class="close-button" @click=${this._hideCalculator}>×</button>
                 <div class="form-group">
                     <label for="birthdate">Date of Birth</label>
                     <input 
@@ -292,6 +314,11 @@ class DeathCalculator extends LitElement {
 
     _showForm() {
         this.showForm = true;
+    }
+
+    _hideCalculator() {
+        this.hasCalculated = true;
+        this.showForm = false;
     }
 
     _onBirthDateChange(e) {

@@ -236,7 +236,7 @@
       const data = JSON.parse(storedDeathDate);
       const deathDateElement = document.getElementById('death-date');
       if (deathDateElement) {
-        deathDateElement.textContent = `Projected Death: ${data.deathDate}`;
+        deathDateElement.textContent = `My number is up: ${data.deathDate}`;
       }
     }
 
@@ -266,7 +266,7 @@
       
       deathCalculator.addEventListener('death-date-update', (e) => {
         if (deathDateElement) {
-          deathDateElement.textContent = `Projected Death: ${e.detail.deathDate}`;
+          deathDateElement.textContent = `My number is up: ${e.detail.deathDate}`;
         }
       });
     });
