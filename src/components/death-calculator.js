@@ -267,7 +267,7 @@ class DeathCalculator extends LitElement {
         .info-button {
             background: none;
             border: none;
-            color: var(--accent-color, #9B2C2C);
+            color: var(--text-color, #E1E1E1);
             font-size: 1.25rem;
             cursor: pointer;
             padding: 0.25rem;
@@ -276,7 +276,7 @@ class DeathCalculator extends LitElement {
         }
 
         .info-button:hover {
-            color: #B83280;
+            color: var(--accent-color, #9B2C2C);
         }
 
         .close-button {

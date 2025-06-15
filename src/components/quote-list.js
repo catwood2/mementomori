@@ -5,7 +5,8 @@ class QuoteList extends LitElement {
     quotes: { type: Array },
     searchTerm: { type: String },
     filterCategory: { type: String },
-    likedQuotes: { type: Object }
+    likedQuotes: { type: Object },
+    isExpanded: { type: Boolean }
   };
 
   static styles = css`
@@ -247,6 +248,7 @@ class QuoteList extends LitElement {
     this.searchTerm = '';
     this.filterCategory = undefined;
     this.likedQuotes = {};
+    this.isExpanded = true;
     this._loadLikedQuotes();
     this._load();
     this.addEventListener('quote-added', () => this._load());
@@ -337,6 +339,10 @@ class QuoteList extends LitElement {
     }
   }
 
+  _toggleAccordion() {
+    this.isExpanded = !this.isExpanded;
+  }
+
   render() {
     if (this.quotes.length === 0) {
       return html`<p class="placeholder">Loading quotes...</p>`;
@@ -351,31 +357,43 @@ class QuoteList extends LitElement {
     }
 
     return html`
-      <ul>
-        ${this.filteredQuotes.map(record => html`
-          <li>
-            <span class="category">${record.fields.Category}</span>
-            ${record.fields.SourceLink && record.fields.SourceLink !== 'No source provided' 
-              ? html`<a href="${record.fields.SourceLink}" target="_blank" class="quote-link">
-                  <p class="quote">${record.fields.Quote}</p>
-                </a>`
-              : html`<p class="quote">${record.fields.Quote}</p>`
-            }
-            <div class="quote-actions">
-              <button 
-                class="like-button ${this.likedQuotes[record.id] ? 'liked' : ''}"
-                @click=${() => this._toggleLike(record.id)}
-                title="${this.likedQuotes[record.id] ? 'Unlike' : 'Like'} this quote"
-              >
-                <svg viewBox="0 0 24 24" fill="${this.likedQuotes[record.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-                ${record.fields.Likes || 0}
-              </button>
-            </div>
-          </li>
-        `)}
-      </ul>
+      <div class="accordion">
+        <div class="accordion-header" @click=${this._toggleAccordion}>
+          <div class="accordion-title">
+            <svg class="accordion-icon ${this.isExpanded ? 'expanded' : ''}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+            Quotes
+          </div>
+        </div>
+        <div class="quote-content ${this.isExpanded ? '' : 'hidden'}">
+          <ul>
+            ${this.filteredQuotes.map(record => html`
+              <li>
+                <span class="category">${record.fields.Category}</span>
+                ${record.fields.SourceLink && record.fields.SourceLink !== 'No source provided' 
+                  ? html`<a href="${record.fields.SourceLink}" target="_blank" class="quote-link">
+                      <p class="quote">${record.fields.Quote}</p>
+                    </a>`
+                  : html`<p class="quote">${record.fields.Quote}</p>`
+                }
+                <div class="quote-actions">
+                  <button 
+                    class="like-button ${this.likedQuotes[record.id] ? 'liked' : ''}"
+                    @click=${() => this._toggleLike(record.id)}
+                    title="${this.likedQuotes[record.id] ? 'Unlike' : 'Like'} this quote"
+                  >
+                    <svg viewBox="0 0 24 24" fill="${this.likedQuotes[record.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    ${record.fields.Likes || 0}
+                  </button>
+                </div>
+              </li>
+            `)}
+          </ul>
+        </div>
+      </div>
     `;
   }
 }
