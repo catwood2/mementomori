@@ -10,8 +10,8 @@ if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_TABLE_NAME) {
 }
 
 exports.handler = async function(event, context) {
-  // Only allow GET and POST
-  if (!['GET', 'POST'].includes(event.httpMethod)) {
+  // Only allow GET, POST, and PATCH
+  if (!['GET', 'POST', 'PATCH'].includes(event.httpMethod)) {
     return {
       statusCode: 405,
       body: JSON.stringify({ error: 'Method not allowed' })
@@ -70,6 +70,42 @@ exports.handler = async function(event, context) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(`Airtable API error: ${res.status} ${res.statusText} - ${JSON.stringify(errorData)}`);
+      }
+      
+      const data = await res.json();
+      return {
+        statusCode: 200,
+        body: JSON.stringify(data)
+      };
+    }
+
+    if (event.httpMethod === 'PATCH') {
+      const { recordId, likes } = JSON.parse(event.body);
+      
+      if (!recordId || typeof likes !== 'number') {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ 
+            error: 'Invalid payload',
+            details: 'recordId and likes are required fields'
+          })
+        };
+      }
+
+      const res = await fetch(`${url}/${recordId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: { Likes: likes }
+        })
       });
       
       if (!res.ok) {

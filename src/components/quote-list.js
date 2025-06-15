@@ -4,7 +4,8 @@ class QuoteList extends LitElement {
   static properties = {
     quotes: { type: Array },
     searchTerm: { type: String },
-    filterCategory: { type: String }
+    filterCategory: { type: String },
+    likedQuotes: { type: Object }
   };
 
   static styles = css`
@@ -129,6 +130,51 @@ class QuoteList extends LitElement {
       border: var(--card-border, 1px solid rgba(49, 151, 149, 0.2));
     }
 
+    .quote-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .like-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      color: var(--text-secondary, #A0A0A0);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+
+    .like-button:hover {
+      background: rgba(155, 44, 44, 0.1);
+      color: var(--accent-color, #9B2C2C);
+    }
+
+    .like-button.liked {
+      color: var(--accent-color, #9B2C2C);
+    }
+
+    .like-button svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      transition: transform 0.2s;
+    }
+
+    .like-button:hover svg {
+      transform: scale(1.1);
+    }
+
+    .like-count {
+      font-size: 0.875rem;
+      color: var(--text-secondary, #A0A0A0);
+    }
+
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -146,8 +192,67 @@ class QuoteList extends LitElement {
     this.quotes = [];
     this.searchTerm = '';
     this.filterCategory = undefined;
+    this.likedQuotes = {};
+    this._loadLikedQuotes();
     this._load();
     this.addEventListener('quote-added', () => this._load());
+  }
+
+  _loadLikedQuotes() {
+    const stored = localStorage.getItem('likedQuotes');
+    if (stored) {
+      this.likedQuotes = JSON.parse(stored);
+    }
+  }
+
+  _saveLikedQuotes() {
+    localStorage.setItem('likedQuotes', JSON.stringify(this.likedQuotes));
+  }
+
+  async _toggleLike(recordId) {
+    const isLiked = this.likedQuotes[recordId];
+    const newLikes = (this.quotes.find(q => q.id === recordId)?.fields.Likes || 0) + (isLiked ? -1 : 1);
+    
+    try {
+      const res = await fetch('/.netlify/functions/airtable', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          recordId,
+          likes: newLikes
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update likes');
+      }
+
+      // Update local state
+      if (isLiked) {
+        delete this.likedQuotes[recordId];
+      } else {
+        this.likedQuotes[recordId] = true;
+      }
+      this._saveLikedQuotes();
+
+      // Update quote in the list
+      this.quotes = this.quotes.map(quote => {
+        if (quote.id === recordId) {
+          return {
+            ...quote,
+            fields: {
+              ...quote.fields,
+              Likes: newLikes
+            }
+          };
+        }
+        return quote;
+      });
+    } catch (err) {
+      console.error('Error updating likes:', err);
+    }
   }
 
   get filteredQuotes() {
@@ -202,6 +307,18 @@ class QuoteList extends LitElement {
                 </a>`
               : html`<p class="quote">${record.fields.Quote}</p>`
             }
+            <div class="quote-actions">
+              <button 
+                class="like-button ${this.likedQuotes[record.id] ? 'liked' : ''}"
+                @click=${() => this._toggleLike(record.id)}
+                title="${this.likedQuotes[record.id] ? 'Unlike' : 'Like'} this quote"
+              >
+                <svg viewBox="0 0 24 24" fill="${this.likedQuotes[record.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                ${record.fields.Likes || 0}
+              </button>
+            </div>
           </li>
         `)}
       </ul>
