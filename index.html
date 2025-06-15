@@ -224,11 +224,26 @@
     .tab-content.active {
       border-color: var(--accent-color, #9B2C2C);
     }
+
+    .calendar-container {
+      background: var(--card-background);
+      padding: var(--spacing);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      border: var(--card-border);
+      overflow: hidden;
+    }
+
+    .calendar-container memento-calendar {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+    }
   </style>
   <script type="module" src="./src/components/quote-list.js"></script>
   <script type="module" src="./src/components/quote-form.js"></script>
   <script type="module" src="./src/components/memento-calendar.js"></script>
-  <script type="module" src="./src/components/death-calculator.js"></script>
   <script>
     // Debug logging
     console.log('Script starting...');
@@ -241,7 +256,6 @@
       console.log('Quote list:', document.querySelector('quote-list'));
       console.log('Quote form:', document.querySelector('quote-form'));
       console.log('Memento calendar:', document.querySelector('memento-calendar'));
-      console.log('Death calculator:', document.querySelector('death-calculator'));
 
       // Direct tab switching
       const tabs = document.querySelectorAll('.tab');
@@ -344,8 +358,9 @@
     </div>
 
     <div id="calendar-tab" class="tab-content">
-      <death-calculator></death-calculator>
-      <memento-calendar></memento-calendar>
+      <div class="calendar-container">
+        <memento-calendar></memento-calendar>
+      </div>
     </div>
   </main>
 
