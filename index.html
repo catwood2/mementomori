@@ -210,10 +210,22 @@
 
     .tab-content {
       display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .tab-content.active {
       display: block;
+      opacity: 1;
+    }
+
+    /* Debug styles */
+    .tab-content {
+      border: 1px solid transparent;
+    }
+
+    .tab-content.active {
+      border-color: var(--accent-color, #9B2C2C);
     }
   </style>
   <script type="module" src="./src/components/quote-list.js"></script>
@@ -222,55 +234,77 @@
   <script type="module" src="./src/components/death-calculator.js"></script>
   <script>
     // Debug logging
-    console.log('Loading components...');
+    console.log('Script starting...');
     
-    // Wait for custom elements to be defined
-    Promise.all([
-      customElements.whenDefined('quote-list'),
-      customElements.whenDefined('quote-form'),
-      customElements.whenDefined('memento-calendar'),
-      customElements.whenDefined('death-calculator')
-    ]).then(() => {
-      console.log('All components loaded successfully');
-    }).catch(error => {
-      console.error('Error loading components:', error);
-    });
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM loaded');
+      
+      // Tab switching
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      console.log('Found tabs:', tabs.length);
+      console.log('Found tab contents:', tabContents.length);
 
-    // Tab switching
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => {
+        console.log('Setting up tab:', tab.dataset.tab);
+        tab.addEventListener('click', () => {
+          console.log('Tab clicked:', tab.dataset.tab);
+          
+          // Remove active class from all tabs and contents
+          tabs.forEach(t => {
+            console.log('Removing active from tab:', t.dataset.tab);
+            t.classList.remove('active');
+          });
+          
+          tabContents.forEach(c => {
+            console.log('Removing active from content:', c.id);
+            c.classList.remove('active');
+          });
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        console.log('Switching to tab:', tab.dataset.tab);
-        // Remove active class from all tabs and contents
-        tabs.forEach(t => t.classList.remove('active'));
-        tabContents.forEach(c => c.classList.remove('active'));
-
-        // Add active class to clicked tab and corresponding content
-        tab.classList.add('active');
-        const tabId = `${tab.dataset.tab}-tab`;
-        document.getElementById(tabId).classList.add('active');
+          // Add active class to clicked tab and corresponding content
+          tab.classList.add('active');
+          const tabId = `${tab.dataset.tab}-tab`;
+          const content = document.getElementById(tabId);
+          console.log('Activating tab:', tabId, 'Content found:', !!content);
+          if (content) {
+            content.classList.add('active');
+          }
+        });
       });
-    });
 
-    // Wait for custom elements to be defined
-    customElements.whenDefined('quote-list').then(() => {
-      const quoteList = document.querySelector('quote-list');
-      const searchInput = document.getElementById('search-input');
-      const categoryFilter = document.getElementById('category-filter');
+      // Wait for custom elements to be defined
+      Promise.all([
+        customElements.whenDefined('quote-list'),
+        customElements.whenDefined('quote-form'),
+        customElements.whenDefined('memento-calendar'),
+        customElements.whenDefined('death-calculator')
+      ]).then(() => {
+        console.log('All components loaded successfully');
+      }).catch(error => {
+        console.error('Error loading components:', error);
+      });
 
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          quoteList.searchTerm = e.target.value.toLowerCase();
-        });
-      }
+      // Quote list setup
+      customElements.whenDefined('quote-list').then(() => {
+        console.log('Quote list defined');
+        const quoteList = document.querySelector('quote-list');
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
 
-      if (categoryFilter) {
-        categoryFilter.addEventListener('change', (e) => {
-          quoteList.filterCategory = e.target.value;
-        });
-      }
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            quoteList.searchTerm = e.target.value.toLowerCase();
+          });
+        }
+
+        if (categoryFilter) {
+          categoryFilter.addEventListener('change', (e) => {
+            quoteList.filterCategory = e.target.value;
+          });
+        }
+      });
     });
 
     // Register service worker
