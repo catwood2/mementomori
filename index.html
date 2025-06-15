@@ -318,8 +318,8 @@
 
   <main>
     <div class="tabs">
-      <button class="tab active" data-tab="quotes">Quotes</button>
-      <button class="tab" data-tab="calendar">Memento Mori</button>
+      <button class="tab active" onclick="showTab('quotes')">Quotes</button>
+      <button class="tab" onclick="showTab('calendar')">Memento Mori</button>
     </div>
 
     <div id="quotes-tab" class="tab-content active">
@@ -352,5 +352,58 @@
   <footer>
     <p>Remember that you must die</p>
   </footer>
+
+  <script>
+    // Simple tab switching function
+    function showTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(`${tabId}-tab`).style.display = 'block';
+      
+      // Add active class to selected tab
+      document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+    }
+
+    // Quote list setup
+    customElements.whenDefined('quote-list').then(() => {
+      const quoteList = document.querySelector('quote-list');
+      const searchInput = document.getElementById('search-input');
+      const categoryFilter = document.getElementById('category-filter');
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          quoteList.searchTerm = e.target.value.toLowerCase();
+        });
+      }
+
+      if (categoryFilter) {
+        categoryFilter.addEventListener('change', (e) => {
+          quoteList.filterCategory = e.target.value;
+        });
+      }
+    });
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful:', registration.scope);
+          })
+          .catch(err => {
+            console.error('ServiceWorker registration failed:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
