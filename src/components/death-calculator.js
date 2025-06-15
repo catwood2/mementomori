@@ -139,20 +139,26 @@ class DeathCalculator extends LitElement {
             text-align: center;
             font-size: 1.1rem;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .what-is-this {
-            display: block;
-            font-size: 0.875rem;
-            color: var(--text-secondary, #A0A0A0);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: underline;
-            margin-top: 0.5rem;
             cursor: pointer;
             transition: color 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
         }
 
         .what-is-this:hover {
-            color: var(--accent-color, #9B2C2C);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .popup-overlay {
@@ -329,8 +335,8 @@ class DeathCalculator extends LitElement {
             return html`
                 <button class="init-button" @click=${this._showForm}>
                     Add Your Projected Death Date
+                    <button class="what-is-this" @click=${e => { e.stopPropagation(); this._showPopup(); }}>What is this?</button>
                 </button>
-                <a class="what-is-this" @click=${this._showPopup}>What is this?</a>
                 <button class="close-button" @click=${this._hideCalculator}>×</button>
                 ${this.showPopup ? html`
                     <div class="popup-overlay" @click=${this._hidePopup}>
