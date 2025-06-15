@@ -209,9 +209,10 @@ class QuoteForm extends LitElement {
         body: JSON.stringify(payload)
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const error = await res.json();
-        throw error;
+        throw new Error(data.details || data.error || 'Failed to save quote');
       }
 
       form.reset();
@@ -219,7 +220,7 @@ class QuoteForm extends LitElement {
       this.dispatchEvent(new CustomEvent('quote-added'));
     } catch (err) {
       console.error('Airtable error:', err);
-      this._showError();
+      this._showError(err.message);
     }
   }
 
@@ -233,8 +234,8 @@ class QuoteForm extends LitElement {
     }, 3000);
   }
 
-  _showError() {
-    alert('Could not save quote. See DevTools → Network & Console for details.');
+  _showError(message) {
+    alert(`Error: ${message}\n\nPlease check the console for more details.`);
   }
 }
 
