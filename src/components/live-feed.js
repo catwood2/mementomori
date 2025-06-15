@@ -272,7 +272,7 @@ class LiveFeed extends LitElement {
                     <div class="tweet-author">${tweet.fields.Author || 'Anonymous'}</div>
                     <div class="tweet-time">${this._formatTime(tweet.fields.CreatedAt)}</div>
                   </div>
-                  <div class="tweet-content">${tweet.fields.Content}</div>
+                  <div class="tweet-content">${tweet.fields.Quote}</div>
                   <div class="tweet-actions">
                     <div class="tweet-action">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
