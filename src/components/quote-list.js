@@ -485,6 +485,7 @@ class QuoteList extends LitElement {
             </svg>
             Find Quotes
           </div>
+          <button class="info-button" @click=${e => { e.stopPropagation(); this._showPopup(); }}>ⓘ</button>
         </div>
         <div class="quote-content ${this.isExpanded ? '' : 'hidden'}">
           <input 
