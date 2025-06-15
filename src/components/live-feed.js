@@ -5,7 +5,8 @@ class LiveFeed extends LitElement {
     tweets: { type: Array },
     isExpanded: { type: Boolean },
     pollInterval: { type: Number },
-    lastUpdate: { type: String }
+    lastUpdate: { type: String },
+    isRefreshing: { type: Boolean }
   };
 
   static styles = css`
@@ -145,6 +146,42 @@ class LiveFeed extends LitElement {
       padding: 2rem;
     }
 
+    .refresh-button {
+      background: none;
+      border: none;
+      color: var(--text-secondary, #A0A0A0);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .refresh-button:hover {
+      color: var(--accent-color, #9B2C2C);
+      background: rgba(155, 44, 44, 0.1);
+    }
+
+    .refresh-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .refresh-button.spinning svg {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     @keyframes slideDown {
       from {
         opacity: 0;
@@ -179,6 +216,7 @@ class LiveFeed extends LitElement {
     this.pollInterval = 30; // Poll every 30 seconds
     this.lastUpdate = '';
     this._pollTimer = null;
+    this.isRefreshing = false;
   }
 
   connectedCallback() {
@@ -226,6 +264,15 @@ class LiveFeed extends LitElement {
     }
   }
 
+  async _refresh() {
+    if (this.isRefreshing) return;
+    this.isRefreshing = true;
+    this.requestUpdate();
+    await this._load();
+    this.isRefreshing = false;
+    this.requestUpdate();
+  }
+
   _formatTime(dateString) {
     const date = new Date(dateString);
     const now = new Date();
@@ -261,6 +308,12 @@ class LiveFeed extends LitElement {
             </svg>
             Live Feed
           </div>
+          <button class="refresh-button ${this.isRefreshing ? 'spinning' : ''}" @click=${(e) => { e.stopPropagation(); this._refresh(); }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
         </div>
         <div class="feed-content ${this.isExpanded ? '' : 'hidden'}">
           ${this.tweets.length === 0 
