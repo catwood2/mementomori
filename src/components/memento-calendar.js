@@ -29,6 +29,8 @@ class MementoCalendar extends HTMLElement {
                 overflow-x: auto;
                 padding: 1rem;
                 position: relative;
+                background: white;
+                border-radius: var(--border-radius, 12px);
             }
 
             .calendar-grid {
@@ -36,7 +38,7 @@ class MementoCalendar extends HTMLElement {
                 grid-template-columns: repeat(104, 1fr);
                 gap: 2px;
                 width: fit-content;
-                margin-left: 3rem;
+                margin: 0 auto;
             }
 
             .dot {
@@ -54,20 +56,6 @@ class MementoCalendar extends HTMLElement {
 
             .dot.marked {
                 background: #1A1A1A;
-            }
-
-            .age-labels {
-                position: absolute;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                padding: 0.5rem;
-                color: var(--text-secondary, #A0A0A0);
-                font-size: 0.8rem;
-                width: 2rem;
             }
 
             .controls {
@@ -125,17 +113,11 @@ class MementoCalendar extends HTMLElement {
         const dots = Array.from({ length: this.rows * this.weeks }, (_, i) => {
             const row = Math.floor(i / this.weeks);
             const col = i % this.weeks;
-            const age = row * 2;
             const isMarked = this.markedWeeks.has(i);
             return `<div class="dot ${isMarked ? 'marked' : ''}" 
                         data-index="${i}" 
-                        data-age="${age}" 
-                        data-week="${col + 1}"></div>`;
-        }).join('');
-
-        const ageLabels = Array.from({ length: this.rows + 1 }, (_, i) => {
-            const age = i * 2;
-            return `<div>${age}</div>`;
+                        data-row="${row}" 
+                        data-col="${col}"></div>`;
         }).join('');
 
         this.shadowRoot.innerHTML = `
@@ -147,7 +129,6 @@ class MementoCalendar extends HTMLElement {
                 <button id="update-birthdate">Update</button>
             </div>
             <div class="calendar-container">
-                <div class="age-labels">${ageLabels}</div>
                 <div class="calendar-grid">${dots}</div>
             </div>
             <div class="controls">
@@ -199,7 +180,12 @@ class MementoCalendar extends HTMLElement {
         if (!this.birthDate) return;
         
         const today = new Date();
-        const ageInWeeks = Math.floor((today - this.birthDate) / (7 * 24 * 60 * 60 * 1000));
+        const birthDate = new Date(this.birthDate);
+        
+        // Calculate the difference in milliseconds
+        const diffTime = Math.abs(today - birthDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const ageInWeeks = Math.floor(diffDays / 7);
         
         if (ageInWeeks >= 0 && ageInWeeks < this.rows * this.weeks) {
             for (let i = 0; i <= ageInWeeks; i++) {
