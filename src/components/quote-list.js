@@ -226,6 +226,62 @@ class QuoteList extends LitElement {
       animation: slideDown 0.2s ease-out;
     }
 
+    .search-filters {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: var(--card-background, #1E1E1E);
+      border-radius: var(--border-radius, 12px);
+      box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
+      border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color, #333);
+      border-radius: 6px;
+      background: var(--input-background, #2A2A2A);
+      color: var(--text-color, #E1E1E1);
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-color, #9B2C2C);
+      box-shadow: 0 0 0 2px rgba(155, 44, 44, 0.2);
+    }
+
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .category-button {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color, #333);
+      border-radius: 1rem;
+      background: var(--input-background, #2A2A2A);
+      color: var(--text-color, #E1E1E1);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+
+    .category-button:hover {
+      background: var(--accent-color, #9B2C2C);
+      border-color: var(--accent-color, #9B2C2C);
+    }
+
+    .category-button.active {
+      background: var(--accent-color, #9B2C2C);
+      border-color: var(--accent-color, #9B2C2C);
+      color: white;
+    }
+
     @keyframes slideDown {
       from {
         opacity: 0;
@@ -348,14 +404,6 @@ class QuoteList extends LitElement {
       return html`<p class="placeholder">Loading quotes...</p>`;
     }
     
-    if (!this.filterCategory && !this.searchTerm) {
-      return html`<p class="placeholder">Please select a category or search to view quotes.</p>`;
-    }
-    
-    if (this.filteredQuotes.length === 0) {
-      return html`<p class="placeholder">No quotes found matching your criteria.</p>`;
-    }
-
     return html`
       <div class="accordion">
         <div class="accordion-header" @click=${this._toggleAccordion}>
@@ -363,35 +411,67 @@ class QuoteList extends LitElement {
             <svg class="accordion-icon ${this.isExpanded ? 'expanded' : ''}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M6 9l6 6 6-6"/>
             </svg>
-            Quotes
+            Find Quotes
           </div>
         </div>
         <div class="quote-content ${this.isExpanded ? '' : 'hidden'}">
-          <ul>
-            ${this.filteredQuotes.map(record => html`
-              <li>
-                <span class="category">${record.fields.Category}</span>
-                ${record.fields.SourceLink && record.fields.SourceLink !== 'No source provided' 
-                  ? html`<a href="${record.fields.SourceLink}" target="_blank" class="quote-link">
-                      <p class="quote">${record.fields.Quote}</p>
-                    </a>`
-                  : html`<p class="quote">${record.fields.Quote}</p>`
-                }
-                <div class="quote-actions">
-                  <button 
-                    class="like-button ${this.likedQuotes[record.id] ? 'liked' : ''}"
-                    @click=${() => this._toggleLike(record.id)}
-                    title="${this.likedQuotes[record.id] ? 'Unlike' : 'Like'} this quote"
-                  >
-                    <svg viewBox="0 0 24 24" fill="${this.likedQuotes[record.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    ${record.fields.Likes || 0}
-                  </button>
-                </div>
-              </li>
-            `)}
-          </ul>
+          <div class="search-filters">
+            <input 
+              type="text" 
+              class="search-input" 
+              placeholder="Search quotes..." 
+              .value=${this.searchTerm}
+              @input=${e => this.searchTerm = e.target.value}
+            />
+            <div class="category-list">
+              <button 
+                class="category-button ${!this.filterCategory ? 'active' : ''}"
+                @click=${() => this.filterCategory = undefined}
+              >
+                All
+              </button>
+              ${['Philosophy', 'Religion', 'Literature', 'History', 'Science', 'Art', 'Other'].map(category => html`
+                <button 
+                  class="category-button ${this.filterCategory === category ? 'active' : ''}"
+                  @click=${() => this.filterCategory = category}
+                >
+                  ${category}
+                </button>
+              `)}
+            </div>
+          </div>
+          ${!this.filterCategory && !this.searchTerm 
+            ? html`<p class="placeholder">Please select a category or search to view quotes.</p>`
+            : this.filteredQuotes.length === 0 
+              ? html`<p class="placeholder">No quotes found matching your criteria.</p>`
+              : html`
+                <ul>
+                  ${this.filteredQuotes.map(record => html`
+                    <li>
+                      <span class="category">${record.fields.Category}</span>
+                      ${record.fields.SourceLink && record.fields.SourceLink !== 'No source provided' 
+                        ? html`<a href="${record.fields.SourceLink}" target="_blank" class="quote-link">
+                            <p class="quote">${record.fields.Quote}</p>
+                          </a>`
+                        : html`<p class="quote">${record.fields.Quote}</p>`
+                      }
+                      <div class="quote-actions">
+                        <button 
+                          class="like-button ${this.likedQuotes[record.id] ? 'liked' : ''}"
+                          @click=${() => this._toggleLike(record.id)}
+                          title="${this.likedQuotes[record.id] ? 'Unlike' : 'Like'} this quote"
+                        >
+                          <svg viewBox="0 0 24 24" fill="${this.likedQuotes[record.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                          </svg>
+                          ${record.fields.Likes || 0}
+                        </button>
+                      </div>
+                    </li>
+                  `)}
+                </ul>
+              `
+          }
         </div>
       </div>
     `;
