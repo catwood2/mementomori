@@ -126,23 +126,31 @@ class DeathCalculator extends LitElement {
         .life-marker.death {
             background: #9B2C2C;
         }
+
+        .age-details {
+            font-size: 0.875rem;
+            color: var(--text-secondary, #A0A0A0);
+            margin-top: 0.5rem;
+        }
     `;
 
     static properties = {
-        age: { type: Number },
+        birthDate: { type: String },
         gender: { type: String },
         lifeExpectancy: { type: Number },
         deathDate: { type: String },
-        lifeProgress: { type: Number }
+        lifeProgress: { type: Number },
+        exactAge: { type: Number }
     };
 
     constructor() {
         super();
-        this.age = 0;
+        this.birthDate = '';
         this.gender = 'male';
         this.lifeExpectancy = 0;
         this.deathDate = '';
         this.lifeProgress = 0;
+        this.exactAge = 0;
     }
 
     // SSA Actuarial Table data (simplified for example)
@@ -175,14 +183,12 @@ class DeathCalculator extends LitElement {
         return html`
             <div class="calculator-form">
                 <div class="form-group">
-                    <label for="age">Current Age</label>
+                    <label for="birthdate">Date of Birth</label>
                     <input 
-                        type="number" 
-                        id="age" 
-                        min="0" 
-                        max="120" 
-                        .value=${this.age}
-                        @input=${this._onAgeChange}
+                        type="date" 
+                        id="birthdate" 
+                        .value=${this.birthDate}
+                        @input=${this._onBirthDateChange}
                     />
                 </div>
 
@@ -203,7 +209,13 @@ class DeathCalculator extends LitElement {
                 ${this.lifeExpectancy ? html`
                     <div class="results">
                         <div class="result-item">
-                            <div class="result-label">Life Expectancy</div>
+                            <div class="result-label">Current Age</div>
+                            <div class="result-value">${this.exactAge.toFixed(1)} years</div>
+                            <div class="age-details">Born on ${new Date(this.birthDate).toLocaleDateString()}</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-label">Remaining Life Expectancy</div>
                             <div class="result-value">${this.lifeExpectancy.toFixed(1)} years</div>
                         </div>
 
@@ -214,7 +226,7 @@ class DeathCalculator extends LitElement {
 
                         <div class="life-timeline">
                             <div class="life-progress" style="width: ${this.lifeProgress}%"></div>
-                            <div class="life-marker current" style="left: ${(this.age / (this.age + this.lifeExpectancy)) * 100}%"></div>
+                            <div class="life-marker current" style="left: ${(this.exactAge / (this.exactAge + this.lifeExpectancy)) * 100}%"></div>
                             <div class="life-marker death" style="left: 100%"></div>
                         </div>
                     </div>
@@ -223,8 +235,8 @@ class DeathCalculator extends LitElement {
         `;
     }
 
-    _onAgeChange(e) {
-        this.age = parseInt(e.target.value) || 0;
+    _onBirthDateChange(e) {
+        this.birthDate = e.target.value;
     }
 
     _onGenderChange(e) {
@@ -232,27 +244,43 @@ class DeathCalculator extends LitElement {
     }
 
     _calculate() {
+        if (!this.birthDate) return;
+
+        const birth = new Date(this.birthDate);
+        const today = new Date();
+        
+        // Calculate exact age in years
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        this.exactAge = age;
+
         // Find the closest age in the table
         const ages = Object.keys(DeathCalculator.lifeExpectancyTable[this.gender])
             .map(Number)
             .sort((a, b) => a - b);
         
         const closestAge = ages.reduce((prev, curr) => {
-            return Math.abs(curr - this.age) < Math.abs(prev - this.age) ? curr : prev;
+            return Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev;
         });
 
         // Get life expectancy
         this.lifeExpectancy = DeathCalculator.lifeExpectancyTable[this.gender][closestAge];
 
-        // Calculate death date
-        const today = new Date();
-        const deathYear = today.getFullYear() + Math.floor(this.lifeExpectancy);
-        const deathMonth = today.getMonth();
-        const deathDay = today.getDate();
-        this.deathDate = new Date(deathYear, deathMonth, deathDay).toLocaleDateString();
+        // Calculate death date by adding remaining years to birth date
+        const deathDate = new Date(birth);
+        deathDate.setFullYear(deathDate.getFullYear() + age + Math.floor(this.lifeExpectancy));
+        this.deathDate = deathDate.toLocaleDateString(undefined, {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
 
         // Calculate life progress
-        this.lifeProgress = (this.age / (this.age + this.lifeExpectancy)) * 100;
+        this.lifeProgress = (age / (age + this.lifeExpectancy)) * 100;
     }
 }
 
