@@ -221,12 +221,28 @@
   <script type="module" src="./src/components/memento-calendar.js"></script>
   <script type="module" src="./src/components/death-calculator.js"></script>
   <script>
+    // Debug logging
+    console.log('Loading components...');
+    
+    // Wait for custom elements to be defined
+    Promise.all([
+      customElements.whenDefined('quote-list'),
+      customElements.whenDefined('quote-form'),
+      customElements.whenDefined('memento-calendar'),
+      customElements.whenDefined('death-calculator')
+    ]).then(() => {
+      console.log('All components loaded successfully');
+    }).catch(error => {
+      console.error('Error loading components:', error);
+    });
+
     // Tab switching
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
 
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
+        console.log('Switching to tab:', tab.dataset.tab);
         // Remove active class from all tabs and contents
         tabs.forEach(t => t.classList.remove('active'));
         tabContents.forEach(c => c.classList.remove('active'));
