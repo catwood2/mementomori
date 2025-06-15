@@ -141,6 +141,82 @@ class DeathCalculator extends LitElement {
             position: relative;
         }
 
+        .what-is-this {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary, #A0A0A0);
+            text-decoration: underline;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .what-is-this:hover {
+            color: var(--accent-color, #9B2C2C);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: var(--card-background, #1E1E1E);
+            padding: 1.5rem;
+            border-radius: var(--border-radius, 12px);
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary, #A0A0A0);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .popup-close:hover {
+            color: var(--accent-color, #9B2C2C);
+        }
+
+        .popup-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent-color, #9B2C2C);
+            margin-bottom: 1rem;
+        }
+
+        .popup-text {
+            color: var(--text-color, #E1E1E1);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .popup-text p {
+            margin-bottom: 0.75rem;
+        }
+
+        .popup-text p:last-child {
+            margin-bottom: 0;
+        }
+
         .close-button {
             position: absolute;
             top: 0.5rem;
@@ -172,7 +248,8 @@ class DeathCalculator extends LitElement {
         lifeProgress: { type: Number },
         exactAge: { type: Number },
         showForm: { type: Boolean },
-        hasCalculated: { type: Boolean }
+        hasCalculated: { type: Boolean },
+        showPopup: { type: Boolean }
     };
 
     constructor() {
@@ -185,6 +262,7 @@ class DeathCalculator extends LitElement {
         this.exactAge = 0;
         this.showForm = false;
         this.hasCalculated = false;
+        this.showPopup = false;
         
         // Load stored data after properties are initialized
         this.updateComplete.then(() => {
@@ -252,7 +330,21 @@ class DeathCalculator extends LitElement {
                 <button class="init-button" @click=${this._showForm}>
                     Add Your Projected Death Date
                 </button>
+                <a class="what-is-this" @click=${this._showPopup}>What is this?</a>
                 <button class="close-button" @click=${this._hideCalculator}>×</button>
+                ${this.showPopup ? html`
+                    <div class="popup-overlay" @click=${this._hidePopup}>
+                        <div class="popup-content" @click=${e => e.stopPropagation()}>
+                            <button class="popup-close" @click=${this._hidePopup}>×</button>
+                            <div class="popup-title">About the Death Date Calculator</div>
+                            <div class="popup-text">
+                                <p>This calculator uses data from the Social Security Administration's actuarial tables to estimate your projected death date based on your age and gender.</p>
+                                <p>Once calculated, your death date will appear under the Memento Mori title as a daily reminder of your mortality - a modern take on the ancient practice of memento mori ("remember you must die").</p>
+                                <p>The calculation is based on statistical averages and should be taken as a thought-provoking reminder rather than a precise prediction.</p>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
             `;
         }
 
@@ -381,6 +473,14 @@ class DeathCalculator extends LitElement {
             bubbles: true,
             composed: true
         }));
+    }
+
+    _showPopup() {
+        this.showPopup = true;
+    }
+
+    _hidePopup() {
+        this.showPopup = false;
     }
 }
 
