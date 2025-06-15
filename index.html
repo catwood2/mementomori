@@ -236,41 +236,37 @@
     // Debug logging
     console.log('Script starting...');
     
+    // Tab switching function
+    function switchTab(tabId) {
+      console.log('Switching to tab:', tabId);
+      
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(tab => {
+        if (tab.dataset.tab === tabId) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+      
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        if (content.id === `${tabId}-tab`) {
+          content.classList.add('active');
+        } else {
+          content.classList.remove('active');
+        }
+      });
+    }
+    
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', () => {
       console.log('DOM loaded');
       
-      // Tab switching
-      const tabs = document.querySelectorAll('.tab');
-      const tabContents = document.querySelectorAll('.tab-content');
-      
-      console.log('Found tabs:', tabs.length);
-      console.log('Found tab contents:', tabContents.length);
-
-      tabs.forEach(tab => {
-        console.log('Setting up tab:', tab.dataset.tab);
+      // Set up tab click handlers
+      document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
-          console.log('Tab clicked:', tab.dataset.tab);
-          
-          // Remove active class from all tabs and contents
-          tabs.forEach(t => {
-            console.log('Removing active from tab:', t.dataset.tab);
-            t.classList.remove('active');
-          });
-          
-          tabContents.forEach(c => {
-            console.log('Removing active from content:', c.id);
-            c.classList.remove('active');
-          });
-
-          // Add active class to clicked tab and corresponding content
-          tab.classList.add('active');
-          const tabId = `${tab.dataset.tab}-tab`;
-          const content = document.getElementById(tabId);
-          console.log('Activating tab:', tabId, 'Content found:', !!content);
-          if (content) {
-            content.classList.add('active');
-          }
+          switchTab(tab.dataset.tab);
         });
       });
 
@@ -310,12 +306,12 @@
     // Register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('/sw.js')
           .then(registration => {
-            console.log('ServiceWorker registration successful');
+            console.log('ServiceWorker registration successful:', registration.scope);
           })
           .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
+            console.error('ServiceWorker registration failed:', err);
           });
       });
     }
