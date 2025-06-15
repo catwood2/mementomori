@@ -270,8 +270,13 @@ class DeathCalculator extends LitElement {
         this.lifeExpectancy = DeathCalculator.lifeExpectancyTable[this.gender][closestAge];
 
         // Calculate death date by adding remaining years to birth date
-        const deathDate = new Date(birth);
-        deathDate.setFullYear(deathDate.getFullYear() + age + Math.floor(this.lifeExpectancy));
+        const deathDate = new Date(today);
+        deathDate.setFullYear(deathDate.getFullYear() + Math.floor(this.lifeExpectancy));
+        // Add the fractional part of the years as days
+        const fractionalYears = this.lifeExpectancy - Math.floor(this.lifeExpectancy);
+        const additionalDays = Math.floor(fractionalYears * 365.25); // Using 365.25 to account for leap years
+        deathDate.setDate(deathDate.getDate() + additionalDays);
+        
         this.deathDate = deathDate.toLocaleDateString(undefined, {
             weekday: 'long',
             year: 'numeric',
