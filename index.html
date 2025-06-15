@@ -11,6 +11,26 @@
   <link rel="manifest" href="./manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <script>
+    // Simple tab switching function
+    function showTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(`${tabId}-tab`).style.display = 'block';
+      
+      // Add active class to selected tab
+      document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+    }
+  </script>
   <style>
     :root {
       --primary-color: #1A1A1A;
@@ -369,25 +389,6 @@
   </footer>
 
   <script>
-    // Simple tab switching function
-    function showTab(tabId) {
-      // Hide all tab contents
-      document.querySelectorAll('.tab-content').forEach(content => {
-        content.style.display = 'none';
-      });
-      
-      // Remove active class from all tabs
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Show selected tab content
-      document.getElementById(`${tabId}-tab`).style.display = 'block';
-      
-      // Add active class to selected tab
-      document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
-    }
-
     // Quote list setup
     customElements.whenDefined('quote-list').then(() => {
       const quoteList = document.querySelector('quote-list');
