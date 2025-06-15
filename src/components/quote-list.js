@@ -6,8 +6,7 @@ class QuoteList extends LitElement {
     searchTerm: { type: String },
     filterCategory: { type: String },
     likedQuotes: { type: Object },
-    isExpanded: { type: Boolean },
-    showPopup: { type: Boolean }
+    isExpanded: { type: Boolean }
   };
 
   static styles = css`
@@ -368,7 +367,6 @@ class QuoteList extends LitElement {
     this.filterCategory = undefined;
     this.likedQuotes = {};
     this.isExpanded = true;
-    this.showPopup = false;
     this._loadLikedQuotes();
     this._load();
     this.addEventListener('quote-added', () => this._load());
@@ -463,14 +461,6 @@ class QuoteList extends LitElement {
     this.isExpanded = !this.isExpanded;
   }
 
-  _showPopup() {
-    this.showPopup = true;
-  }
-
-  _hidePopup() {
-    this.showPopup = false;
-  }
-
   render() {
     if (this.quotes.length === 0) {
       return html`<p class="placeholder">Loading quotes...</p>`;
@@ -485,7 +475,6 @@ class QuoteList extends LitElement {
             </svg>
             Find Quotes
           </div>
-          <button class="info-button" @click=${e => { e.stopPropagation(); this._showPopup(); }}>ⓘ</button>
         </div>
         <div class="quote-content ${this.isExpanded ? '' : 'hidden'}">
           <input 
@@ -544,18 +533,6 @@ class QuoteList extends LitElement {
           }
         </div>
       </div>
-      ${this.showPopup ? html`
-        <div class="popup-overlay" @click=${this._hidePopup}>
-          <div class="popup-content" @click=${e => e.stopPropagation()}>
-            <button class="popup-close" @click=${this._hidePopup}>×</button>
-            <div class="popup-title">About Quotes</div>
-            <div class="popup-text">
-              <p>This section contains a collection of quotes about death, mortality, and the meaning of life. You can search through them or filter by category.</p>
-              <p>Click on a quote to visit its source, or use the heart icon to save your favorites.</p>
-            </div>
-          </div>
-        </div>
-      ` : ''}
     `;
   }
 }
