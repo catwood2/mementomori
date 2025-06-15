@@ -184,6 +184,9 @@ class DeathCalculator extends LitElement {
                 bubbles: true,
                 composed: true
             }));
+        } else {
+            this.hasCalculated = false;
+            this.showForm = false;
         }
     }
 
