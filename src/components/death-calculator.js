@@ -387,10 +387,23 @@ class DeathCalculator extends LitElement {
                         Calculate the Day I Die
                     </button>
                     <div class="top-buttons">
-                        <button class="info-button" @click=${this._showInfo}>ⓘ</button>
+                        <button class="info-button" @click=${this._showPopup}>ⓘ</button>
                         <button class="close-button" @click=${this._hideCalculator}>×</button>
                     </div>
                 </div>
+                ${this.showPopup ? html`
+                    <div class="popup-overlay" @click=${this._hidePopup}>
+                        <div class="popup-content" @click=${e => e.stopPropagation()}>
+                            <button class="popup-close" @click=${this._hidePopup}>×</button>
+                            <h3 class="popup-title">About Death Calculator</h3>
+                            <div class="popup-text">
+                                <p>This calculator estimates your life expectancy based on your birth date and gender, using data from the Social Security Administration's actuarial tables.</p>
+                                <p>The calculation is an estimate and should not be taken as a definitive prediction. Many factors can influence life expectancy, including lifestyle choices, medical advances, and environmental factors.</p>
+                                <p>Use this as a reminder to make the most of your time and live intentionally.</p>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
             `;
         }
 

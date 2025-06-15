@@ -366,7 +366,7 @@ class QuoteList extends LitElement {
     this.searchTerm = '';
     this.filterCategory = undefined;
     this.likedQuotes = {};
-    this.isExpanded = true;
+    this.isExpanded = false;
     this._loadLikedQuotes();
     this._load();
     this.addEventListener('quote-added', () => this._load());

@@ -202,7 +202,7 @@ class QuoteForm extends LitElement {
 
   constructor() {
     super();
-    this.isExpanded = false;
+    this.isExpanded = true;
     this.showSuccess = false;
   }
 
