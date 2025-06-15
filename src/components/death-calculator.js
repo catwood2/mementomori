@@ -139,33 +139,33 @@ class DeathCalculator extends LitElement {
             text-align: center;
             font-size: 1.1rem;
             position: relative;
+        }
+
+        .top-buttons {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
             display: flex;
-            align-items: center;
-            justify-content: center;
             gap: 0.5rem;
         }
 
-        .info-icon {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.7);
-            cursor: pointer;
-            transition: color 0.2s;
+        .close-button, .info-icon {
             background: none;
             border: none;
-            padding: 0;
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 50%;
+            color: var(--text-secondary, #A0A0A0);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
             line-height: 1;
+            transition: color 0.2s;
         }
 
-        .info-icon:hover {
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.1);
+        .close-button:hover, .info-icon:hover {
+            color: var(--accent-color, #9B2C2C);
+        }
+
+        .info-icon {
+            font-size: 1rem;
         }
 
         .what-is-this {
@@ -244,24 +244,6 @@ class DeathCalculator extends LitElement {
 
         .popup-text p:last-child {
             margin-bottom: 0;
-        }
-
-        .close-button {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: none;
-            border: none;
-            color: var(--text-secondary, #A0A0A0);
-            font-size: 1.25rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            line-height: 1;
-            transition: color 0.2s;
-        }
-
-        .close-button:hover {
-            color: var(--accent-color, #9B2C2C);
         }
 
         .hidden {
@@ -358,9 +340,11 @@ class DeathCalculator extends LitElement {
             return html`
                 <button class="init-button" @click=${this._showForm}>
                     Add Your Projected Death Date
-                    <button class="info-icon" @click=${e => { e.stopPropagation(); this._showPopup(); }} title="What is this?">ⓘ</button>
                 </button>
-                <button class="close-button" @click=${this._hideCalculator}>×</button>
+                <div class="top-buttons">
+                    <button class="info-icon" @click=${e => { e.stopPropagation(); this._showPopup(); }} title="What is this?">ⓘ</button>
+                    <button class="close-button" @click=${this._hideCalculator}>×</button>
+                </div>
                 ${this.showPopup ? html`
                     <div class="popup-overlay" @click=${this._hidePopup}>
                         <div class="popup-content" @click=${e => e.stopPropagation()}>
@@ -379,7 +363,10 @@ class DeathCalculator extends LitElement {
 
         return html`
             <div class="calculator-form">
-                <button class="close-button" @click=${this._hideCalculator}>×</button>
+                <div class="top-buttons">
+                    <button class="info-icon" @click=${e => { e.stopPropagation(); this._showPopup(); }} title="What is this?">ⓘ</button>
+                    <button class="close-button" @click=${this._hideCalculator}>×</button>
+                </div>
                 <div class="form-group">
                     <label for="birthdate">Date of Birth</label>
                     <input 
