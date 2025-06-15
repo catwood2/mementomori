@@ -6,6 +6,8 @@ const ASSETS_TO_CACHE = [
   './styles.css',
   './src/components/quote-list.js',
   './src/components/quote-form.js',
+  './src/components/memento-calendar.js',
+  './src/components/death-calculator.js',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
@@ -15,7 +17,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(ASSETS_TO_CACHE))
-      .then(() => self.skipWaiting())
   );
 });
 
@@ -30,7 +31,7 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+    })
   );
 });
 
@@ -41,8 +42,10 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .catch(() => {
-          // If offline, return a cached response or empty data
-          return new Response(JSON.stringify({ records: [] }), {
+          // Return empty data if offline
+          return new Response(JSON.stringify({
+            records: []
+          }), {
             headers: { 'Content-Type': 'application/json' }
           });
         })
@@ -68,14 +71,17 @@ self.addEventListener('fetch', (event) => {
         }
         return fetch(event.request)
           .then((response) => {
-            // Cache successful responses
-            if (response && response.status === 200) {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME)
-                .then((cache) => {
-                  cache.put(event.request, responseToCache);
-                });
+            // Don't cache if not a success response
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
             }
+
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
+
             return response;
           });
       })

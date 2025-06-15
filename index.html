@@ -177,10 +177,67 @@
         top: calc(64px + var(--spacing));
       }
     }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      background: var(--card-background, #1E1E1E);
+      padding: 1rem;
+      border-radius: var(--border-radius, 12px);
+      box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
+      border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background: var(--primary-color, #1A1A1A);
+      color: var(--text-color, #E1E1E1);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .tab.active {
+      background: var(--accent-color, #9B2C2C);
+    }
+
+    .tab:hover:not(.active) {
+      background: #2A2A2A;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
   </style>
   <script type="module" src="./src/components/quote-list.js"></script>
   <script type="module" src="./src/components/quote-form.js"></script>
+  <script type="module" src="./src/components/memento-calendar.js"></script>
+  <script type="module" src="./src/components/death-calculator.js"></script>
   <script>
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        const tabId = `${tab.dataset.tab}-tab`;
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
     // Wait for custom elements to be defined
     customElements.whenDefined('quote-list').then(() => {
       const quoteList = document.querySelector('quote-list');
@@ -227,24 +284,36 @@
   </header>
 
   <main>
-    <div class="add-quote-section">
-      <h2>Add New Quote</h2>
-      <quote-form></quote-form>
+    <div class="tabs">
+      <button class="tab active" data-tab="quotes">Quotes</button>
+      <button class="tab" data-tab="calendar">Memento Mori</button>
     </div>
 
-    <div class="search-container">
-      <input id="search-input" placeholder="🔍 Search quotes..." />
-      <select id="category-filter">
-        <option value="" disabled selected>Select Category</option>
-        <option value="ALL">All Categories</option>
-        <option value="Life">Life</option>
-        <option value="Death">Death</option>
-        <option value="Humor">Humor</option>
-        <option value="Motivation">Motivation</option>
-      </select>
+    <div id="quotes-tab" class="tab-content active">
+      <div class="add-quote-section">
+        <h2>Add New Quote</h2>
+        <quote-form></quote-form>
+      </div>
+
+      <div class="search-container">
+        <input id="search-input" placeholder="🔍 Search quotes..." />
+        <select id="category-filter">
+          <option value="" disabled selected>Select Category</option>
+          <option value="ALL">All Categories</option>
+          <option value="Life">Life</option>
+          <option value="Death">Death</option>
+          <option value="Humor">Humor</option>
+          <option value="Motivation">Motivation</option>
+        </select>
+      </div>
+
+      <quote-list></quote-list>
     </div>
 
-    <quote-list></quote-list>
+    <div id="calendar-tab" class="tab-content">
+      <death-calculator></death-calculator>
+      <memento-calendar></memento-calendar>
+    </div>
   </main>
 
   <footer>
