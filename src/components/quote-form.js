@@ -221,42 +221,43 @@ class QuoteForm extends LitElement {
             Add a Quote
           </div>
         </div>
-        <form class="${this.isExpanded ? '' : 'hidden'}" @submit=${this._onSubmit} novalidate>
+        <form @submit=${this._onSubmit} class=${this.isExpanded ? '' : 'hidden'}>
           <div class="form-group">
             <label for="quote">Quote</label>
-            <textarea id="quote" name="quote" placeholder="Hard choices, easy life. Easy choices, hard life." required></textarea>
+            <textarea id="quote" name="quote" required placeholder="Enter your quote here..."></textarea>
           </div>
-          
+          <div class="form-group">
+            <label for="author">Author</label>
+            <input type="text" id="author" name="author" required placeholder="Your name or handle">
+          </div>
           <div class="form-group">
             <label for="category">Category</label>
             <select id="category" name="category" required>
-              <option value="" disabled selected>Select a category</option>
+              <option value="">Select a category</option>
               <option value="Life">Life</option>
               <option value="Death">Death</option>
               <option value="Humor">Humor</option>
               <option value="Motivation">Motivation</option>
             </select>
           </div>
-
           <div class="form-group">
-            <label for="link">Source Link</label>
-            <input type="url" id="link" name="link" placeholder="https://example.com" />
+            <label for="link">Source Link (optional)</label>
+            <input type="url" id="link" name="link" placeholder="https://...">
           </div>
-
           <button type="submit">
             <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14M5 12h14"></path>
+              <path d="M12 5v14M5 12h14"/>
             </svg>
             Add Quote
           </button>
         </form>
-      </div>
-
-      <div class="success-message ${this.showSuccess ? 'visible' : ''}">
-        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Quote added successfully!
+        <div class="success-message ${this.showSuccess ? 'visible' : ''}">
+          <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          Quote added successfully!
+        </div>
       </div>
     `;
   }
@@ -268,8 +269,13 @@ class QuoteForm extends LitElement {
     const payload = {
       fields: {
         Quote: form.quote.value,
+        Author: form.author.value,
         Category: form.category.value,
-        SourceLink: form.link.value || 'No source provided'
+        SourceLink: form.link.value || 'No source provided',
+        Content: form.quote.value, // Using the quote as content for now
+        Likes: 0,
+        Replies: 0,
+        Retweets: 0
       }
     };
 

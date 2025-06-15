@@ -27,6 +27,11 @@ cd memento-mori
      - Category (Single select)
      - SourceLink (URL)
      - CreatedAt (Date, auto-generated)
+     - Author (Single line text)
+     - Content (Long text)
+     - Likes (Number)
+     - Replies (Number)
+     - Retweets (Number)
 
 3. Configure the app:
    - Copy `src/config.template.js` to `src/config.js`
