@@ -477,27 +477,30 @@ class QuoteList extends LitElement {
           </div>
         </div>
         <div class="quote-content ${this.isExpanded ? '' : 'hidden'}">
-          <input 
-            type="text" 
-            placeholder="Search quotes..." 
-            .value=${this.searchTerm}
-            @input=${e => this.searchTerm = e.target.value}
-          />
-          <div class="category-list">
-            <button 
-              class="category-button ${!this.filterCategory ? 'active' : ''}"
-              @click=${() => this.filterCategory = undefined}
-            >
-              All
-            </button>
-            ${['Philosophy', 'Religion', 'Literature', 'History', 'Science', 'Art', 'Other'].map(category => html`
+          <div class="search-filters">
+            <input 
+              type="text" 
+              placeholder="🔍 Search quotes..." 
+              .value=${this.searchTerm}
+              @input=${e => this.searchTerm = e.target.value.toLowerCase()}
+              class="search-input"
+            />
+            <div class="category-list">
               <button 
-                class="category-button ${this.filterCategory === category ? 'active' : ''}"
-                @click=${() => this.filterCategory = category}
+                class="category-button ${!this.filterCategory ? 'active' : ''}"
+                @click=${() => this.filterCategory = undefined}
               >
-                ${category}
+                All Categories
               </button>
-            `)}
+              ${['Life', 'Death', 'Humor', 'Motivation'].map(category => html`
+                <button 
+                  class="category-button ${this.filterCategory === category ? 'active' : ''}"
+                  @click=${() => this.filterCategory = category}
+                >
+                  ${category}
+                </button>
+              `)}
+            </div>
           </div>
           ${!this.filterCategory && !this.searchTerm 
             ? html`<p class="placeholder">Please select a category or search to view quotes.</p>`

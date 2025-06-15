@@ -210,18 +210,6 @@
       <quote-form></quote-form>
     </div>
 
-    <div class="search-container">
-      <input id="search-input" placeholder="🔍 Search quotes..." />
-      <select id="category-filter">
-        <option value="" disabled selected>Select Category</option>
-        <option value="ALL">All Categories</option>
-        <option value="Life">Life</option>
-        <option value="Death">Death</option>
-        <option value="Humor">Humor</option>
-        <option value="Motivation">Motivation</option>
-      </select>
-    </div>
-
     <quote-list></quote-list>
   </main>
 
@@ -239,25 +227,6 @@
         deathDateElement.textContent = `My number is up: ${data.deathDate}`;
       }
     }
-
-    // Quote list setup
-    customElements.whenDefined('quote-list').then(() => {
-      const quoteList = document.querySelector('quote-list');
-      const searchInput = document.getElementById('search-input');
-      const categoryFilter = document.getElementById('category-filter');
-
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          quoteList.searchTerm = e.target.value.toLowerCase();
-        });
-      }
-
-      if (categoryFilter) {
-        categoryFilter.addEventListener('change', (e) => {
-          quoteList.filterCategory = e.target.value;
-        });
-      }
-    });
 
     // Death calculator setup
     customElements.whenDefined('death-calculator').then(() => {
