@@ -5,28 +5,30 @@ class MementoCalendar extends HTMLElement {
         this.weeks = 104; // 2 years per row
         this.rows = 40;   // 80 years total
         this.markedWeeks = new Set();
+        this.birthDate = localStorage.getItem('birthDate') ? new Date(localStorage.getItem('birthDate')) : null;
     }
 
     connectedCallback() {
+        this.loadState();
         this.render();
         this.setupEventListeners();
+        if (this.birthDate) {
+            this.markWeeksUpToCurrent();
+        }
     }
 
     render() {
         const style = `
             :host {
                 display: block;
-                background: var(--card-background, #1E1E1E);
-                padding: 1rem;
-                border-radius: var(--border-radius, 12px);
-                box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.3));
-                border: var(--card-border, 1px solid rgba(155, 44, 44, 0.2));
+                width: 100%;
             }
 
             .calendar-container {
                 width: 100%;
                 overflow-x: auto;
                 padding: 1rem;
+                position: relative;
             }
 
             .calendar-grid {
@@ -34,7 +36,7 @@ class MementoCalendar extends HTMLElement {
                 grid-template-columns: repeat(104, 1fr);
                 gap: 2px;
                 width: fit-content;
-                margin: 0 auto;
+                margin-left: 3rem;
             }
 
             .dot {
@@ -65,6 +67,7 @@ class MementoCalendar extends HTMLElement {
                 padding: 0.5rem;
                 color: var(--text-secondary, #A0A0A0);
                 font-size: 0.8rem;
+                width: 2rem;
             }
 
             .controls {
@@ -95,6 +98,28 @@ class MementoCalendar extends HTMLElement {
                 font-size: 1.2rem;
                 font-weight: 600;
             }
+
+            .birth-date-input {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+                margin-bottom: 1rem;
+                justify-content: center;
+            }
+
+            input[type="date"] {
+                background: var(--primary-color, #1A1A1A);
+                color: var(--text-color, #E1E1E1);
+                border: 1px solid rgba(155, 44, 44, 0.3);
+                padding: 0.5rem;
+                border-radius: 8px;
+                font-family: inherit;
+            }
+
+            label {
+                color: var(--text-color, #E1E1E1);
+                font-weight: 500;
+            }
         `;
 
         const dots = Array.from({ length: this.rows * this.weeks }, (_, i) => {
@@ -116,13 +141,17 @@ class MementoCalendar extends HTMLElement {
         this.shadowRoot.innerHTML = `
             <style>${style}</style>
             <div class="title">Memento Mori Calendar</div>
+            <div class="birth-date-input">
+                <label for="birthdate">Birth Date:</label>
+                <input type="date" id="birthdate" value="${this.birthDate ? this.birthDate.toISOString().split('T')[0] : ''}">
+                <button id="update-birthdate">Update</button>
+            </div>
             <div class="calendar-container">
                 <div class="age-labels">${ageLabels}</div>
                 <div class="calendar-grid">${dots}</div>
             </div>
             <div class="controls">
                 <button id="reset-btn">Reset All</button>
-                <button id="mark-current-btn">Mark Current Week</button>
             </div>
         `;
     }
@@ -130,7 +159,8 @@ class MementoCalendar extends HTMLElement {
     setupEventListeners() {
         const grid = this.shadowRoot.querySelector('.calendar-grid');
         const resetBtn = this.shadowRoot.querySelector('#reset-btn');
-        const markCurrentBtn = this.shadowRoot.querySelector('#mark-current-btn');
+        const birthdateInput = this.shadowRoot.querySelector('#birthdate');
+        const updateBirthdateBtn = this.shadowRoot.querySelector('#update-birthdate');
 
         grid.addEventListener('click', (e) => {
             const dot = e.target.closest('.dot');
@@ -152,17 +182,31 @@ class MementoCalendar extends HTMLElement {
             this.saveState();
         });
 
-        markCurrentBtn.addEventListener('click', () => {
-            const today = new Date();
-            const birthDate = new Date(localStorage.getItem('birthDate') || today);
-            const ageInWeeks = Math.floor((today - birthDate) / (7 * 24 * 60 * 60 * 1000));
-            
-            if (ageInWeeks >= 0 && ageInWeeks < this.rows * this.weeks) {
-                this.markedWeeks.add(ageInWeeks);
+        updateBirthdateBtn.addEventListener('click', () => {
+            const birthDate = new Date(birthdateInput.value);
+            if (birthDate && !isNaN(birthDate)) {
+                this.birthDate = birthDate;
+                localStorage.setItem('birthDate', birthDate.toISOString());
+                this.markedWeeks.clear();
+                this.markWeeksUpToCurrent();
                 this.render();
                 this.saveState();
             }
         });
+    }
+
+    markWeeksUpToCurrent() {
+        if (!this.birthDate) return;
+        
+        const today = new Date();
+        const ageInWeeks = Math.floor((today - this.birthDate) / (7 * 24 * 60 * 60 * 1000));
+        
+        if (ageInWeeks >= 0 && ageInWeeks < this.rows * this.weeks) {
+            for (let i = 0; i <= ageInWeeks; i++) {
+                this.markedWeeks.add(i);
+            }
+            this.saveState();
+        }
     }
 
     saveState() {
