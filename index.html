@@ -55,7 +55,7 @@
 
     .header-content {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
       max-width: 600px;
       margin: 0 auto;
@@ -77,6 +77,14 @@
       font-size: 1.5rem;
       font-weight: 600;
       margin: 0;
+    }
+
+    .death-date {
+      font-size: 0.875rem;
+      color: var(--accent-color, #9B2C2C);
+      text-align: center;
+      margin-top: 0.5rem;
+      font-weight: 500;
     }
 
     main {
@@ -177,14 +185,6 @@
         top: calc(64px + var(--spacing));
       }
     }
-
-    .death-date {
-      font-size: 0.875rem;
-      color: var(--accent-color, #9B2C2C);
-      text-align: center;
-      margin-top: 0.5rem;
-      font-weight: 500;
-    }
   </style>
   <script type="module" src="./src/components/quote-list.js"></script>
   <script type="module" src="./src/components/quote-form.js"></script>
@@ -249,6 +249,18 @@
       }
     });
 
+    // Death calculator setup
+    customElements.whenDefined('death-calculator').then(() => {
+      const deathCalculator = document.querySelector('death-calculator');
+      const deathDateElement = document.getElementById('death-date');
+      
+      deathCalculator.addEventListener('death-date-update', (e) => {
+        if (deathDateElement) {
+          deathDateElement.textContent = `Projected Death: ${e.detail.deathDate}`;
+        }
+      });
+    });
+
     // Register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -261,18 +273,6 @@
           });
       });
     }
-
-    // Death calculator setup
-    customElements.whenDefined('death-calculator').then(() => {
-      const deathCalculator = document.querySelector('death-calculator');
-      const deathDateElement = document.getElementById('death-date');
-      
-      deathCalculator.addEventListener('death-date-update', (e) => {
-        if (deathDateElement) {
-          deathDateElement.textContent = `Projected Death: ${e.detail.deathDate}`;
-        }
-      });
-    });
   </script>
 </body>
 </html>
