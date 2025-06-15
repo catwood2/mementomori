@@ -230,6 +230,16 @@
   </footer>
 
   <script>
+    // Load stored death date on page load
+    const storedDeathDate = localStorage.getItem('deathCalculator');
+    if (storedDeathDate) {
+      const data = JSON.parse(storedDeathDate);
+      const deathDateElement = document.getElementById('death-date');
+      if (deathDateElement) {
+        deathDateElement.textContent = `Projected Death: ${data.deathDate}`;
+      }
+    }
+
     // Quote list setup
     customElements.whenDefined('quote-list').then(() => {
       const quoteList = document.querySelector('quote-list');

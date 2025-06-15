@@ -165,7 +165,11 @@ class DeathCalculator extends LitElement {
         this.exactAge = 0;
         this.showForm = false;
         this.hasCalculated = false;
-        this._loadFromStorage();
+        
+        // Load stored data after properties are initialized
+        this.updateComplete.then(() => {
+            this._loadFromStorage();
+        });
     }
 
     _loadFromStorage() {
