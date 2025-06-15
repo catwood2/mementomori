@@ -277,30 +277,34 @@
       console.log('Quote form:', document.querySelector('quote-form'));
       console.log('Memento calendar:', document.querySelector('memento-calendar'));
 
-      // Direct tab switching
+      // Set up tab switching
       const tabs = document.querySelectorAll('.tab');
       const contents = document.querySelectorAll('.tab-content');
-      
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          console.log('Tab clicked:', tab.dataset.tab);
-          
-          // Remove active class from all tabs and contents
-          tabs.forEach(t => t.classList.remove('active'));
-          contents.forEach(c => c.classList.remove('active'));
-          
-          // Add active class to clicked tab
-          tab.classList.add('active');
-          
-          // Show corresponding content
-          const contentId = `${tab.dataset.tab}-tab`;
-          const content = document.getElementById(contentId);
-          if (content) {
-            console.log('Showing content:', contentId);
+
+      function switchTab(tabId) {
+        // Update tabs
+        tabs.forEach(tab => {
+          if (tab.dataset.tab === tabId) {
+            tab.classList.add('active');
+          } else {
+            tab.classList.remove('active');
+          }
+        });
+
+        // Update content
+        contents.forEach(content => {
+          if (content.id === `${tabId}-tab`) {
             content.classList.add('active');
           } else {
-            console.error('Content not found:', contentId);
+            content.classList.remove('active');
           }
+        });
+      }
+
+      // Add click handlers to tabs
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          switchTab(tab.dataset.tab);
         });
       });
 
@@ -352,8 +356,8 @@
 
   <main>
     <div class="tabs">
-      <button class="tab active" onclick="showTab('quotes')">Quotes</button>
-      <button class="tab" onclick="showTab('calendar')">Memento Mori</button>
+      <button class="tab active" data-tab="quotes">Quotes</button>
+      <button class="tab" data-tab="calendar">Memento Mori</button>
     </div>
 
     <div id="quotes-tab" class="tab-content active">
