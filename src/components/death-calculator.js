@@ -269,7 +269,7 @@ class DeathCalculator extends LitElement {
         // Get life expectancy
         this.lifeExpectancy = DeathCalculator.lifeExpectancyTable[this.gender][closestAge];
 
-        // Calculate death date by adding remaining years to birth date
+        // Calculate death date by adding remaining years to current date
         const deathDate = new Date(today);
         deathDate.setFullYear(deathDate.getFullYear() + Math.floor(this.lifeExpectancy));
         // Add the fractional part of the years as days
