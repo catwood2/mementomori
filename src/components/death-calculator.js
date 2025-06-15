@@ -132,6 +132,16 @@ class DeathCalculator extends LitElement {
             color: var(--text-secondary, #A0A0A0);
             margin-top: 0.5rem;
         }
+
+        .init-button {
+            width: 100%;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
     `;
 
     static properties = {
@@ -140,7 +150,9 @@ class DeathCalculator extends LitElement {
         lifeExpectancy: { type: Number },
         deathDate: { type: String },
         lifeProgress: { type: Number },
-        exactAge: { type: Number }
+        exactAge: { type: Number },
+        showForm: { type: Boolean },
+        hasCalculated: { type: Boolean }
     };
 
     constructor() {
@@ -151,6 +163,30 @@ class DeathCalculator extends LitElement {
         this.deathDate = '';
         this.lifeProgress = 0;
         this.exactAge = 0;
+        this.showForm = false;
+        this.hasCalculated = false;
+        this._loadFromStorage();
+    }
+
+    _loadFromStorage() {
+        const stored = localStorage.getItem('deathCalculator');
+        if (stored) {
+            const data = JSON.parse(stored);
+            this.deathDate = data.deathDate;
+            this.hasCalculated = true;
+            // Dispatch event to update header
+            this.dispatchEvent(new CustomEvent('death-date-update', {
+                detail: { deathDate: this.deathDate },
+                bubbles: true,
+                composed: true
+            }));
+        }
+    }
+
+    _saveToStorage() {
+        localStorage.setItem('deathCalculator', JSON.stringify({
+            deathDate: this.deathDate
+        }));
     }
 
     // SSA Actuarial Table data (simplified for example)
@@ -180,6 +216,18 @@ class DeathCalculator extends LitElement {
     };
 
     render() {
+        if (this.hasCalculated) {
+            return html``;
+        }
+
+        if (!this.showForm) {
+            return html`
+                <button class="init-button" @click=${this._showForm}>
+                    Calculate Your Death Date
+                </button>
+            `;
+        }
+
         return html`
             <div class="calculator-form">
                 <div class="form-group">
@@ -235,6 +283,10 @@ class DeathCalculator extends LitElement {
         `;
     }
 
+    _showForm() {
+        this.showForm = true;
+    }
+
     _onBirthDateChange(e) {
         this.birthDate = e.target.value;
     }
@@ -286,6 +338,15 @@ class DeathCalculator extends LitElement {
 
         // Calculate life progress
         this.lifeProgress = (age / (age + this.lifeExpectancy)) * 100;
+
+        // Save to storage and update header
+        this.hasCalculated = true;
+        this._saveToStorage();
+        this.dispatchEvent(new CustomEvent('death-date-update', {
+            detail: { deathDate: this.deathDate },
+            bubbles: true,
+            composed: true
+        }));
     }
 }
 

@@ -177,6 +177,14 @@
         top: calc(64px + var(--spacing));
       }
     }
+
+    .death-date {
+      font-size: 0.875rem;
+      color: var(--accent-color, #9B2C2C);
+      text-align: center;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
   </style>
   <script type="module" src="./src/components/quote-list.js"></script>
   <script type="module" src="./src/components/quote-form.js"></script>
@@ -189,6 +197,7 @@
         <img src="./icons/icon-192.png" alt="Memento Mori">
         <h1>Memento Mori</h1>
       </div>
+      <div id="death-date" class="death-date"></div>
       <button id="install-btn" hidden>Add to Home Screen</button>
     </div>
   </header>
@@ -252,6 +261,18 @@
           });
       });
     }
+
+    // Death calculator setup
+    customElements.whenDefined('death-calculator').then(() => {
+      const deathCalculator = document.querySelector('death-calculator');
+      const deathDateElement = document.getElementById('death-date');
+      
+      deathCalculator.addEventListener('death-date-update', (e) => {
+        if (deathDateElement) {
+          deathDateElement.textContent = `Projected Death: ${e.detail.deathDate}`;
+        }
+      });
+    });
   </script>
 </body>
 </html>
