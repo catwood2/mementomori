@@ -268,7 +268,7 @@ class LiveFeed extends LitElement {
             : this.tweets.map(tweet => html`
                 <div class="tweet">
                   <div class="tweet-header">
-                    <div class="tweet-avatar">${tweet.fields.Author?.[0] || '?'}</div>
+                    <div class="tweet-avatar">${tweet.fields.Author?.[0] || '☠'}</div>
                     <div class="tweet-author">${tweet.fields.Author || 'Anonymous'}</div>
                     <div class="tweet-time">${this._formatTime(tweet.fields.CreatedAt)}</div>
                   </div>
