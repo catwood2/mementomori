@@ -271,39 +271,47 @@ class QuoteForm extends LitElement {
       return;
     }
 
+    const payload = {
+      fields: {
+        Quote: quote,
+        Category: category,
+        SourceLink: sourceLink,
+        Author: author,
+        Content: quote,
+        Likes: 0,
+        Replies: 0,
+        Retweets: 0,
+        CreatedAt: new Date().toISOString()
+      }
+    };
+
+    console.log('Submitting quote with payload:', payload);
+
     try {
       const res = await fetch('/.netlify/functions/airtable', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          fields: {
-            Quote: quote,
-            Category: category,
-            SourceLink: sourceLink,
-            Author: author,
-            Content: quote,
-            Likes: 0,
-            Replies: 0,
-            Retweets: 0,
-            CreatedAt: new Date().toISOString()
-          }
-        })
+        body: JSON.stringify(payload)
       });
 
+      const data = await res.json();
+      console.log('Server response:', data);
+
       if (!res.ok) {
-        throw new Error('Failed to submit quote');
+        throw new Error(data.details || data.error || 'Failed to submit quote');
       }
 
       form.reset();
+      this._showSuccess();
       this.dispatchEvent(new CustomEvent('quote-submitted', {
         bubbles: true,
         composed: true
       }));
     } catch (err) {
       console.error('Error submitting quote:', err);
-      alert('Failed to submit quote. Please try again.');
+      alert(`Failed to submit quote: ${err.message}`);
     }
   }
 
