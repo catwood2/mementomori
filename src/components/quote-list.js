@@ -384,10 +384,24 @@ class QuoteList extends LitElement {
   }
 
   async _toggleLike(recordId) {
-    const isLiked = this.likedQuotes[recordId];
-    const newLikes = (this.quotes.find(q => q.id === recordId)?.fields.Likes || 0) + (isLiked ? -1 : 1);
-    
     try {
+      const quote = this.quotes.find(q => q.id === recordId);
+      if (!quote) {
+        console.error('Quote not found:', recordId);
+        return;
+      }
+
+      const isLiked = this.likedQuotes[recordId];
+      const currentLikes = quote.fields.Likes || 0;
+      const newLikes = currentLikes + (isLiked ? -1 : 1);
+      
+      console.log('Toggling like:', {
+        recordId,
+        isLiked,
+        currentLikes,
+        newLikes
+      });
+
       const res = await fetch('/.netlify/functions/airtable', {
         method: 'PATCH',
         headers: {
@@ -400,6 +414,8 @@ class QuoteList extends LitElement {
       });
 
       if (!res.ok) {
+        const errorData = await res.json();
+        console.error('Failed to update likes:', errorData);
         throw new Error('Failed to update likes');
       }
 
@@ -412,20 +428,24 @@ class QuoteList extends LitElement {
       this._saveLikedQuotes();
 
       // Update quote in the list
-      this.quotes = this.quotes.map(quote => {
-        if (quote.id === recordId) {
+      this.quotes = this.quotes.map(q => {
+        if (q.id === recordId) {
           return {
-            ...quote,
+            ...q,
             fields: {
-              ...quote.fields,
+              ...q.fields,
               Likes: newLikes
             }
           };
         }
-        return quote;
+        return q;
       });
+
+      // Force a re-render
+      this.requestUpdate();
     } catch (err) {
       console.error('Error updating likes:', err);
+      alert('Failed to update likes. Please try again.');
     }
   }
 
