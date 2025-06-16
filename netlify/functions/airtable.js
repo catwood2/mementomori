@@ -11,6 +11,8 @@ if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_TABLE_NAME) {
 
 // Helper function to validate and clean fields
 function validateAndCleanFields(fields) {
+  console.log('Validating fields:', JSON.stringify(fields, null, 2));
+  
   const cleaned = {
     Quote: fields.Quote?.trim(),
     Category: fields.Category,
@@ -22,6 +24,8 @@ function validateAndCleanFields(fields) {
     Retweets: fields.Retweets || 0,
     CreatedAt: fields.CreatedAt || new Date().toISOString()
   };
+
+  console.log('Cleaned fields:', JSON.stringify(cleaned, null, 2));
 
   // Validate required fields
   if (!cleaned.Quote) {
@@ -35,6 +39,12 @@ function validateAndCleanFields(fields) {
 }
 
 exports.handler = async function(event, context) {
+  console.log('Received request:', {
+    method: event.httpMethod,
+    path: event.path,
+    headers: event.headers
+  });
+
   // Only allow GET, POST, and PATCH
   if (!['GET', 'POST', 'PATCH'].includes(event.httpMethod)) {
     return {
@@ -45,6 +55,11 @@ exports.handler = async function(event, context) {
 
   // Check for required environment variables
   if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_TABLE_NAME) {
+    console.error('Missing environment variables:', {
+      AIRTABLE_BASE_ID: !!AIRTABLE_BASE_ID,
+      AIRTABLE_API_KEY: !!AIRTABLE_API_KEY,
+      AIRTABLE_TABLE_NAME: !!AIRTABLE_TABLE_NAME
+    });
     return {
       statusCode: 500,
       body: JSON.stringify({ 
@@ -56,6 +71,7 @@ exports.handler = async function(event, context) {
 
   try {
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+    console.log('Airtable URL:', url);
     
     if (event.httpMethod === 'GET') {
       const res = await fetch(`${url}?sort[0][field]=CreatedAt&sort[0][direction]=desc`, {
@@ -64,6 +80,11 @@ exports.handler = async function(event, context) {
       
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
+        console.error('GET request failed:', {
+          status: res.status,
+          statusText: res.statusText,
+          error: errorData
+        });
         throw new Error(`Airtable API error: ${res.status} ${res.statusText} - ${JSON.stringify(errorData)}`);
       }
       
@@ -75,10 +96,14 @@ exports.handler = async function(event, context) {
     }
     
     if (event.httpMethod === 'POST') {
+      console.log('POST request body:', event.body);
+      
       let payload;
       try {
         payload = JSON.parse(event.body);
+        console.log('Parsed payload:', JSON.stringify(payload, null, 2));
       } catch (e) {
+        console.error('JSON parse error:', e);
         return {
           statusCode: 400,
           body: JSON.stringify({ 
@@ -91,7 +116,9 @@ exports.handler = async function(event, context) {
       try {
         const cleanedFields = validateAndCleanFields(payload.fields || {});
         payload.fields = cleanedFields;
+        console.log('Final payload to Airtable:', JSON.stringify(payload, null, 2));
       } catch (e) {
+        console.error('Field validation error:', e);
         return {
           statusCode: 400,
           body: JSON.stringify({ 
@@ -112,10 +139,16 @@ exports.handler = async function(event, context) {
       
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
+        console.error('POST request failed:', {
+          status: res.status,
+          statusText: res.statusText,
+          error: errorData
+        });
         throw new Error(`Airtable API error: ${res.status} ${res.statusText} - ${JSON.stringify(errorData)}`);
       }
       
       const data = await res.json();
+      console.log('POST request successful:', JSON.stringify(data, null, 2));
       return {
         statusCode: 200,
         body: JSON.stringify(data)
@@ -126,7 +159,9 @@ exports.handler = async function(event, context) {
       let payload;
       try {
         payload = JSON.parse(event.body);
+        console.log('PATCH payload:', JSON.stringify(payload, null, 2));
       } catch (e) {
+        console.error('JSON parse error:', e);
         return {
           statusCode: 400,
           body: JSON.stringify({ 
@@ -139,6 +174,7 @@ exports.handler = async function(event, context) {
       const { recordId, likes } = payload;
       
       if (!recordId || typeof likes !== 'number') {
+        console.error('Invalid PATCH payload:', payload);
         return {
           statusCode: 400,
           body: JSON.stringify({ 
@@ -161,10 +197,16 @@ exports.handler = async function(event, context) {
       
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
+        console.error('PATCH request failed:', {
+          status: res.status,
+          statusText: res.statusText,
+          error: errorData
+        });
         throw new Error(`Airtable API error: ${res.status} ${res.statusText} - ${JSON.stringify(errorData)}`);
       }
       
       const data = await res.json();
+      console.log('PATCH request successful:', JSON.stringify(data, null, 2));
       return {
         statusCode: 200,
         body: JSON.stringify(data)
