@@ -9,6 +9,31 @@ if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_TABLE_NAME) {
   console.error('AIRTABLE_TABLE_NAME:', !!AIRTABLE_TABLE_NAME);
 }
 
+// Helper function to validate and clean fields
+function validateAndCleanFields(fields) {
+  const cleaned = {
+    Quote: fields.Quote?.trim(),
+    Category: fields.Category,
+    SourceLink: fields.SourceLink?.trim() || '',
+    Author: fields.Author?.trim() || 'Anonymous',
+    Content: fields.Content?.trim() || fields.Quote?.trim(),
+    Likes: fields.Likes || 0,
+    Replies: fields.Replies || 0,
+    Retweets: fields.Retweets || 0,
+    CreatedAt: fields.CreatedAt || new Date().toISOString()
+  };
+
+  // Validate required fields
+  if (!cleaned.Quote) {
+    throw new Error('Quote is required');
+  }
+  if (!cleaned.Category) {
+    throw new Error('Category is required');
+  }
+
+  return cleaned;
+}
+
 exports.handler = async function(event, context) {
   // Only allow GET, POST, and PATCH
   if (!['GET', 'POST', 'PATCH'].includes(event.httpMethod)) {
@@ -50,15 +75,28 @@ exports.handler = async function(event, context) {
     }
     
     if (event.httpMethod === 'POST') {
-      const payload = JSON.parse(event.body);
-      
-      // Validate payload
-      if (!payload.fields || !payload.fields.Quote || !payload.fields.Category) {
+      let payload;
+      try {
+        payload = JSON.parse(event.body);
+      } catch (e) {
         return {
           statusCode: 400,
           body: JSON.stringify({ 
-            error: 'Invalid payload',
-            details: 'Quote and Category are required fields'
+            error: 'Invalid JSON payload',
+            details: e.message
+          })
+        };
+      }
+
+      try {
+        const cleanedFields = validateAndCleanFields(payload.fields || {});
+        payload.fields = cleanedFields;
+      } catch (e) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ 
+            error: 'Invalid fields',
+            details: e.message
           })
         };
       }
@@ -85,7 +123,20 @@ exports.handler = async function(event, context) {
     }
 
     if (event.httpMethod === 'PATCH') {
-      const { recordId, likes } = JSON.parse(event.body);
+      let payload;
+      try {
+        payload = JSON.parse(event.body);
+      } catch (e) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ 
+            error: 'Invalid JSON payload',
+            details: e.message
+          })
+        };
+      }
+
+      const { recordId, likes } = payload;
       
       if (!recordId || typeof likes !== 'number') {
         return {
