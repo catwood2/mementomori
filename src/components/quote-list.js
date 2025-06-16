@@ -430,30 +430,74 @@ class QuoteList extends LitElement {
   }
 
   get filteredQuotes() {
+    console.log('Filtering quotes:', {
+      searchTerm: this.searchTerm,
+      filterCategory: this.filterCategory,
+      totalQuotes: this.quotes?.length || 0
+    });
+
+    if (!Array.isArray(this.quotes)) {
+      console.warn('Quotes is not an array:', this.quotes);
+      return [];
+    }
+
     return this.quotes.filter(record => {
-      const { Quote, Category, SourceLink } = record.fields;
-      const textLower = Quote.toLowerCase() + ' ' + SourceLink.toLowerCase();
-      const matchesText = textLower.includes(this.searchTerm);
-      let matchesCategory = true;
-      if (this.filterCategory && this.filterCategory !== 'ALL') {
-        matchesCategory = Category === this.filterCategory;
+      if (!record?.fields) {
+        console.warn('Invalid record:', record);
+        return false;
       }
+
+      const { Quote = '', Category = '', SourceLink = '' } = record.fields;
+      const searchTerm = (this.searchTerm || '').toLowerCase();
+      const textLower = `${Quote.toLowerCase()} ${SourceLink.toLowerCase()}`;
+      const matchesText = !searchTerm || textLower.includes(searchTerm);
+      const matchesCategory = !this.filterCategory || this.filterCategory === 'ALL' || Category === this.filterCategory;
+
+      console.log('Quote match:', {
+        quote: Quote,
+        category: Category,
+        matchesText,
+        matchesCategory
+      });
+
       return matchesText && matchesCategory;
     });
   }
 
   async _load() {
     try {
+      console.log('Loading quotes...');
       const res = await fetch('/.netlify/functions/airtable');
       if (!res.ok) {
         const errorData = await res.json();
         console.error('API Error:', errorData);
         throw errorData;
       }
-      const { records } = await res.json();
-      this.quotes = records;
+      const data = await res.json();
+      console.log('Raw API response:', data);
+
+      if (!data || !Array.isArray(data.records)) {
+        console.error('Invalid API response format:', data);
+        this.quotes = [];
+        return;
+      }
+
+      // Ensure each record has the required fields
+      this.quotes = data.records.map(record => ({
+        ...record,
+        fields: {
+          Quote: record.fields?.Quote || '',
+          Category: record.fields?.Category || '',
+          SourceLink: record.fields?.SourceLink || '',
+          Likes: record.fields?.Likes || 0,
+          ...record.fields
+        }
+      }));
+
+      console.log('Processed quotes:', this.quotes);
     } catch (err) {
       console.error('Load error:', err);
+      this.quotes = [];
     }
   }
 
