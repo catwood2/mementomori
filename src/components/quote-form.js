@@ -280,8 +280,7 @@ class QuoteForm extends LitElement {
         Content: quote,
         Likes: 0,
         Replies: 0,
-        Retweets: 0,
-        CreatedAt: new Date().toISOString()
+        Retweets: 0
       }
     };
 

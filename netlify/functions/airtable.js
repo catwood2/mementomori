@@ -21,8 +21,7 @@ function validateAndCleanFields(fields) {
     Content: fields.Content?.trim() || fields.Quote?.trim(),
     Likes: fields.Likes || 0,
     Replies: fields.Replies || 0,
-    Retweets: fields.Retweets || 0,
-    CreatedAt: fields.CreatedAt || new Date().toISOString()
+    Retweets: fields.Retweets || 0
   };
 
   console.log('Cleaned fields:', JSON.stringify(cleaned, null, 2));
