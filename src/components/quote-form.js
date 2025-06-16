@@ -227,10 +227,6 @@ class QuoteForm extends LitElement {
             <textarea id="quote" name="quote" required placeholder="Enter your quote here..."></textarea>
           </div>
           <div class="form-group">
-            <label for="author">Author</label>
-            <input type="text" id="author" name="author" required placeholder="Your name or handle">
-          </div>
-          <div class="form-group">
             <label for="category">Category</label>
             <select id="category" name="category" required>
               <option value="">Select a category</option>
@@ -241,8 +237,8 @@ class QuoteForm extends LitElement {
             </select>
           </div>
           <div class="form-group">
-            <label for="link">Source Link (optional)</label>
-            <input type="url" id="link" name="link" placeholder="https://...">
+            <label for="sourceLink">Source Link (optional)</label>
+            <input type="url" id="sourceLink" name="sourceLink" placeholder="https://...">
           </div>
           <button type="submit">
             <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -265,41 +261,49 @@ class QuoteForm extends LitElement {
   async _onSubmit(e) {
     e.preventDefault();
     const form = e.target;
-    
-    const payload = {
-      fields: {
-        Quote: form.quote.value,
-        Author: form.author.value,
-        Category: form.category.value,
-        SourceLink: form.link.value || 'No source provided',
-        Content: form.quote.value, // Using the quote as content for now
-        Likes: 0,
-        Replies: 0,
-        Retweets: 0
-      }
-    };
+    const quote = form.quote.value.trim();
+    const category = form.category.value;
+    const sourceLink = form.sourceLink.value.trim();
+    const author = localStorage.getItem('userHandle') || 'Anonymous';
+
+    if (!quote) {
+      alert('Please enter a quote');
+      return;
+    }
 
     try {
       const res = await fetch('/.netlify/functions/airtable', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          fields: {
+            Quote: quote,
+            Category: category,
+            SourceLink: sourceLink,
+            Author: author,
+            Content: quote,
+            Likes: 0,
+            Replies: 0,
+            Retweets: 0,
+            CreatedAt: new Date().toISOString()
+          }
+        })
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        throw new Error(data.details || data.error || 'Failed to save quote');
+        throw new Error('Failed to submit quote');
       }
 
       form.reset();
-      this._showSuccess();
-      this.dispatchEvent(new CustomEvent('quote-added'));
+      this.dispatchEvent(new CustomEvent('quote-submitted', {
+        bubbles: true,
+        composed: true
+      }));
     } catch (err) {
-      console.error('Airtable error:', err);
-      this._showError(err.message);
+      console.error('Error submitting quote:', err);
+      alert('Failed to submit quote. Please try again.');
     }
   }
 
