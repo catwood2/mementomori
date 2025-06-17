@@ -1,7 +1,7 @@
 [build]
-  base = "react-app"
-  command = "npm run build"
-  publish = "dist"
+  base = "."
+  publish = "react-app/dist"
+  command = "cd react-app && npm install && npm run build"
   functions = "../netlify/functions"
 
 [dev]
@@ -14,8 +14,8 @@
   base = "react-app"
 
 [[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 [context.branch-deploy]
@@ -37,4 +37,7 @@
   compress = true
 
 [[plugins]]
-  package = "@netlify/plugin-lighthouse" 
+  package = "@netlify/plugin-lighthouse"
+
+[build.environment]
+  NODE_VERSION = "18" 
