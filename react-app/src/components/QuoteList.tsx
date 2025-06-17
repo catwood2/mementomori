@@ -12,10 +12,11 @@ import {
   CircularProgress,
   Alert,
   Snackbar,
+  Skeleton,
 } from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Quote {
   id: string;
@@ -40,6 +41,30 @@ const CategoryChip = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   color: 'white',
 }));
+
+const MotionButton = motion(Button);
+const MotionIconButton = motion(IconButton);
+
+const LoadingSkeleton = () => (
+  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+    {[1, 2, 3, 4, 5, 6].map((i) => (
+      <motion.div
+        key={i}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: i * 0.1 }}
+      >
+        <Card>
+          <CardContent>
+            <Skeleton variant="rectangular" width={100} height={32} sx={{ mb: 2 }} />
+            <Skeleton variant="text" height={60} sx={{ mb: 2 }} />
+            <Skeleton variant="text" width={60} />
+          </CardContent>
+        </Card>
+      </motion.div>
+    ))}
+  </Box>
+);
 
 export default function QuoteList() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
@@ -148,11 +173,7 @@ export default function QuoteList() {
   const categories = ['Life', 'Death', 'Humor', 'Motivation'];
 
   if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingSkeleton />;
   }
 
   if (error) {
@@ -177,20 +198,24 @@ export default function QuoteList() {
           sx={{ mb: 2 }}
         />
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
-          <Button
+          <MotionButton
             variant={!filterCategory ? 'contained' : 'outlined'}
             onClick={() => setFilterCategory(null)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             All Categories
-          </Button>
+          </MotionButton>
           {categories.map((category) => (
-            <Button
+            <MotionButton
               key={category}
               variant={filterCategory === category ? 'contained' : 'outlined'}
               onClick={() => setFilterCategory(category)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {category}
-            </Button>
+            </MotionButton>
           ))}
         </Box>
       </Box>
@@ -201,60 +226,81 @@ export default function QuoteList() {
         </Typography>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 3 }}>
-          {filteredQuotes.map((quote, index) => (
-            <motion.div
-              key={quote.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <StyledCard>
-                <CardContent>
-                  <CategoryChip label={quote.fields.Category} />
-                  <Typography
-                    variant="body1"
-                    component="p"
-                    sx={{
-                      mb: 2,
-                      fontStyle: 'italic',
-                      position: 'relative',
-                      pl: 2,
-                    }}
-                  >
-                    {quote.fields.Quote}
-                  </Typography>
-                  {quote.fields.SourceLink && (
+          <AnimatePresence>
+            {filteredQuotes.map((quote, index) => (
+              <motion.div
+                key={quote.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                layout
+              >
+                <StyledCard>
+                  <CardContent>
+                    <CategoryChip label={quote.fields.Category} />
                     <Typography
-                      variant="body2"
-                      component="a"
-                      href={quote.fields.SourceLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      variant="body1"
+                      component="p"
                       sx={{
-                        color: 'primary.main',
-                        textDecoration: 'none',
-                        '&:hover': { textDecoration: 'underline' },
+                        mb: 2,
+                        fontStyle: 'italic',
+                        position: 'relative',
+                        pl: 2,
                       }}
                     >
-                      Source
+                      {quote.fields.Quote}
                     </Typography>
-                  )}
-                  <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                    <IconButton
-                      onClick={() => handleLike(quote.id)}
-                      color="primary"
-                      size="small"
-                    >
-                      {likedQuotes[quote.id] ? <Favorite /> : <FavoriteBorder />}
-                    </IconButton>
-                    <Typography variant="body2" color="text.secondary">
-                      {quote.fields.Likes || 0}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </StyledCard>
-            </motion.div>
-          ))}
+                    {quote.fields.SourceLink && (
+                      <Typography
+                        variant="body2"
+                        component="a"
+                        href={quote.fields.SourceLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          color: 'primary.main',
+                          textDecoration: 'none',
+                          '&:hover': { textDecoration: 'underline' },
+                        }}
+                      >
+                        Source
+                      </Typography>
+                    )}
+                    <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                      <MotionIconButton
+                        onClick={() => handleLike(quote.id)}
+                        color="primary"
+                        size="small"
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.8 }}
+                        animate={{
+                          scale: likedQuotes[quote.id] ? [1, 1.2, 1] : 1,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 15
+                        }}
+                      >
+                        {likedQuotes[quote.id] ? <Favorite /> : <FavoriteBorder />}
+                      </MotionIconButton>
+                      <motion.div
+                        key={quote.fields.Likes}
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 500 }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          {quote.fields.Likes || 0}
+                        </Typography>
+                      </motion.div>
+                    </Box>
+                  </CardContent>
+                </StyledCard>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </Box>
       )}
 
