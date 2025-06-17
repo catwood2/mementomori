@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   Paper,
   Stack,
 } from '@mui/material';
-import { Info, Close, CalendarToday } from '@mui/icons-material';
+import { Info, Close, CalendarToday, Timer } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
@@ -38,8 +38,17 @@ export default function DayIDieButton() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [birthDate, setBirthDate] = useState<Date | null>(null);
-  const [showResults, setShowResults] = useState(false);
   const [deathDate, setDeathDate] = useState<Date | null>(null);
+  const [hasCalculated, setHasCalculated] = useState(false);
+
+  useEffect(() => {
+    // Check if user has already calculated their death date
+    const savedDeathDate = localStorage.getItem('deathDate');
+    if (savedDeathDate) {
+      setDeathDate(new Date(savedDeathDate));
+      setHasCalculated(true);
+    }
+  }, []);
 
   const handleClose = () => {
     setIsDismissed(true);
@@ -48,7 +57,9 @@ export default function DayIDieButton() {
   const calculateDeathDate = (birthDate: Date) => {
     const age = differenceInYears(new Date(), birthDate);
     const lifeExpectancy = LIFE_EXPECTANCY[Math.min(age, 79)] || 0;
-    return addYears(birthDate, age + lifeExpectancy);
+    const deathDate = addYears(birthDate, lifeExpectancy);
+    localStorage.setItem('deathDate', deathDate.toISOString());
+    return deathDate;
   };
 
   const handleDateSelect = (date: Date | null) => {
@@ -56,7 +67,7 @@ export default function DayIDieButton() {
     if (date) {
       const calculatedDeathDate = calculateDeathDate(date);
       setDeathDate(calculatedDeathDate);
-      setShowResults(true);
+      setHasCalculated(true);
       setShowDatePicker(false);
     }
   };
@@ -74,8 +85,46 @@ export default function DayIDieButton() {
     return null;
   }
 
+  if (hasCalculated && deathDate) {
+    return (
+      <Box sx={{ position: 'fixed', top: 20, left: 20, right: 20, zIndex: 1000 }}>
+        <MotionPaper
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          sx={{
+            p: 3,
+            borderRadius: 2,
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+          }}
+        >
+          <Timer sx={{ fontSize: 40, color: 'primary.main' }} />
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h5" color="primary" gutterBottom>
+              Memento Mori
+            </Typography>
+            <Typography variant="h6" color="white">
+              Your time ends on {deathDate.toLocaleDateString()}
+            </Typography>
+            {(() => {
+              const { years, months, days } = calculateTimeLeft(deathDate);
+              return (
+                <Typography variant="body1" color="text.secondary">
+                  {years} years, {months} months, and {days} days remaining
+                </Typography>
+              );
+            })()}
+          </Box>
+        </MotionPaper>
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ position: 'fixed', bottom: 20, left: 20, zIndex: 1000 }}>
+    <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 1000 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <MotionButton
           variant="contained"
@@ -96,7 +145,7 @@ export default function DayIDieButton() {
             },
           }}
         >
-          Day I Die
+          Calculate Your Death Date
         </MotionButton>
         
         <Tooltip title="Learn more">
@@ -149,45 +198,6 @@ export default function DayIDieButton() {
         </DialogContent>
       </Dialog>
 
-      {showResults && deathDate && (
-        <MotionPaper
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          sx={{
-            mt: 2,
-            p: 3,
-            borderRadius: 2,
-            background: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(10px)',
-          }}
-        >
-          <Stack spacing={2}>
-            <Typography variant="h6" color="primary">
-              Time Remaining
-            </Typography>
-            {(() => {
-              const { years, months, days } = calculateTimeLeft(deathDate);
-              return (
-                <>
-                  <Typography variant="h4" color="white">
-                    {years} years
-                  </Typography>
-                  <Typography variant="h4" color="white">
-                    {months} months
-                  </Typography>
-                  <Typography variant="h4" color="white">
-                    {days} days
-                  </Typography>
-                </>
-              );
-            })()}
-            <Typography variant="body2" color="text.secondary">
-              Based on actuarial life expectancy tables
-            </Typography>
-          </Stack>
-        </MotionPaper>
-      )}
-
       <Dialog
         open={showInfo}
         onClose={() => setShowInfo(false)}
@@ -196,12 +206,12 @@ export default function DayIDieButton() {
       >
         <DialogTitle>
           <Typography variant="h6" component="div">
-            Day I Die
+            Memento Mori
           </Typography>
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" paragraph>
-            "Day I Die" uses actuarial life expectancy tables to estimate your remaining time based on your birth date.
+            "Memento Mori" (Remember you must die) uses actuarial life expectancy tables to estimate your remaining time based on your birth date.
           </Typography>
           <Typography variant="body1" paragraph>
             By acknowledging our limited time, we can:
