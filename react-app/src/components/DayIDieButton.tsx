@@ -9,7 +9,6 @@ import {
   DialogActions,
   Typography,
   Tooltip,
-  Paper,
 } from '@mui/material';
 import { Info, Close, CalendarToday, Timer } from '@mui/icons-material';
 import { motion } from 'framer-motion';
@@ -18,7 +17,6 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { addYears, differenceInYears, differenceInMonths, differenceInDays, isValid } from 'date-fns';
 
 const MotionButton = motion(Button);
-const MotionPaper = motion(Paper);
 
 // Actuarial life expectancy table (simplified)
 const LIFE_EXPECTANCY: { [key: number]: number } = {
