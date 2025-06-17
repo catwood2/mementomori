@@ -78,9 +78,9 @@ export default function DayIDieButton() {
       if (calculatedDeathDate) {
         setDeathDate(calculatedDeathDate);
         setHasCalculated(true);
-        setShowDatePicker(false);
       }
     }
+    setShowDatePicker(false); // Always close the dialog after selection
   };
 
   const calculateTimeLeft = (deathDate: Date) => {
