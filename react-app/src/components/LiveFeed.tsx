@@ -9,8 +9,9 @@ import {
   CircularProgress,
   Alert,
   Snackbar,
+  Button,
 } from '@mui/material';
-import { Favorite, FavoriteBorder, Share, ChatBubbleOutline } from '@mui/icons-material';
+import { Favorite, FavoriteBorder, Share, ChatBubbleOutline, Refresh } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Quote {
@@ -30,6 +31,7 @@ const MotionCard = motion(Card);
 export default function LiveFeed() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [likedQuotes, setLikedQuotes] = useState<Record<string, boolean>>({});
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
@@ -56,6 +58,7 @@ export default function LiveFeed() {
       setError(error instanceof Error ? error.message : 'Failed to load quotes');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -129,6 +132,11 @@ export default function LiveFeed() {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadQuotes();
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -147,6 +155,21 @@ export default function LiveFeed() {
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', py: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6" component="h2">
+          Live Feed
+        </Typography>
+        <Button
+          startIcon={refreshing ? <CircularProgress size={20} /> : <Refresh />}
+          onClick={handleRefresh}
+          disabled={refreshing}
+          variant="outlined"
+          size="small"
+        >
+          {refreshing ? 'Refreshing...' : 'Refresh'}
+        </Button>
+      </Box>
+
       <AnimatePresence>
         {quotes.map((quote, index) => (
           <MotionCard
