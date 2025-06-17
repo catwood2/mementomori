@@ -16,24 +16,46 @@ import { Info, Close, CalendarToday } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { addYears, differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
 
 const MotionButton = motion(Button);
 const MotionPaper = motion(Paper);
+
+// Actuarial life expectancy table (simplified)
+const LIFE_EXPECTANCY: { [key: number]: number } = {
+  0: 79, 1: 78, 2: 77, 3: 76, 4: 75, 5: 74, 6: 73, 7: 72, 8: 71, 9: 70,
+  10: 69, 11: 68, 12: 67, 13: 66, 14: 65, 15: 64, 16: 63, 17: 62, 18: 61, 19: 60,
+  20: 59, 21: 58, 22: 57, 23: 56, 24: 55, 25: 54, 26: 53, 27: 52, 28: 51, 29: 50,
+  30: 49, 31: 48, 32: 47, 33: 46, 34: 45, 35: 44, 36: 43, 37: 42, 38: 41, 39: 40,
+  40: 39, 41: 38, 42: 37, 43: 36, 44: 35, 45: 34, 46: 33, 47: 32, 48: 31, 49: 30,
+  50: 29, 51: 28, 52: 27, 53: 26, 54: 25, 55: 24, 56: 23, 57: 22, 58: 21, 59: 20,
+  60: 19, 61: 18, 62: 17, 63: 16, 64: 15, 65: 14, 66: 13, 67: 12, 68: 11, 69: 10,
+  70: 9, 71: 8, 72: 7, 73: 6, 74: 5, 75: 4, 76: 3, 77: 2, 78: 1, 79: 0
+};
 
 export default function DayIDieButton() {
   const [showInfo, setShowInfo] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [deathDate, setDeathDate] = useState<Date | null>(null);
 
   const handleClose = () => {
     setIsDismissed(true);
   };
 
+  const calculateDeathDate = (birthDate: Date) => {
+    const age = differenceInYears(new Date(), birthDate);
+    const lifeExpectancy = LIFE_EXPECTANCY[Math.min(age, 79)] || 0;
+    return addYears(birthDate, age + lifeExpectancy);
+  };
+
   const handleDateSelect = (date: Date | null) => {
-    setSelectedDate(date);
+    setBirthDate(date);
     if (date) {
+      const calculatedDeathDate = calculateDeathDate(date);
+      setDeathDate(calculatedDeathDate);
       setShowResults(true);
       setShowDatePicker(false);
     }
@@ -41,11 +63,9 @@ export default function DayIDieButton() {
 
   const calculateTimeLeft = (deathDate: Date) => {
     const now = new Date();
-    const diff = deathDate.getTime() - now.getTime();
-    
-    const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
-    const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
-    const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+    const years = differenceInYears(deathDate, now);
+    const months = differenceInMonths(deathDate, now) % 12;
+    const days = differenceInDays(deathDate, now) % 30;
     
     return { years, months, days };
   };
@@ -114,14 +134,14 @@ export default function DayIDieButton() {
       >
         <DialogTitle>
           <Typography variant="h6" component="div">
-            When will you die?
+            Enter Your Birth Date
           </Typography>
         </DialogTitle>
         <DialogContent>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-              label="Select date"
-              value={selectedDate}
+              label="Birth Date"
+              value={birthDate}
               onChange={handleDateSelect}
               sx={{ width: '100%', mt: 2 }}
             />
@@ -129,7 +149,7 @@ export default function DayIDieButton() {
         </DialogContent>
       </Dialog>
 
-      {showResults && selectedDate && (
+      {showResults && deathDate && (
         <MotionPaper
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -146,7 +166,7 @@ export default function DayIDieButton() {
               Time Remaining
             </Typography>
             {(() => {
-              const { years, months, days } = calculateTimeLeft(selectedDate);
+              const { years, months, days } = calculateTimeLeft(deathDate);
               return (
                 <>
                   <Typography variant="h4" color="white">
@@ -162,7 +182,7 @@ export default function DayIDieButton() {
               );
             })()}
             <Typography variant="body2" color="text.secondary">
-              Make every moment count
+              Based on actuarial life expectancy tables
             </Typography>
           </Stack>
         </MotionPaper>
@@ -181,7 +201,7 @@ export default function DayIDieButton() {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" paragraph>
-            "Day I Die" is a unique feature that helps you reflect on your mortality and make the most of your time.
+            "Day I Die" uses actuarial life expectancy tables to estimate your remaining time based on your birth date.
           </Typography>
           <Typography variant="body1" paragraph>
             By acknowledging our limited time, we can:
