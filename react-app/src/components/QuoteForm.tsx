@@ -12,7 +12,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { styled } from '@mui/material/styles';
 
 const MotionCard = motion(Card);
 const MotionButton = motion(Button);
