@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab } from '@mui/ma
 import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
 import LiveFeed from './components/LiveFeed';
+import DayIDieButton from './components/DayIDieButton';
 
 const theme = createTheme({
   palette: {
@@ -63,7 +64,7 @@ function App() {
   const [tabValue, setTabValue] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -102,6 +103,7 @@ function App() {
         <TabPanel value={tabValue} index={2}>
           <QuoteForm onQuoteAdded={handleQuoteAdded} />
         </TabPanel>
+        <DayIDieButton />
       </Box>
     </ThemeProvider>
   );
