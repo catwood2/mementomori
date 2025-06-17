@@ -74,7 +74,6 @@ export default function DayIDieButton() {
   };
 
   const handleDateSelect = (date: Date | null) => {
-    setBirthDate(date);
     if (date) {
       const calculatedDeathDate = calculateDeathDate(date);
       if (calculatedDeathDate) {
@@ -99,6 +98,7 @@ export default function DayIDieButton() {
   }
 
   if (hasCalculated && deathDate) {
+    const { years, months, days } = calculateTimeLeft(deathDate);
     return (
       <Box sx={{ 
         position: 'fixed', 
@@ -125,12 +125,20 @@ export default function DayIDieButton() {
               Memento Mori
             </Typography>
             <Typography variant="body2" color="white">
-              Your time ends on {deathDate.toLocaleDateString()} ({(() => {
-                const { years, months, days } = calculateTimeLeft(deathDate);
-                return `${years} years, ${months} months, and ${days} days remaining`;
-              })()})
+              Your time ends on {deathDate.toLocaleDateString()} ({years} years, {months} months, and {days} days remaining)
             </Typography>
           </Box>
+          <Tooltip title="Dismiss">
+            <IconButton
+              onClick={handleClose}
+              sx={{
+                color: 'white',
+                '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' },
+              }}
+            >
+              <Close />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
     );
@@ -210,6 +218,9 @@ export default function DayIDieButton() {
             />
           </LocalizationProvider>
         </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDatePicker(false)}>Cancel</Button>
+        </DialogActions>
       </Dialog>
 
       <Dialog
