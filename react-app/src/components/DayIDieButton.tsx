@@ -15,7 +15,7 @@ import { Info, Close, CalendarToday, Timer } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { addYears, differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
+import { addYears, differenceInYears, differenceInMonths, differenceInDays, isValid } from 'date-fns';
 
 const MotionButton = motion(Button);
 const MotionPaper = motion(Paper);
@@ -44,8 +44,13 @@ export default function DayIDieButton() {
     // Check if user has already calculated their death date
     const savedDeathDate = localStorage.getItem('deathDate');
     if (savedDeathDate) {
-      setDeathDate(new Date(savedDeathDate));
-      setHasCalculated(true);
+      const date = new Date(savedDeathDate);
+      if (isValid(date) && date > new Date()) {
+        setDeathDate(date);
+        setHasCalculated(true);
+      } else {
+        localStorage.removeItem('deathDate');
+      }
     }
   }, []);
 
@@ -54,9 +59,18 @@ export default function DayIDieButton() {
   };
 
   const calculateDeathDate = (birthDate: Date) => {
-    const age = differenceInYears(new Date(), birthDate);
+    if (!isValid(birthDate)) return null;
+    
+    const now = new Date();
+    if (birthDate > now) return null; // Invalid future birth date
+    
+    const age = differenceInYears(now, birthDate);
     const lifeExpectancy = LIFE_EXPECTANCY[Math.min(age, 79)] || 0;
     const deathDate = addYears(birthDate, lifeExpectancy);
+    
+    // Ensure death date is in the future
+    if (deathDate <= now) return null;
+    
     localStorage.setItem('deathDate', deathDate.toISOString());
     return deathDate;
   };
@@ -65,9 +79,11 @@ export default function DayIDieButton() {
     setBirthDate(date);
     if (date) {
       const calculatedDeathDate = calculateDeathDate(date);
-      setDeathDate(calculatedDeathDate);
-      setHasCalculated(true);
-      setShowDatePicker(false);
+      if (calculatedDeathDate) {
+        setDeathDate(calculatedDeathDate);
+        setHasCalculated(true);
+        setShowDatePicker(false);
+      }
     }
   };
 
@@ -86,38 +102,38 @@ export default function DayIDieButton() {
 
   if (hasCalculated && deathDate) {
     return (
-      <Box sx={{ position: 'fixed', top: 20, left: 20, right: 20, zIndex: 1000 }}>
-        <MotionPaper
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          sx={{
-            p: 3,
-            borderRadius: 2,
-            background: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(10px)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2,
-          }}
-        >
-          <Timer sx={{ fontSize: 40, color: 'primary.main' }} />
+      <Box sx={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        zIndex: 1000,
+        background: 'rgba(0, 0, 0, 0.8)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        py: 1
+      }}>
+        <Box sx={{ 
+          maxWidth: '1200px', 
+          mx: 'auto', 
+          px: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2
+        }}>
+          <Timer sx={{ fontSize: 24, color: 'primary.main' }} />
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h5" color="primary" gutterBottom>
+            <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
               Memento Mori
             </Typography>
-            <Typography variant="h6" color="white">
-              Your time ends on {deathDate.toLocaleDateString()}
+            <Typography variant="body2" color="white">
+              Your time ends on {deathDate.toLocaleDateString()} ({(() => {
+                const { years, months, days } = calculateTimeLeft(deathDate);
+                return `${years} years, ${months} months, and ${days} days remaining`;
+              })()})
             </Typography>
-            {(() => {
-              const { years, months, days } = calculateTimeLeft(deathDate);
-              return (
-                <Typography variant="body1" color="text.secondary">
-                  {years} years, {months} months, and {days} days remaining
-                </Typography>
-              );
-            })()}
           </Box>
-        </MotionPaper>
+        </Box>
       </Box>
     );
   }
@@ -191,6 +207,7 @@ export default function DayIDieButton() {
               label="Birth Date"
               value={birthDate}
               onChange={handleDateSelect}
+              maxDate={new Date()}
               sx={{ width: '100%', mt: 2 }}
             />
           </LocalizationProvider>
