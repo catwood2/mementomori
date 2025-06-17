@@ -17,14 +17,6 @@ import { styled } from '@mui/material/styles';
 const MotionCard = motion(Card);
 const MotionButton = motion(Button);
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  transition: 'transform 0.2s, box-shadow 0.2s',
-  '&:hover': {
-    transform: 'translateY(-4px)',
-    boxShadow: theme.shadows[4],
-  },
-}));
-
 interface QuoteFormProps {
   onQuoteAdded: () => void;
 }
