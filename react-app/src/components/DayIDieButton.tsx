@@ -34,7 +34,6 @@ export default function DayIDieButton() {
   const [showInfo, setShowInfo] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [deathDate, setDeathDate] = useState<Date | null>(null);
   const [hasCalculated, setHasCalculated] = useState(false);
 
@@ -211,7 +210,6 @@ export default function DayIDieButton() {
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Birth Date"
-              value={birthDate}
               onChange={handleDateSelect}
               maxDate={new Date()}
               sx={{ width: '100%', mt: 2 }}
