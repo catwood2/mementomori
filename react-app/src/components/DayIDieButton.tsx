@@ -73,6 +73,7 @@ export default function DayIDieButton() {
   };
 
   const handleDateSelect = (date: Date | null) => {
+    setShowDatePicker(false); // Close dialog first
     if (date) {
       const calculatedDeathDate = calculateDeathDate(date);
       if (calculatedDeathDate) {
@@ -80,7 +81,6 @@ export default function DayIDieButton() {
         setHasCalculated(true);
       }
     }
-    setShowDatePicker(false); // Always close the dialog after selection
   };
 
   const calculateTimeLeft = (deathDate: Date) => {
@@ -134,17 +134,21 @@ export default function DayIDieButton() {
           color="primary"
           size="large"
           onClick={() => setShowDatePicker(true)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           startIcon={<CalendarToday />}
           sx={{
-            borderRadius: '50px',
-            px: 3,
-            py: 1.5,
-            boxShadow: 3,
-            background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+            borderRadius: '12px',
+            px: 2.5,
+            py: 1,
+            boxShadow: 2,
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            color: 'white',
             '&:hover': {
-              background: 'linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%)',
+              background: 'rgba(255, 255, 255, 0.15)',
+              boxShadow: 3,
             },
           }}
         >
@@ -155,9 +159,14 @@ export default function DayIDieButton() {
           <IconButton
             onClick={() => setShowInfo(true)}
             sx={{
-              bgcolor: 'background.paper',
-              boxShadow: 2,
-              '&:hover': { bgcolor: 'action.hover' },
+              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              '&:hover': { 
+                bgcolor: 'rgba(255, 255, 255, 0.15)',
+                boxShadow: 2,
+              },
             }}
           >
             <Info />
@@ -168,9 +177,14 @@ export default function DayIDieButton() {
           <IconButton
             onClick={handleClose}
             sx={{
-              bgcolor: 'background.paper',
-              boxShadow: 2,
-              '&:hover': { bgcolor: 'action.hover' },
+              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              '&:hover': { 
+                bgcolor: 'rgba(255, 255, 255, 0.15)',
+                boxShadow: 2,
+              },
             }}
           >
             <Close />
@@ -183,9 +197,16 @@ export default function DayIDieButton() {
         onClose={() => setShowDatePicker(false)}
         maxWidth="xs"
         fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+          }
+        }}
       >
         <DialogTitle>
-          <Typography variant="h6" component="div">
+          <Typography variant="h6" component="div" color="white">
             Enter Your Birth Date
           </Typography>
         </DialogTitle>
@@ -195,12 +216,37 @@ export default function DayIDieButton() {
               label="Birth Date"
               onChange={handleDateSelect}
               maxDate={new Date()}
-              sx={{ width: '100%', mt: 2 }}
+              sx={{ 
+                width: '100%', 
+                mt: 2,
+                '& .MuiInputBase-root': {
+                  color: 'white',
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.7)',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.2)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
+                },
+              }}
             />
           </LocalizationProvider>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDatePicker(false)}>Cancel</Button>
+          <Button 
+            onClick={() => setShowDatePicker(false)}
+            sx={{
+              color: 'white',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            Cancel
+          </Button>
         </DialogActions>
       </Dialog>
 
