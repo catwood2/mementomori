@@ -14,8 +14,8 @@
   base = "react-app"
 
 [[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 [context.branch-deploy]
