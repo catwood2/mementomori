@@ -9,13 +9,13 @@ import {
   Chip,
   IconButton,
   Container,
-  Fade,
   CircularProgress,
   Alert,
   Snackbar,
 } from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { motion } from 'framer-motion';
 
 interface Quote {
   id: string;
@@ -201,56 +201,59 @@ export default function QuoteList() {
         </Typography>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 3 }}>
-          {filteredQuotes.map((quote) => (
-            <Box key={quote.id}>
-              <Fade in timeout={500}>
-                <StyledCard>
-                  <CardContent>
-                    <CategoryChip label={quote.fields.Category} />
+          {filteredQuotes.map((quote, index) => (
+            <motion.div
+              key={quote.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <StyledCard>
+                <CardContent>
+                  <CategoryChip label={quote.fields.Category} />
+                  <Typography
+                    variant="body1"
+                    component="p"
+                    sx={{
+                      mb: 2,
+                      fontStyle: 'italic',
+                      position: 'relative',
+                      pl: 2,
+                    }}
+                  >
+                    {quote.fields.Quote}
+                  </Typography>
+                  {quote.fields.SourceLink && (
                     <Typography
-                      variant="body1"
-                      component="p"
+                      variant="body2"
+                      component="a"
+                      href={quote.fields.SourceLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       sx={{
-                        mb: 2,
-                        fontStyle: 'italic',
-                        position: 'relative',
-                        pl: 2,
+                        color: 'primary.main',
+                        textDecoration: 'none',
+                        '&:hover': { textDecoration: 'underline' },
                       }}
                     >
-                      {quote.fields.Quote}
+                      Source
                     </Typography>
-                    {quote.fields.SourceLink && (
-                      <Typography
-                        variant="body2"
-                        component="a"
-                        href={quote.fields.SourceLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        sx={{
-                          color: 'primary.main',
-                          textDecoration: 'none',
-                          '&:hover': { textDecoration: 'underline' },
-                        }}
-                      >
-                        Source
-                      </Typography>
-                    )}
-                    <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                      <IconButton
-                        onClick={() => handleLike(quote.id)}
-                        color="primary"
-                        size="small"
-                      >
-                        {likedQuotes[quote.id] ? <Favorite /> : <FavoriteBorder />}
-                      </IconButton>
-                      <Typography variant="body2" color="text.secondary">
-                        {quote.fields.Likes || 0}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </StyledCard>
-              </Fade>
-            </Box>
+                  )}
+                  <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                    <IconButton
+                      onClick={() => handleLike(quote.id)}
+                      color="primary"
+                      size="small"
+                    >
+                      {likedQuotes[quote.id] ? <Favorite /> : <FavoriteBorder />}
+                    </IconButton>
+                    <Typography variant="body2" color="text.secondary">
+                      {quote.fields.Likes || 0}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </StyledCard>
+            </motion.div>
           ))}
         </Box>
       )}
