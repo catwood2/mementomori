@@ -10,7 +10,6 @@ import {
   Typography,
   Tooltip,
   Paper,
-  Stack,
 } from '@mui/material';
 import { Info, Close, CalendarToday, Timer } from '@mui/icons-material';
 import { motion } from 'framer-motion';
