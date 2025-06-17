@@ -100,45 +100,28 @@ export default function DayIDieButton() {
     const { years, months, days } = calculateTimeLeft(deathDate);
     return (
       <Box sx={{ 
-        position: 'fixed', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        zIndex: 1000,
-        background: 'rgba(0, 0, 0, 0.8)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        py: 1
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        mb: 2,
+        px: 2
       }}>
-        <Box sx={{ 
-          maxWidth: '1200px', 
-          mx: 'auto', 
-          px: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2
-        }}>
-          <Timer sx={{ fontSize: 24, color: 'primary.main' }} />
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
-              Memento Mori
-            </Typography>
-            <Typography variant="body2" color="white">
-              Your time ends on {deathDate.toLocaleDateString()} ({years} years, {months} months, and {days} days remaining)
-            </Typography>
-          </Box>
-          <Tooltip title="Dismiss">
-            <IconButton
-              onClick={handleClose}
-              sx={{
-                color: 'white',
-                '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' },
-              }}
-            >
-              <Close />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <Timer sx={{ fontSize: 20, color: 'primary.main' }} />
+        <Typography variant="body2" color="text.secondary">
+          Your time ends on {deathDate.toLocaleDateString()} ({years} years, {months} months, and {days} days remaining)
+        </Typography>
+        <Tooltip title="Dismiss">
+          <IconButton
+            onClick={handleClose}
+            size="small"
+            sx={{
+              ml: 'auto',
+              '&:hover': { bgcolor: 'action.hover' },
+            }}
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
     );
   }
