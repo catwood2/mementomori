@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab } from '@mui/ma
 import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
 import LiveFeed from './components/LiveFeed';
+import DayIDieButton from './components/DayIDieButton';
 
 const theme = createTheme({
   palette: {
@@ -102,6 +103,7 @@ function App() {
         <TabPanel value={tabValue} index={2}>
           <QuoteForm onQuoteAdded={handleQuoteAdded} />
         </TabPanel>
+        <DayIDieButton />
       </Box>
     </ThemeProvider>
   );
