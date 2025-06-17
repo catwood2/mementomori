@@ -60,15 +60,20 @@ export default function QuoteList() {
     try {
       setLoading(true);
       setError(null);
+      console.log('Fetching quotes from:', '/.netlify/functions/airtable');
       const response = await fetch('/.netlify/functions/airtable');
+      console.log('Response status:', response.status);
       if (!response.ok) {
-        throw new Error('Failed to load quotes');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error response:', errorData);
+        throw new Error(errorData.details || 'Failed to load quotes');
       }
       const data = await response.json();
+      console.log('Received data:', data);
       setQuotes(data.records || []);
     } catch (error) {
       console.error('Error loading quotes:', error);
-      setError('Failed to load quotes. Please try again later.');
+      setError(error instanceof Error ? error.message : 'Failed to load quotes. Please try again later.');
     } finally {
       setLoading(false);
     }
