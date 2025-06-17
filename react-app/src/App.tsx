@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Container, Box, Tabs, Tab } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab } from '@mui/material';
 import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
+import LiveFeed from './components/LiveFeed';
 
 const theme = createTheme({
   palette: {
@@ -19,6 +20,16 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        },
+      },
+    },
   },
 });
 
@@ -40,7 +51,7 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ py: 3 }}>
+        <Box sx={{ p: 3 }}>
           {children}
         </Box>
       )}
@@ -52,38 +63,46 @@ function App() {
   const [tabValue, setTabValue] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
   const handleQuoteAdded = () => {
     setRefreshTrigger(prev => prev + 1);
-    setTabValue(0); // Switch to quotes list after adding
   };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg">
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 2 }}>
+      <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs 
             value={tabValue} 
-            onChange={handleTabChange}
+            onChange={handleTabChange} 
             centered
-            textColor="primary"
-            indicatorColor="primary"
+            sx={{
+              '& .MuiTab-root': {
+                fontSize: '1.1rem',
+                textTransform: 'none',
+                fontWeight: 500,
+              },
+            }}
           >
-            <Tab label="Quotes" />
+            <Tab label="Live Feed" />
+            <Tab label="Find Quotes" />
             <Tab label="Add Quote" />
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
-          <QuoteList key={refreshTrigger} />
+          <LiveFeed />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
+          <QuoteList key={refreshTrigger} />
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
           <QuoteForm onQuoteAdded={handleQuoteAdded} />
         </TabPanel>
-      </Container>
+      </Box>
     </ThemeProvider>
   );
 }
