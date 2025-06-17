@@ -73,14 +73,14 @@ export default function DayIDieButton() {
   };
 
   const handleDateSelect = (date: Date | null) => {
-    setShowDatePicker(false); // Close dialog first
-    if (date) {
+    if (date && isValid(date)) {
       const calculatedDeathDate = calculateDeathDate(date);
       if (calculatedDeathDate) {
         setDeathDate(calculatedDeathDate);
         setHasCalculated(true);
       }
     }
+    setShowDatePicker(false);
   };
 
   const calculateTimeLeft = (deathDate: Date) => {
@@ -216,22 +216,28 @@ export default function DayIDieButton() {
               label="Birth Date"
               onChange={handleDateSelect}
               maxDate={new Date()}
-              sx={{ 
-                width: '100%', 
-                mt: 2,
-                '& .MuiInputBase-root': {
-                  color: 'white',
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.7)',
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                },
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  variant: 'outlined',
+                  sx: {
+                    mt: 2,
+                    '& .MuiInputBase-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(255, 255, 255, 0.7)',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                    },
+                  }
+                }
               }}
+              format="MM/dd/yyyy"
             />
           </LocalizationProvider>
         </DialogContent>
