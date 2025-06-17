@@ -215,15 +215,6 @@ export default function QuoteList() {
                         fontStyle: 'italic',
                         position: 'relative',
                         pl: 2,
-                        '&::before': {
-                          content: '"""',
-                          position: 'absolute',
-                          left: 0,
-                          top: -10,
-                          fontSize: '2rem',
-                          color: 'primary.main',
-                          opacity: 0.5,
-                        },
                       }}
                     >
                       {quote.fields.Quote}
