@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab, Button, Typography } from '@mui/material';
 import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
@@ -66,6 +66,13 @@ function App() {
   const [deathDate, setDeathDate] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
 
+  useEffect(() => {
+    const savedDeathDate = localStorage.getItem("deathDate");
+    if (savedDeathDate) {
+      setDeathDate(savedDeathDate);
+    }
+  }, []);
+
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
@@ -85,7 +92,7 @@ function App() {
       <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
         <Box sx={{ 
           position: 'fixed', 
-          top: 20, 
+          top: 8, 
           left: 20, 
           zIndex: 1000,
           display: 'flex',
