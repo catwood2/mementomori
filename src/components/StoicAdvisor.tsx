@@ -195,6 +195,9 @@ const StoicAdvisor: React.FC = () => {
       >
         <TextField
           fullWidth
+          multiline
+          maxRows={4}
+          minRows={1}
           variant="outlined"
           placeholder="Ask for stoic wisdom..."
           value={input}
@@ -213,6 +216,10 @@ const StoicAdvisor: React.FC = () => {
               '&.Mui-focused fieldset': {
                 borderColor: 'rgba(255, 255, 255, 0.7)',
               },
+            },
+            '& .MuiInputBase-input': {
+              maxHeight: isMobile ? '120px' : '160px',
+              overflowY: 'auto',
             },
           }}
         />
