@@ -1,20 +1,5 @@
 [build]
-<<<<<<< HEAD
-  command = "npm run build"
-  publish = "dist"
-  functions = "netlify/functions"
   base = "react-app"
-
-[dev]
-  command = "npm run dev"
-  port = 8888
-  targetPort = 5173
-  publish = "dist"
-  functions = "netlify/functions"
-  functionsPort = 9999
-  base = "react-app"
-=======
-  base = "."
   publish = "react-app/dist"
   command = "cd react-app && npm install && npm run build"
 
@@ -24,19 +9,12 @@
   targetPort = 5173
   publish = "react-app/dist"
   autoLaunch = true
->>>>>>> 59ddb684486a31eedac84d9bbd3dd2dd663f6edf
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-<<<<<<< HEAD
-[context.branch-deploy]
-  command = "npm run build"
-  publish = "dist"
-  base = "react-app" 
-=======
 [build.processing]
   skip_processing = false
 
@@ -58,5 +36,4 @@
   package = "@netlify/plugin-lighthouse"
 
 [build.environment]
-  NODE_VERSION = "18" 
->>>>>>> 59ddb684486a31eedac84d9bbd3dd2dd663f6edf
+  NODE_VERSION = "18"
