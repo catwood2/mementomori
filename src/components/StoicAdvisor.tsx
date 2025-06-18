@@ -52,7 +52,6 @@ const StoicAdvisor: React.FC = () => {
         fields: {
           Quote: quote,
           Category: 'Life',
-          SourceLink: 'AI Generated',
           Likes: 0,
           Replies: 0,
           Retweets: 0
@@ -236,8 +235,8 @@ const StoicAdvisor: React.FC = () => {
                           p: isMobile ? 1.5 : 2,
                           maxWidth: isMobile ? '85%' : '60%',
                           backgroundColor: message.role === 'user' 
-                            ? 'rgba(144, 202, 249, 0.1)' 
-                            : 'rgba(244, 143, 177, 0.1)',
+                            ? 'rgba(155, 44, 44, 0.1)' 
+                            : 'rgba(184, 50, 128, 0.1)',
                           borderRadius: 2,
                           border: '1px solid rgba(255, 255, 255, 0.1)'
                         }}
