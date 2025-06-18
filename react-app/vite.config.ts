@@ -14,10 +14,11 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
-  base: './',
+  base: '/',
   build: {
     outDir: 'dist',
     sourcemap: true,
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks: {
