@@ -37,7 +37,6 @@ const Dot: React.FC<DotProps> = ({ isCleared, isCurrent, delay }) => {
         color: '#000',
         fontSize: '6px',
         fontWeight: 'bold',
-        opacity: isCleared ? 1 : 0.7
       }}
     >
       {isCleared && '×'}
