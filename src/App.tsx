@@ -56,9 +56,11 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           color: 'rgba(255, 255, 255, 0.7)',
+          borderColor: 'rgba(155, 44, 44, 0.3)',
           '&.Mui-selected': {
             color: '#9B2C2C',
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            borderColor: '#9B2C2C',
           },
         },
       },
