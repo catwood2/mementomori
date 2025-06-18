@@ -166,13 +166,25 @@ const DayIDieButton: React.FC = () => {
               </Button>
             </Box>
           ) : (
-            <Box sx={{ p: 2 }}>
+            <Box sx={{ p: 2, minHeight: 400 }}>
               {birthDate ? (
                 <MementoCalendar birthDate={new Date(birthDate)} />
               ) : (
-                <Typography variant="body1" align="center" color="text.secondary">
-                  Please enter your birth date in the Date Picker tab to see your life calendar
-                </Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  height: '100%',
+                  minHeight: 400
+                }}>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No Birth Date Entered
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" align="center">
+                    Please enter your birth date in the Date Picker tab to see your life calendar
+                  </Typography>
+                </Box>
               )}
             </Box>
           )}
