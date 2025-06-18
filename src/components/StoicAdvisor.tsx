@@ -8,6 +8,8 @@ import {
   CircularProgress,
   useTheme,
   useMediaQuery,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { Send as SendIcon } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,6 +23,7 @@ const StoicAdvisor: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -32,6 +35,54 @@ const StoicAdvisor: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const extractQuotes = (text: string): string[] => {
+    // Match text between quotation marks
+    const quoteRegex = /"([^"]+)"/g;
+    const matches = text.match(quoteRegex);
+    if (!matches) return [];
+    
+    // Remove the quotation marks and return unique quotes
+    return [...new Set(matches.map(quote => quote.slice(1, -1)))];
+  };
+
+  const addQuoteToAirtable = async (quote: string) => {
+    try {
+      const response = await fetch('/.netlify/functions/airtable', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fields: {
+            Quote: quote,
+            Category: 'Stoic Philosophy',
+            SourceLink: 'AI Generated',
+            Likes: 0,
+            Replies: 0,
+            Retweets: 0
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add quote to Airtable');
+      }
+
+      setSnackbar({
+        open: true,
+        message: 'Quote added to collection',
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error adding quote:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to add quote to collection',
+        severity: 'error'
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +113,12 @@ const StoicAdvisor: React.FC = () => {
       }
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+
+      // Extract and add quotes to Airtable
+      const quotes = extractQuotes(data.response);
+      for (const quote of quotes) {
+        await addQuoteToAirtable(quote);
+      }
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, { 
@@ -293,6 +350,20 @@ const StoicAdvisor: React.FC = () => {
             </motion.div>
           </Paper>
         </motion.div>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          <Alert 
+            onClose={() => setSnackbar({ ...snackbar, open: false })} 
+            severity={snackbar.severity}
+            sx={{ width: '100%' }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Box>
     </motion.div>
   );
