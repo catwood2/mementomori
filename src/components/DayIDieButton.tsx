@@ -7,8 +7,6 @@ import {
   TextField,
   Typography,
   Box,
-  Tabs,
-  Tab,
   IconButton,
   FormControl,
   InputLabel,
@@ -18,7 +16,6 @@ import {
 import { Close, CalendarToday } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { format, differenceInDays, addYears } from "date-fns";
-import MementoCalendar from "./MementoCalendar";
 
 const MotionButton = motion(Button);
 
@@ -28,19 +25,27 @@ const LIFE_EXPECTANCY = {
   female: 81.1, // years
 };
 
-const DayIDieButton: React.FC = () => {
+interface DayIDieButtonProps {
+  isCalendarTab: boolean;
+}
+
+const DayIDieButton: React.FC<DayIDieButtonProps> = ({ isCalendarTab }) => {
   const [open, setOpen] = useState(false);
   const [birthDate, setBirthDate] = useState<string>("");
   const [deathDate, setDeathDate] = useState<string>("");
   const [gender, setGender] = useState<"male" | "female">("male");
-  const [activeTab, setActiveTab] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [hasCalculated, setHasCalculated] = useState(false);
 
   useEffect(() => {
     const savedDeathDate = localStorage.getItem("deathDate");
+    const hasCalculatedBefore = localStorage.getItem("hasCalculated");
     if (savedDeathDate) {
       setDeathDate(savedDeathDate);
       setShowResult(true);
+    }
+    if (hasCalculatedBefore) {
+      setHasCalculated(true);
     }
   }, []);
 
@@ -57,20 +62,41 @@ const DayIDieButton: React.FC = () => {
     
     setDeathDate(formattedDeathDate);
     localStorage.setItem("deathDate", formattedDeathDate);
+    localStorage.setItem("hasCalculated", "true");
+    setHasCalculated(true);
     setShowResult(true);
     handleClose();
-  };
-
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
   };
 
   const remainingDays = deathDate
     ? differenceInDays(new Date(deathDate), new Date())
     : 0;
 
+  if (!isCalendarTab) return null;
+
   return (
     <>
+      {!hasCalculated && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 100,
+            right: 20,
+            maxWidth: 300,
+            bgcolor: "rgba(30, 30, 30, 0.95)",
+            p: 2,
+            borderRadius: 2,
+            color: "white",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+          }}
+        >
+          <Typography variant="body2" gutterBottom>
+            Click the button below to calculate your life expectancy and see your life calendar.
+            Each dot represents one week of your 80-year life.
+          </Typography>
+        </Box>
+      )}
+
       <MotionButton
         variant="contained"
         color="primary"

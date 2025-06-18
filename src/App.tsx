@@ -110,7 +110,7 @@ function App() {
             <MementoCalendar birthDate={new Date()} />
           </Box>
         </TabPanel>
-        <DayIDieButton />
+        <DayIDieButton isCalendarTab={tabValue === 3} />
       </Box>
     </ThemeProvider>
   );
