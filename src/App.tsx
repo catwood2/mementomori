@@ -133,12 +133,12 @@ function App() {
       <CssBaseline />
       <Box sx={{ 
         width: '100%', 
-        minHeight: '100vh', 
+        height: '100vh',
         bgcolor: 'background.default',
-        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        color: 'text.primary'
+        color: 'text.primary',
+        overflow: 'hidden'
       }}>
         <Box sx={{ 
           borderBottom: 1, 
@@ -146,8 +146,7 @@ function App() {
           backgroundColor: 'background.default',
           zIndex: 900,
           pt: isMobile ? 6 : 0,
-          position: 'sticky',
-          top: 0
+          flexShrink: 0
         }}>
           <Tabs 
             value={tabValue} 
@@ -228,7 +227,8 @@ function App() {
           flex: 1,
           overflow: 'auto',
           pt: isMobile ? 1 : 2,
-          backgroundColor: 'background.default'
+          backgroundColor: 'background.default',
+          position: 'relative'
         }}>
           <TabPanel value={tabValue} index={0}>
             <LiveFeed />
