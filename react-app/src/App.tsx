@@ -64,7 +64,6 @@ function TabPanel(props: TabPanelProps) {
 function App() {
   const [tabValue, setTabValue] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [birthDate] = useState<Date | null>(null);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -108,7 +107,7 @@ function App() {
         </TabPanel>
         <TabPanel value={tabValue} index={3}>
           <Box sx={{ maxWidth: 800, mx: 'auto', p: 2 }}>
-            <MementoCalendar birthDate={birthDate || new Date()} />
+            <MementoCalendar birthDate={new Date()} />
           </Box>
         </TabPanel>
         <DayIDieButton />

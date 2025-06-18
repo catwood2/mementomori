@@ -61,7 +61,7 @@ const DayIDieButton: React.FC = () => {
     handleClose();
   };
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
