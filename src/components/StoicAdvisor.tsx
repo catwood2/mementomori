@@ -48,24 +48,29 @@ const StoicAdvisor: React.FC = () => {
 
   const addQuoteToAirtable = async (quote: string) => {
     try {
+      const payload = {
+        fields: {
+          Quote: quote,
+          Category: 'Stoic Philosophy',
+          SourceLink: 'AI Generated',
+          Likes: 0,
+          Replies: 0,
+          Retweets: 0
+        }
+      };
+      console.log('Sending payload to Airtable:', payload);
+      
       const response = await fetch('/.netlify/functions/airtable', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          fields: {
-            Quote: quote,
-            Category: 'Stoic Philosophy',
-            SourceLink: 'AI Generated',
-            Likes: 0,
-            Replies: 0,
-            Retweets: 0
-          }
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Airtable error response:', errorData);
         throw new Error('Failed to add quote to Airtable');
       }
 
