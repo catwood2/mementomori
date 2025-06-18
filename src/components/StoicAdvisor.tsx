@@ -42,8 +42,29 @@ const StoicAdvisor: React.FC = () => {
     const matches = text.match(quoteRegex);
     if (!matches) return [];
     
-    // Remove the quotation marks and return unique quotes
-    return [...new Set(matches.map(quote => quote.slice(1, -1)))];
+    // Find source attribution patterns
+    const sourcePatterns = [
+      /as ([^,.]+) said/i,
+      /according to ([^,.]+)/i,
+      /by ([^,.]+)/i,
+      /from ([^,.]+)/i
+    ];
+
+    // Remove the quotation marks and add source if found
+    return [...new Set(matches.map(quote => {
+      const quoteText = quote.slice(1, -1);
+      const quoteIndex = text.indexOf(quote);
+      const surroundingText = text.slice(Math.max(0, quoteIndex - 100), quoteIndex + quote.length + 100);
+      
+      // Look for source attribution before or after the quote
+      for (const pattern of sourcePatterns) {
+        const match = surroundingText.match(pattern);
+        if (match && match[1]) {
+          return `${quoteText} - ${match[1].trim()}`;
+        }
+      }
+      return quoteText;
+    }))];
   };
 
   const addQuoteToAirtable = async (quote: string) => {
