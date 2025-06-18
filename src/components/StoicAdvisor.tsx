@@ -58,6 +58,8 @@ const StoicAdvisor: React.FC = () => {
             Quote: quote,
             Category: 'Stoic Philosophy',
             SourceLink: 'AI Generated',
+            Author: 'AI Generated',
+            Content: quote,
             Likes: 0,
             Replies: 0,
             Retweets: 0
