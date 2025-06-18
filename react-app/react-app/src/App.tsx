@@ -64,7 +64,7 @@ function TabPanel(props: TabPanelProps) {
 function App() {
   const [tabValue, setTabValue] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [birthDate] = useState<Date | null>(null);
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
