@@ -17,8 +17,6 @@ function validateAndCleanFields(fields) {
     Quote: fields.Quote?.trim(),
     Category: fields.Category,
     SourceLink: fields.SourceLink?.trim() || '',
-    Author: fields.Author?.trim() || 'Anonymous',
-    Content: fields.Content?.trim() || fields.Quote?.trim(),
     Likes: fields.Likes || 0,
     Replies: fields.Replies || 0,
     Retweets: fields.Retweets || 0
