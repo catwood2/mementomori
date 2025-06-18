@@ -6,22 +6,15 @@
 
 [dev]
   command = "cd react-app && npm run dev"
-  port = 8888
+  port = 5173
   targetPort = 5173
   publish = "react-app/dist"
-  functions = "netlify/functions"
-  functionsPort = 9999
-  base = "."
+  autoLaunch = true
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[context.branch-deploy]
-  command = "cd react-app && npm install && npm run build"
-  publish = "react-app/dist"
-  base = "."
 
 [build.processing]
   skip_processing = false
