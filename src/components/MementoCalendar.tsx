@@ -27,14 +27,14 @@ const Dot: React.FC<DotProps> = ({ isCleared, isCurrent, delay }) => {
         width: 8,
         height: 8,
         borderRadius: '50%',
-        backgroundColor: isCleared ? '#666' : '#444',
+        backgroundColor: isCleared ? '#fff' : '#000',
         border: '1px solid #666',
         margin: 2,
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#fff',
+        color: '#000',
         fontSize: '6px',
         fontWeight: 'bold'
       }}
