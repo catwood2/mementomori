@@ -6,7 +6,7 @@ import LiveFeed from './components/LiveFeed';
 import DayIDieButton from './components/DayIDieButton';
 import StoicAdvisor from './components/StoicAdvisor';
 
-const theme = createTheme({
+const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
@@ -19,24 +19,53 @@ const theme = createTheme({
       default: '#121212',
       paper: '#1e1e1e',
     },
+    text: {
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.7)',
+    },
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#121212',
+          color: '#ffffff',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1e1e1e',
+        },
+      },
+    },
     MuiCard: {
       styleOverrides: {
         root: {
+          backgroundColor: '#1e1e1e',
           borderRadius: 12,
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         },
       },
     },
-    MuiCssBaseline: {
+    MuiTab: {
       styleOverrides: {
-        body: {
-          backgroundColor: '#121212',
-          color: 'white',
+        root: {
+          color: 'rgba(255, 255, 255, 0.7)',
+          '&.Mui-selected': {
+            color: '#90caf9',
+          },
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          backgroundColor: '#90caf9',
         },
       },
     },
@@ -100,7 +129,7 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Box sx={{ 
         width: '100%', 
@@ -109,7 +138,7 @@ function App() {
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        color: 'white'
+        color: 'text.primary'
       }}>
         <Box sx={{ 
           borderBottom: 1, 
