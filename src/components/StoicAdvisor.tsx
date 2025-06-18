@@ -343,9 +343,9 @@ const StoicAdvisor: React.FC = () => {
                 sx={{
                   minWidth: isMobile ? 40 : 48,
                   height: isMobile ? 40 : 48,
-                  background: "linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)",
+                  background: "linear-gradient(45deg, #9B2C2C 30%, #B83280 90%)",
                   "&:hover": {
-                    background: "linear-gradient(45deg, #FF8E53 30%, #FF6B6B 90%)",
+                    background: "linear-gradient(45deg, #B83280 30%, #9B2C2C 90%)",
                   },
                   transition: 'all 0.3s ease',
                 }}

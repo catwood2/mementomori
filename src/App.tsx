@@ -10,10 +10,10 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#90caf9',
+      main: '#9B2C2C',
     },
     secondary: {
-      main: '#f48fb1',
+      main: '#B83280',
     },
     background: {
       default: '#121212',
@@ -57,7 +57,7 @@ const darkTheme = createTheme({
         root: {
           color: 'rgba(255, 255, 255, 0.7)',
           '&.Mui-selected': {
-            color: '#90caf9',
+            color: '#9B2C2C',
           },
         },
       },
@@ -65,7 +65,7 @@ const darkTheme = createTheme({
     MuiTabs: {
       styleOverrides: {
         indicator: {
-          backgroundColor: '#90caf9',
+          backgroundColor: '#9B2C2C',
         },
       },
     },
@@ -164,11 +164,11 @@ function App() {
                 padding: isMobile ? '12px 8px' : '12px 16px',
                 color: 'rgba(255, 255, 255, 0.7)',
                 '&.Mui-selected': {
-                  color: '#90caf9',
+                  color: '#9B2C2C',
                 },
               },
               '& .MuiTabs-indicator': {
-                backgroundColor: '#90caf9',
+                backgroundColor: '#9B2C2C',
               },
             }}
           >
