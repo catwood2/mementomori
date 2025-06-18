@@ -32,6 +32,14 @@ const theme = createTheme({
         },
       },
     },
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#121212',
+          color: 'white',
+        },
+      },
+    },
   },
 });
 
@@ -100,14 +108,17 @@ function App() {
         bgcolor: 'background.default',
         overflow: 'hidden',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        color: 'white'
       }}>
         <Box sx={{ 
           borderBottom: 1, 
           borderColor: 'divider',
           backgroundColor: 'background.default',
           zIndex: 900,
-          pt: isMobile ? 6 : 0
+          pt: isMobile ? 6 : 0,
+          position: 'sticky',
+          top: 0
         }}>
           <Tabs 
             value={tabValue} 
@@ -122,7 +133,14 @@ function App() {
                 textTransform: 'none',
                 fontWeight: 500,
                 minWidth: isMobile ? 'auto' : 120,
-                padding: isMobile ? '12px 8px' : '12px 16px'
+                padding: isMobile ? '12px 8px' : '12px 16px',
+                color: 'rgba(255, 255, 255, 0.7)',
+                '&.Mui-selected': {
+                  color: '#90caf9',
+                },
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: '#90caf9',
               },
             }}
           >
@@ -180,7 +198,8 @@ function App() {
         <Box sx={{ 
           flex: 1,
           overflow: 'auto',
-          pt: isMobile ? 1 : 2
+          pt: isMobile ? 1 : 2,
+          backgroundColor: 'background.default'
         }}>
           <TabPanel value={tabValue} index={0}>
             <LiveFeed />
