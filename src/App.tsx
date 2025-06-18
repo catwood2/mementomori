@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab, Button, Typography } from '@mui/material';
 import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
 import LiveFeed from './components/LiveFeed';
-import MementoCalendar from './components/MementoCalendar';
 import DayIDieButton from './components/DayIDieButton';
 
 const theme = createTheme({
@@ -64,7 +63,8 @@ function TabPanel(props: TabPanelProps) {
 function App() {
   const [tabValue, setTabValue] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [deathDate, setDeathDate] = useState<string | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -74,14 +74,46 @@ function App() {
     setRefreshTrigger(prev => prev + 1);
   };
 
-  const handleBirthDateSet = (date: Date) => {
-    setBirthDate(date);
+  const handleDeathDateSet = (date: string) => {
+    setDeathDate(date);
+    setShowDialog(false);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
+        <Box sx={{ 
+          position: 'fixed', 
+          top: 20, 
+          left: 20, 
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1
+        }}>
+          {deathDate ? (
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+              My number is up: {deathDate}
+            </Typography>
+          ) : (
+            <Button
+              variant="outlined"
+              onClick={() => setShowDialog(true)}
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                borderColor: 'rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                },
+              }}
+            >
+              when i die
+            </Button>
+          )}
+        </Box>
+
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs 
             value={tabValue} 
@@ -98,7 +130,6 @@ function App() {
             <Tab label="Live Feed" />
             <Tab label="Find Quotes" />
             <Tab label="Add Quote" />
-            <Tab label="Calendar" />
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
@@ -110,15 +141,13 @@ function App() {
         <TabPanel value={tabValue} index={2}>
           <QuoteForm onQuoteAdded={handleQuoteAdded} />
         </TabPanel>
-        <TabPanel value={tabValue} index={3}>
-          <Box sx={{ maxWidth: 800, mx: 'auto', p: 2 }}>
-            {birthDate ? (
-              <MementoCalendar birthDate={birthDate} />
-            ) : (
-              <DayIDieButton onBirthDateSet={handleBirthDateSet} />
-            )}
-          </Box>
-        </TabPanel>
+
+        {showDialog && (
+          <DayIDieButton 
+            onDeathDateSet={handleDeathDateSet}
+            onClose={() => setShowDialog(false)}
+          />
+        )}
       </Box>
     </ThemeProvider>
   );
