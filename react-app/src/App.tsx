@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab } from '@mui/ma
 import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
 import LiveFeed from './components/LiveFeed';
+import MementoCalendar from './components/MementoCalendar';
 import DayIDieButton from './components/DayIDieButton';
 
 const theme = createTheme({
@@ -63,6 +64,7 @@ function TabPanel(props: TabPanelProps) {
 function App() {
   const [tabValue, setTabValue] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -92,6 +94,7 @@ function App() {
             <Tab label="Live Feed" />
             <Tab label="Find Quotes" />
             <Tab label="Add Quote" />
+            <Tab label="Memento Mori" />
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
@@ -102,6 +105,11 @@ function App() {
         </TabPanel>
         <TabPanel value={tabValue} index={2}>
           <QuoteForm onQuoteAdded={handleQuoteAdded} />
+        </TabPanel>
+        <TabPanel value={tabValue} index={3}>
+          <Box sx={{ maxWidth: 800, mx: 'auto', p: 2 }}>
+            <MementoCalendar birthDate={birthDate || new Date()} />
+          </Box>
         </TabPanel>
         <DayIDieButton />
       </Box>

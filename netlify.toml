@@ -2,7 +2,6 @@
   base = "."
   publish = "react-app/dist"
   command = "cd react-app && npm install && npm run build"
-  functions = "netlify/functions"
 
 [dev]
   command = "cd react-app && npm run dev"
