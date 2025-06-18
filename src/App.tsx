@@ -62,6 +62,10 @@ const darkTheme = createTheme({
             backgroundColor: 'transparent',
             borderColor: '#9B2C2C',
           },
+          '&:focus-visible': {
+            outline: '2px solid #9B2C2C',
+            outlineOffset: '2px',
+          },
         },
       },
     },
