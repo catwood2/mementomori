@@ -99,7 +99,7 @@ const DayIDieButton: React.FC = () => {
       <Dialog
         open={open}
         onClose={handleClose}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: {
@@ -112,7 +112,7 @@ const DayIDieButton: React.FC = () => {
       >
         <DialogTitle>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h5">Memento Mori</Typography>
+            <Typography variant="h5">Calculate Your Time</Typography>
             <IconButton onClick={handleClose} size="small">
               <Close />
             </IconButton>
@@ -120,73 +120,44 @@ const DayIDieButton: React.FC = () => {
         </DialogTitle>
 
         <DialogContent>
-          <Tabs value={activeTab} onChange={handleTabChange} centered sx={{ mb: 2 }}>
-            <Tab label="Date Picker" />
-            <Tab label="Calendar View" />
-          </Tabs>
-
-          {activeTab === 0 ? (
-            <Box sx={{ p: 2 }}>
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Gender</InputLabel>
-                <Select
-                  value={gender}
-                  label="Gender"
-                  onChange={(e) => setGender(e.target.value as "male" | "female")}
-                >
-                  <MenuItem value="male">Male</MenuItem>
-                  <MenuItem value="female">Female</MenuItem>
-                </Select>
-              </FormControl>
-
-              <TextField
-                fullWidth
-                type="date"
-                label="Birth Date"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                sx={{ mb: 2 }}
-              />
-
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={calculateDeathDate}
-                disabled={!birthDate}
-                sx={{
-                  background: "linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)",
-                  "&:hover": {
-                    background: "linear-gradient(45deg, #FF8E53 30%, #FF6B6B 90%)",
-                  },
-                }}
+          <Box sx={{ p: 2 }}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Gender</InputLabel>
+              <Select
+                value={gender}
+                label="Gender"
+                onChange={(e) => setGender(e.target.value as "male" | "female")}
               >
-                Calculate
-              </Button>
-            </Box>
-          ) : (
-            <Box sx={{ p: 2, minHeight: 400 }}>
-              {birthDate ? (
-                <MementoCalendar birthDate={new Date(birthDate)} />
-              ) : (
-                <Box sx={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  height: '100%',
-                  minHeight: 400
-                }}>
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No Birth Date Entered
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary" align="center">
-                    Please enter your birth date in the Date Picker tab to see your life calendar
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          )}
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              fullWidth
+              type="date"
+              label="Birth Date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{ mb: 2 }}
+            />
+
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={calculateDeathDate}
+              disabled={!birthDate}
+              sx={{
+                background: "linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)",
+                "&:hover": {
+                  background: "linear-gradient(45deg, #FF8E53 30%, #FF6B6B 90%)",
+                },
+              }}
+            >
+              Calculate
+            </Button>
+          </Box>
         </DialogContent>
       </Dialog>
 
@@ -226,9 +197,6 @@ const DayIDieButton: React.FC = () => {
             <Typography variant="body1" align="center" gutterBottom>
               That's approximately {remainingDays.toLocaleString()} days remaining.
             </Typography>
-            <Box sx={{ mt: 2 }}>
-              {birthDate && <MementoCalendar birthDate={new Date(birthDate)} />}
-            </Box>
           </DialogContent>
         </Dialog>
       )}

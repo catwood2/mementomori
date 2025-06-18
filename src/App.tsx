@@ -93,7 +93,7 @@ function App() {
             <Tab label="Live Feed" />
             <Tab label="Find Quotes" />
             <Tab label="Add Quote" />
-            <Tab label="Memento Mori" />
+            <Tab label="Calendar" />
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
