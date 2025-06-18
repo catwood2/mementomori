@@ -51,7 +51,7 @@ const StoicAdvisor: React.FC = () => {
       const payload = {
         fields: {
           Quote: quote,
-          Category: 'Stoic Philosophy',
+          Category: 'Life',
           SourceLink: 'AI Generated',
           Likes: 0,
           Replies: 0,
