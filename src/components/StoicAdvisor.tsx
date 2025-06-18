@@ -117,7 +117,7 @@ const StoicAdvisor: React.FC = () => {
             fontSize: isMobile ? '0.875rem' : '1rem'
           }}
         >
-          Ask for stoic wisdom or advice on any challenge you're facing
+          Share your challenge and receive wisdom from Stoic philosophy. How can we apply ancient principles to your modern situation?
         </Typography>
 
         <Box sx={{ 
@@ -146,7 +146,7 @@ const StoicAdvisor: React.FC = () => {
                     elevation={1}
                     sx={{
                       p: isMobile ? 1.5 : 2,
-                      maxWidth: isMobile ? '85%' : '70%',
+                      maxWidth: isMobile ? '85%' : '60%',
                       backgroundColor: message.role === 'user' 
                         ? 'rgba(144, 202, 249, 0.1)' 
                         : 'rgba(244, 143, 177, 0.1)',
@@ -199,7 +199,7 @@ const StoicAdvisor: React.FC = () => {
           maxRows={4}
           minRows={1}
           variant="outlined"
-          placeholder="Ask for stoic wisdom..."
+          placeholder="Share your challenge..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={isLoading}
