@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab, Button, Typography } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Tabs, Tab, Button, Typography, useMediaQuery, useTheme } from '@mui/material';
 import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
 import LiveFeed from './components/LiveFeed';
@@ -43,6 +43,8 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <div
@@ -53,7 +55,7 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: isMobile ? 2 : 3 }}>
           {children}
         </Box>
       )}
@@ -66,6 +68,8 @@ function App() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [deathDate, setDeathDate] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const savedDeathDate = localStorage.getItem("deathDate");
@@ -90,48 +94,35 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box sx={{ 
+        width: '100%', 
+        minHeight: '100vh', 
+        bgcolor: 'background.default',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
         <Box sx={{ 
-          position: 'fixed', 
-          top: 8, 
-          left: 20, 
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1
+          borderBottom: 1, 
+          borderColor: 'divider',
+          backgroundColor: 'background.default',
+          zIndex: 900,
+          pt: isMobile ? 6 : 0
         }}>
-          {deathDate ? (
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-              My number is up: {deathDate}
-            </Typography>
-          ) : (
-            <Button
-              variant="outlined"
-              onClick={() => setShowDialog(true)}
-              sx={{
-                color: 'rgba(255, 255, 255, 0.7)',
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-                '&:hover': {
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                },
-              }}
-            >
-              when i die
-            </Button>
-          )}
-        </Box>
-
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs 
             value={tabValue} 
             onChange={handleTabChange} 
-            centered
+            centered={!isMobile}
+            variant={isMobile ? "scrollable" : "standard"}
+            scrollButtons={isMobile ? "auto" : false}
+            allowScrollButtonsMobile
             sx={{
               '& .MuiTab-root': {
-                fontSize: '1.1rem',
+                fontSize: isMobile ? '0.875rem' : '1.1rem',
                 textTransform: 'none',
                 fontWeight: 500,
+                minWidth: isMobile ? 'auto' : 120,
+                padding: isMobile ? '12px 8px' : '12px 16px'
               },
             }}
           >
@@ -141,18 +132,69 @@ function App() {
             <Tab label="Stoic Advisor" />
           </Tabs>
         </Box>
-        <TabPanel value={tabValue} index={0}>
-          <LiveFeed />
-        </TabPanel>
-        <TabPanel value={tabValue} index={1}>
-          <QuoteList key={refreshTrigger} />
-        </TabPanel>
-        <TabPanel value={tabValue} index={2}>
-          <QuoteForm onQuoteAdded={handleQuoteAdded} />
-        </TabPanel>
-        <TabPanel value={tabValue} index={3}>
-          <StoicAdvisor />
-        </TabPanel>
+
+        <Box sx={{ 
+          position: 'fixed', 
+          top: isMobile ? 8 : 8, 
+          left: isMobile ? 8 : 20, 
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1
+        }}>
+          {deathDate ? (
+            <Typography 
+              variant={isMobile ? "body2" : "body1"} 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: isMobile ? '0.875rem' : '1rem',
+                backgroundColor: 'rgba(18, 18, 18, 0.8)',
+                padding: '4px 8px',
+                borderRadius: 1
+              }}
+            >
+              My number is up: {deathDate}
+            </Typography>
+          ) : (
+            <Button
+              variant="outlined"
+              onClick={() => setShowDialog(true)}
+              size={isMobile ? "small" : "medium"}
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                borderColor: 'rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                },
+                fontSize: isMobile ? '0.875rem' : '1rem',
+                padding: isMobile ? '4px 8px' : '6px 16px',
+                backgroundColor: 'rgba(18, 18, 18, 0.8)'
+              }}
+            >
+              when i die
+            </Button>
+          )}
+        </Box>
+
+        <Box sx={{ 
+          flex: 1,
+          overflow: 'auto',
+          pt: isMobile ? 1 : 2
+        }}>
+          <TabPanel value={tabValue} index={0}>
+            <LiveFeed />
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            <QuoteList key={refreshTrigger} />
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            <QuoteForm onQuoteAdded={handleQuoteAdded} />
+          </TabPanel>
+          <TabPanel value={tabValue} index={3}>
+            <StoicAdvisor />
+          </TabPanel>
+        </Box>
 
         {showDialog && (
           <DayIDieButton 
