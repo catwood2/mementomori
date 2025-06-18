@@ -7,6 +7,7 @@ import {
   Typography,
   CircularProgress,
   useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { Send as SendIcon } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,6 +23,7 @@ const StoicAdvisor: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -78,31 +80,52 @@ const StoicAdvisor: React.FC = () => {
       flexDirection: 'column',
       maxWidth: '800px',
       margin: '0 auto',
-      p: 2,
-      gap: 2
+      p: isMobile ? 1 : 2,
+      gap: isMobile ? 1 : 2,
+      width: '100%'
     }}>
       <Paper 
         elevation={3} 
         sx={{ 
           flex: 1, 
-          p: 3, 
+          p: isMobile ? 2 : 3, 
           overflow: 'auto',
           backgroundColor: 'rgba(30, 30, 30, 0.95)',
           backdropFilter: 'blur(10px)',
           borderRadius: 2,
           display: 'flex',
           flexDirection: 'column',
-          gap: 2
+          gap: isMobile ? 1 : 2
         }}
       >
-        <Typography variant="h5" gutterBottom align="center" color="white">
+        <Typography 
+          variant={isMobile ? "h6" : "h5"} 
+          gutterBottom 
+          align="center" 
+          color="white"
+          sx={{ mb: isMobile ? 1 : 2 }}
+        >
           Stoic Advisor
         </Typography>
-        <Typography variant="body2" sx={{ mb: 3, textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)' }}>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            mb: isMobile ? 2 : 3, 
+            textAlign: 'center', 
+            color: 'rgba(255, 255, 255, 0.7)',
+            px: isMobile ? 1 : 2,
+            fontSize: isMobile ? '0.875rem' : '1rem'
+          }}
+        >
           Ask for stoic wisdom or advice on any challenge you're facing
         </Typography>
 
-        <Box sx={{ flex: 1, overflowY: 'auto', mb: 2 }}>
+        <Box sx={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          mb: isMobile ? 1 : 2,
+          px: isMobile ? 0.5 : 1
+        }}>
           <AnimatePresence>
             {messages.map((message, index) => (
               <motion.div
@@ -116,14 +139,14 @@ const StoicAdvisor: React.FC = () => {
                   sx={{
                     display: 'flex',
                     justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                    mb: 2
+                    mb: isMobile ? 1 : 2
                   }}
                 >
                   <Paper
                     elevation={1}
                     sx={{
-                      p: 2,
-                      maxWidth: '70%',
+                      p: isMobile ? 1.5 : 2,
+                      maxWidth: isMobile ? '85%' : '70%',
                       backgroundColor: message.role === 'user' 
                         ? 'rgba(144, 202, 249, 0.1)' 
                         : 'rgba(244, 143, 177, 0.1)',
@@ -131,7 +154,14 @@ const StoicAdvisor: React.FC = () => {
                       border: '1px solid rgba(255, 255, 255, 0.1)'
                     }}
                   >
-                    <Typography variant="body1" color="white">
+                    <Typography 
+                      variant="body1" 
+                      color="white"
+                      sx={{ 
+                        fontSize: isMobile ? '0.9rem' : '1rem',
+                        lineHeight: 1.5
+                      }}
+                    >
                       {message.content}
                     </Typography>
                   </Paper>
@@ -140,8 +170,8 @@ const StoicAdvisor: React.FC = () => {
             ))}
           </AnimatePresence>
           {isLoading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: isMobile ? 1 : 2 }}>
+              <CircularProgress size={isMobile ? 20 : 24} sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
             </Box>
           )}
           <div ref={messagesEndRef} />
@@ -152,12 +182,15 @@ const StoicAdvisor: React.FC = () => {
         component="form" 
         onSubmit={handleSubmit}
         sx={{ 
-          p: 2, 
+          p: isMobile ? 1 : 2, 
           display: 'flex', 
           gap: 1,
           backgroundColor: 'rgba(30, 30, 30, 0.95)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)'
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          position: 'sticky',
+          bottom: 0,
+          zIndex: 1
         }}
       >
         <TextField
@@ -167,6 +200,7 @@ const StoicAdvisor: React.FC = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={isLoading}
+          size={isMobile ? "small" : "medium"}
           sx={{
             '& .MuiOutlinedInput-root': {
               color: 'white',
@@ -187,15 +221,15 @@ const StoicAdvisor: React.FC = () => {
           variant="contained"
           disabled={isLoading || !input.trim()}
           sx={{
-            minWidth: 48,
-            height: 48,
+            minWidth: isMobile ? 40 : 48,
+            height: isMobile ? 40 : 48,
             background: "linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)",
             "&:hover": {
               background: "linear-gradient(45deg, #FF8E53 30%, #FF6B6B 90%)",
             },
           }}
         >
-          <SendIcon />
+          <SendIcon sx={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }} />
         </Button>
       </Paper>
     </Box>
