@@ -4,6 +4,7 @@ import QuoteList from './components/QuoteList';
 import QuoteForm from './components/QuoteForm';
 import LiveFeed from './components/LiveFeed';
 import DayIDieButton from './components/DayIDieButton';
+import StoicAdvisor from './components/StoicAdvisor';
 
 const theme = createTheme({
   palette: {
@@ -137,6 +138,7 @@ function App() {
             <Tab label="Live Feed" />
             <Tab label="Find Quotes" />
             <Tab label="Add Quote" />
+            <Tab label="Stoic Advisor" />
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
@@ -147,6 +149,9 @@ function App() {
         </TabPanel>
         <TabPanel value={tabValue} index={2}>
           <QuoteForm onQuoteAdded={handleQuoteAdded} />
+        </TabPanel>
+        <TabPanel value={tabValue} index={3}>
+          <StoicAdvisor />
         </TabPanel>
 
         {showDialog && (
