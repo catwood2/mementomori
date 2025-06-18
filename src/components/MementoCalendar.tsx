@@ -12,9 +12,9 @@ interface DotProps {
 const Dot: React.FC<DotProps> = ({ isCleared, isCurrent, delay }) => {
   return (
     <motion.div
-      initial={{ opacity: 1 }}
+      initial={{ opacity: 0 }}
       animate={{ 
-        opacity: isCleared ? 0 : 1,
+        opacity: 1,
         scale: isCurrent ? [1, 1.2, 1] : 1
       }}
       transition={{ 
@@ -27,32 +27,18 @@ const Dot: React.FC<DotProps> = ({ isCleared, isCurrent, delay }) => {
         width: 8,
         height: 8,
         borderRadius: '50%',
-        backgroundColor: isCurrent ? '#ff4444' : '#666',
+        backgroundColor: isCleared ? '#666' : '#333',
         margin: 2,
         position: 'relative',
-        overflow: 'hidden'
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
+        fontSize: '6px',
+        fontWeight: 'bold'
       }}
     >
-      {isCurrent && (
-        <motion.div
-          initial={{ x: -8 }}
-          animate={{ x: 8 }}
-          transition={{ 
-            duration: 0.5,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: '#ff4444',
-            borderRadius: '50%'
-          }}
-        />
-      )}
+      {isCleared && '×'}
     </motion.div>
   );
 };
