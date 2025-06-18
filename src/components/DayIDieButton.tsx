@@ -4,20 +4,18 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   TextField,
   Typography,
   Box,
   Tabs,
   Tab,
-  Paper,
   IconButton,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
-import { Info, Close, CalendarToday } from "@mui/icons-material";
+import { Close, CalendarToday } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { format, differenceInDays, addYears } from "date-fns";
 import MementoCalendar from "./MementoCalendar";
@@ -63,7 +61,7 @@ const DayIDieButton: React.FC = () => {
     handleClose();
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
