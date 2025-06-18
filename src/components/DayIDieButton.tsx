@@ -103,9 +103,10 @@ const DayIDieButton: React.FC = () => {
         fullWidth
         PaperProps={{
           sx: {
-            background: "rgba(255, 255, 255, 0.9)",
-            backdropFilter: "blur(10px)",
+            background: 'rgba(30, 30, 30, 0.95)',
+            backdropFilter: 'blur(10px)',
             borderRadius: 2,
+            color: 'white',
           },
         }}
       >
@@ -195,10 +196,11 @@ const DayIDieButton: React.FC = () => {
           onClose={() => setShowResult(false)}
           PaperProps={{
             sx: {
-              background: "rgba(255, 255, 255, 0.9)",
-              backdropFilter: "blur(10px)",
+              background: 'rgba(30, 30, 30, 0.95)',
+              backdropFilter: 'blur(10px)',
               borderRadius: 2,
               maxWidth: 400,
+              color: 'white',
             },
           }}
         >

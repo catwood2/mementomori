@@ -27,7 +27,7 @@ const Dot: React.FC<DotProps> = ({ isCleared, isCurrent, delay }) => {
         width: 8,
         height: 8,
         borderRadius: '50%',
-        backgroundColor: isCurrent ? '#ff4444' : '#333',
+        backgroundColor: isCurrent ? '#ff4444' : '#666',
         margin: 2,
         position: 'relative',
         overflow: 'hidden'
@@ -96,14 +96,15 @@ export default function MementoCalendar({ birthDate }: MementoCalendarProps) {
       elevation={3}
       sx={{
         p: 3,
-        bgcolor: 'rgba(255, 255, 255, 0.9)',
+        bgcolor: 'rgba(30, 30, 30, 0.95)',
         backdropFilter: 'blur(10px)',
         borderRadius: 2,
         maxWidth: '100%',
-        overflow: 'auto'
+        overflow: 'auto',
+        color: 'white'
       }}
     >
-      <Typography variant="h6" gutterBottom align="center">
+      <Typography variant="h6" gutterBottom align="center" color="white">
         Your Life in Weeks
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -130,7 +131,7 @@ export default function MementoCalendar({ birthDate }: MementoCalendarProps) {
           </Box>
         ))}
       </Box>
-      <Typography variant="body2" sx={{ mt: 2, textAlign: 'center', color: 'text.secondary' }}>
+      <Typography variant="body2" sx={{ mt: 2, textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)' }}>
         Each dot represents one week of your 80-year life
       </Typography>
     </Paper>
