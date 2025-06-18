@@ -44,10 +44,11 @@ const StoicAdvisor: React.FC = () => {
     
     // Find source attribution patterns
     const sourcePatterns = [
-      /as ([^,.]+) said/i,
-      /according to ([^,.]+)/i,
-      /by ([^,.]+)/i,
-      /from ([^,.]+)/i
+      /"([^"]+)"\s*-\s*([^,.]+)/i,  // Matches "quote" - author
+      /as ([^,.]+) said,?\s*"([^"]+)"/i,  // Matches as author said, "quote"
+      /according to ([^,.]+),?\s*"([^"]+)"/i,  // Matches according to author, "quote"
+      /by ([^,.]+),?\s*"([^"]+)"/i,  // Matches by author, "quote"
+      /from ([^,.]+),?\s*"([^"]+)"/i  // Matches from author, "quote"
     ];
 
     // Remove the quotation marks and add source if found
@@ -56,10 +57,16 @@ const StoicAdvisor: React.FC = () => {
       const quoteIndex = text.indexOf(quote);
       const surroundingText = text.slice(Math.max(0, quoteIndex - 100), quoteIndex + quote.length + 100);
       
-      // Look for source attribution before or after the quote
+      // First check for "quote" - author pattern
+      const dashMatch = surroundingText.match(/"([^"]+)"\s*-\s*([^,.]+)/i);
+      if (dashMatch && dashMatch[1] === quoteText) {
+        return `${quoteText} - ${dashMatch[2].trim()}`;
+      }
+
+      // Then check other patterns
       for (const pattern of sourcePatterns) {
         const match = surroundingText.match(pattern);
-        if (match && match[1]) {
+        if (match && match[2] === quoteText) {
           return `${quoteText} - ${match[1].trim()}`;
         }
       }

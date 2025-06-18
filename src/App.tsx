@@ -65,7 +65,7 @@ const darkTheme = createTheme({
     MuiTabs: {
       styleOverrides: {
         indicator: {
-          backgroundColor: '#9B2C2C',
+          display: 'none'
         },
       },
     },
