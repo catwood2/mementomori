@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
-import { differenceInWeeks, addWeeks, startOfWeek } from 'date-fns';
+import { motion } from 'framer-motion';
+import { differenceInWeeks, startOfWeek } from 'date-fns';
 
 interface DotProps {
   isCleared: boolean;
@@ -68,7 +68,6 @@ export default function MementoCalendar({ birthDate }: MementoCalendarProps) {
   useEffect(() => {
     const calculateWeeks = () => {
       const now = new Date();
-      const totalWeeks = 80 * 52; // 80 years in weeks
       const weeksLived = differenceInWeeks(now, birthDate);
       const currentWeekIndex = differenceInWeeks(startOfWeek(now), startOfWeek(birthDate));
 
