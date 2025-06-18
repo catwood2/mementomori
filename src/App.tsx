@@ -58,6 +58,7 @@ const darkTheme = createTheme({
           color: 'rgba(255, 255, 255, 0.7)',
           '&.Mui-selected': {
             color: '#9B2C2C',
+            backgroundColor: 'transparent'
           },
         },
       },
