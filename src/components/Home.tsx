@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider } from '@mui/material';
+import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat } from '@mui/icons-material';
 
 const features = [
@@ -55,6 +55,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [quote, setQuote] = useState('');
+  const [privacyOpen, setPrivacyOpen] = useState(false);
 
   useEffect(() => {
     setQuote(getRandomQuote());
@@ -190,10 +191,30 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
             GitHub
           </a>
           {`  |  `}
-          <a href="mailto:hello@catwood.co" style={{ color: '#9B2C2C', textDecoration: 'none', fontWeight: 500 }}>
+          <a href="mailto:catwood2@gmail.com" style={{ color: '#9B2C2C', textDecoration: 'none', fontWeight: 500 }}>
             Contact
           </a>
+          {`  |  `}
+          <span
+            style={{ color: '#FFD700', textDecoration: 'underline', cursor: 'pointer', fontWeight: 500 }}
+            onClick={() => setPrivacyOpen(true)}
+          >
+            Privacy
+          </span>
         </Typography>
+        <Dialog open={privacyOpen} onClose={() => setPrivacyOpen(false)}>
+          <DialogTitle>Privacy Policy</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              This app does <b>not</b> store any user-related data. All code is open source and you can verify this on GitHub. Your privacy is fully respected.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setPrivacyOpen(false)} color="primary" autoFocus>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );
