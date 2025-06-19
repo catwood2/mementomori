@@ -9,9 +9,11 @@ import LiveFeed from './components/LiveFeed';
 import DayIDieButton from './components/DayIDieButton';
 import StoicAdvisor from './components/StoicAdvisor';
 import VideoCarousel from './components/VideoCarousel';
+import Home from './components/Home';
 
 const drawerWidth = 220;
 const menuItems = [
+  { label: 'Home', component: <Home /> },
   { label: 'Live Feed', component: <LiveFeed /> },
   { label: 'Find Quotes', component: <QuoteList /> },
   { label: 'Add Quote', component: <QuoteForm onQuoteAdded={() => {}} /> },
