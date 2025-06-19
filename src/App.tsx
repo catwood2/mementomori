@@ -61,6 +61,10 @@ function App() {
     setDeathDate(date);
     setShowDialog(false);
   };
+  const handleFeatureSelect = (tabIndex: number) => {
+    setSelectedIndex(tabIndex);
+    setMobileOpen(false);
+  };
 
   const drawer = (
     <Box sx={{ width: drawerWidth, bgcolor: 'background.paper', height: '100%', pt: 2 }}>
@@ -182,7 +186,7 @@ function App() {
           </Box>
           {/* Main content area */}
           <Box sx={{ flex: 1, width: '100%', mt: isMobile ? 2 : 0 }}>
-            {menuItems[selectedIndex].component}
+            {selectedIndex === 0 ? <Home onFeatureSelect={handleFeatureSelect} /> : menuItems[selectedIndex].component}
           </Box>
           {showDialog && (
             <DayIDieButton onDeathDateSet={handleDeathDateSet} onClose={() => setShowDialog(false)} />

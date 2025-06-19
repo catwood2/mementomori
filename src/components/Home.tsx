@@ -4,34 +4,34 @@ import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat } from '
 
 const features = [
   {
-    icon: <PlayCircleOutline fontSize="large" sx={{ color: '#B83280' }} />,
+    icon: <PlayCircleOutline fontSize="large" sx={{ color: '#FFD700' }} />,
     label: 'Featured Videos',
     description: 'Watch Stoic talks and interviews.',
-    anchor: '#featured-videos',
+    tabIndex: 5,
   },
   {
     icon: <FormatQuote fontSize="large" sx={{ color: '#9B2C2C' }} />,
     label: 'Live Feed',
     description: 'See the latest Stoic quotes.',
-    anchor: '#live-feed',
+    tabIndex: 1,
   },
   {
-    icon: <Search fontSize="large" sx={{ color: '#B83280' }} />,
+    icon: <Search fontSize="large" sx={{ color: '#FFD700' }} />,
     label: 'Find Quotes',
     description: 'Search timeless wisdom.',
-    anchor: '#find-quotes',
+    tabIndex: 2,
   },
   {
     icon: <AddCircleOutline fontSize="large" sx={{ color: '#9B2C2C' }} />,
     label: 'Add Quote',
     description: 'Share your own insight.',
-    anchor: '#add-quote',
+    tabIndex: 3,
   },
   {
-    icon: <Chat fontSize="large" sx={{ color: '#B83280' }} />,
+    icon: <Chat fontSize="large" sx={{ color: '#FFD700' }} />,
     label: 'Stoic Advisor',
     description: 'Ask the Stoic AI for advice.',
-    anchor: '#stoic-advisor',
+    tabIndex: 4,
   },
 ];
 
@@ -47,7 +47,11 @@ const getRandomQuote = () => {
   return fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
 };
 
-const Home: React.FC = () => {
+interface HomeProps {
+  onFeatureSelect?: (tabIndex: number) => void;
+}
+
+const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [quote, setQuote] = useState('');
@@ -86,7 +90,7 @@ const Home: React.FC = () => {
       <Typography
         variant={isMobile ? 'h6' : 'h5'}
         sx={{
-          color: '#B83280',
+          color: '#FFD700',
           mb: 3,
           textAlign: 'center',
           fontWeight: 400,
@@ -98,7 +102,7 @@ const Home: React.FC = () => {
         variant="contained"
         size={isMobile ? 'medium' : 'large'}
         sx={{
-          background: 'linear-gradient(45deg, #9B2C2C 30%, #B83280 90%)',
+          background: 'linear-gradient(45deg, #9B2C2C 30%, #FFD700 90%)',
           color: 'white',
           fontWeight: 700,
           px: 4,
@@ -107,10 +111,10 @@ const Home: React.FC = () => {
           mb: 5,
           boxShadow: 3,
           '&:hover': {
-            background: 'linear-gradient(45deg, #B83280 30%, #9B2C2C 90%)',
+            background: 'linear-gradient(45deg, #FFD700 30%, #9B2C2C 90%)',
           },
         }}
-        href="#live-feed"
+        onClick={() => onFeatureSelect?.(1)}
       >
         Begin Your Stoic Journey
       </Button>
@@ -155,13 +159,13 @@ const Home: React.FC = () => {
                 borderRadius: 2,
                 minHeight: 120,
                 transition: 'box-shadow 0.2s',
+                cursor: 'pointer',
                 '&:hover': {
                   boxShadow: 6,
                   bgcolor: 'rgba(155,44,44,0.15)',
                 },
               }}
-              component="a"
-              href={feature.anchor}
+              onClick={() => onFeatureSelect?.(feature.tabIndex)}
             >
               {feature.icon}
               <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 700, color: '#9B2C2C' }}>
@@ -182,7 +186,7 @@ const Home: React.FC = () => {
           Inspired by the wisdom of the Stoics. Built for modern reflection.
         </Typography>
         <Typography variant="body2">
-          <a href="https://github.com/catwood2/mementomori" target="_blank" rel="noopener noreferrer" style={{ color: '#B83280', textDecoration: 'none', fontWeight: 500 }}>
+          <a href="https://github.com/catwood2/mementomori" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', textDecoration: 'none', fontWeight: 500 }}>
             GitHub
           </a>
           {`  |  `}
