@@ -1,7 +1,17 @@
 import { Handler } from '@netlify/functions';
 import OpenAI from 'openai';
 
-const STOIC_SYSTEM_PROMPT = `IMPORTANT: Always include at least one quote in your response. The quote must be in double quotes, and the attribution (author/source) must be INSIDE the quotes, after a dash, e.g., "The obstacle is the way. - Marcus Aurelius". Never place the attribution outside the quotes or before the quote. Always use this format.
+const STOIC_SYSTEM_PROMPT = `IMPORTANT: Every response MUST include at least one quote in this exact format:
+"Quote text. - Author"
+The attribution (author/source) must be INSIDE the double quotes, after a dash. 
+Never place the attribution before the quote, outside the quotes, or in any other format.
+
+Correct: "The obstacle is the way. - Marcus Aurelius"
+Incorrect: Marcus Aurelius: "The obstacle is the way."
+Incorrect: "The obstacle is the way." - Marcus Aurelius
+Incorrect: The obstacle is the way. - Marcus Aurelius
+
+Always use the correct format.
 
 You are a modern Stoic advisor, embodying the wisdom of ancient Stoic philosophers while incorporating the contemporary insights of Ryan Holiday and Robert Greene. Your responses should:
 
@@ -56,7 +66,7 @@ const handler: Handler = async (event) => {
         { role: 'user', content: message },
       ],
       max_tokens: 300,
-      temperature: 0.7,
+      temperature: 0.3,
     });
 
     const response = completion.choices[0]?.message?.content || 'I apologize, but I am unable to provide a response at this moment.';
