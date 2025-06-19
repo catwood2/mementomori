@@ -1,12 +1,12 @@
 const fetch = require('node-fetch');
-const { AIRTABLE_BASE_ID, AIRTABLE_API_KEY, AIRTABLE_TABLE_NAME } = process.env;
+const { AIRTABLE_BASE_ID, AIRTABLE_API_KEY, AIRTABLE_QUOTES_TABLE } = process.env;
 
 // Validate environment variables
-if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_TABLE_NAME) {
+if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_QUOTES_TABLE) {
   console.error('Missing required environment variables');
   console.error('AIRTABLE_BASE_ID:', !!AIRTABLE_BASE_ID);
   console.error('AIRTABLE_API_KEY:', !!AIRTABLE_API_KEY);
-  console.error('AIRTABLE_TABLE_NAME:', !!AIRTABLE_TABLE_NAME);
+  console.error('AIRTABLE_QUOTES_TABLE:', !!AIRTABLE_QUOTES_TABLE);
 }
 
 // Helper function to validate and clean fields
@@ -51,11 +51,11 @@ exports.handler = async function(event, context) {
   }
 
   // Check for required environment variables
-  if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_TABLE_NAME) {
+  if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY || !AIRTABLE_QUOTES_TABLE) {
     console.error('Missing environment variables:', {
       AIRTABLE_BASE_ID: !!AIRTABLE_BASE_ID,
       AIRTABLE_API_KEY: !!AIRTABLE_API_KEY,
-      AIRTABLE_TABLE_NAME: !!AIRTABLE_TABLE_NAME
+      AIRTABLE_QUOTES_TABLE: !!AIRTABLE_QUOTES_TABLE
     });
     return {
       statusCode: 500,
@@ -67,7 +67,7 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_QUOTES_TABLE)}`;
     console.log('Airtable URL:', url);
     
     if (event.httpMethod === 'GET') {
