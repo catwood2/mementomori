@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, IconButton, Typography, useMediaQuery, useTheme, Paper, CircularProgress } from '@mui/material';
+import { Box, IconButton, Typography, useMediaQuery, useTheme, Paper, CircularProgress, Button, TextField, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,22 +13,26 @@ const VideoCarousel: React.FC = () => {
   const [videos, setVideos] = useState<FeaturedVideo[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [addOpen, setAddOpen] = useState(false);
+  const [form, setForm] = useState({ youtubeUrl: '', title: '', description: '' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const fetchVideos = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/.netlify/functions/airtable-videos');
+      const data = await res.json();
+      setVideos(data.videos || []);
+    } catch (err) {
+      setVideos([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchVideos = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch('/.netlify/functions/airtable-videos');
-        const data = await res.json();
-        setVideos(data.videos || []);
-      } catch (err) {
-        setVideos([]);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchVideos();
   }, []);
 
@@ -37,6 +41,25 @@ const VideoCarousel: React.FC = () => {
   };
   const handleNext = () => {
     setIndex((prev) => (prev === videos.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleAddVideo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/.netlify/functions/airtable-add-video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to add video');
+      setSnackbar({ open: true, message: 'Video added!', severity: 'success' });
+      setAddOpen(false);
+      setForm({ youtubeUrl: '', title: '', description: '' });
+      fetchVideos();
+    } catch (err: any) {
+      setSnackbar({ open: true, message: err.message, severity: 'error' });
+    }
   };
 
   if (loading) {
@@ -105,6 +128,56 @@ const VideoCarousel: React.FC = () => {
           />
         ))}
       </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+        <Button variant="outlined" color="primary" onClick={() => setAddOpen(true)}>
+          Add a Video
+        </Button>
+      </Box>
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)}>
+        <DialogTitle>Add a YouTube Video</DialogTitle>
+        <form onSubmit={handleAddVideo}>
+          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 320 }}>
+            <TextField
+              label="YouTube URL"
+              value={form.youtubeUrl}
+              onChange={e => setForm(f => ({ ...f, youtubeUrl: e.target.value }))}
+              required
+              fullWidth
+            />
+            <TextField
+              label="Title (optional)"
+              value={form.title}
+              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              fullWidth
+            />
+            <TextField
+              label="Description (optional)"
+              value={form.description}
+              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              fullWidth
+              multiline
+              minRows={2}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAddOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="contained" color="primary">Add</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
