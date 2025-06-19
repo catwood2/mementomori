@@ -13,12 +13,13 @@ exports.handler = async function(event, context) {
   }
 
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?view=Grid%20view`;
+  const headers = { Authorization: `Bearer ${AIRTABLE_API_KEY}` };
+  console.log('Airtable request URL:', url);
+  console.log('Airtable request headers:', headers);
 
   try {
     const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-      },
+      headers,
     });
     if (!response.ok) {
       throw new Error('Failed to fetch from Airtable');
