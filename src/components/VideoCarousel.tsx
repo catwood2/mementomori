@@ -1,28 +1,50 @@
-import React, { useState } from 'react';
-import { Box, IconButton, Typography, useMediaQuery, useTheme, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, IconButton, Typography, useMediaQuery, useTheme, Paper, CircularProgress } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
-import featuredVideos from '../data/featuredVideos';
 
 type FeaturedVideo = {
   id: string;
   title: string;
-  url: string;
+  description?: string;
 };
 
-const featuredVideosTyped: FeaturedVideo[] = featuredVideos;
-
 const VideoCarousel: React.FC = () => {
+  const [videos, setVideos] = useState<FeaturedVideo[]>([]);
   const [index, setIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  useEffect(() => {
+    const fetchVideos = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/.netlify/functions/airtable-videos');
+        const data = await res.json();
+        setVideos(data.videos || []);
+      } catch (err) {
+        setVideos([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVideos();
+  }, []);
+
   const handlePrev = () => {
-    setIndex((prev) => (prev === 0 ? featuredVideosTyped.length - 1 : prev - 1));
+    setIndex((prev) => (prev === 0 ? videos.length - 1 : prev - 1));
   };
   const handleNext = () => {
-    setIndex((prev) => (prev === featuredVideosTyped.length - 1 ? 0 : prev + 1));
+    setIndex((prev) => (prev === videos.length - 1 ? 0 : prev + 1));
   };
+
+  if (loading) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}><CircularProgress /></Box>;
+  }
+  if (!videos.length) {
+    return <Typography align="center" color="text.secondary">No videos available.</Typography>;
+  }
 
   return (
     <Box sx={{ width: '100%', maxWidth: 600, mx: 'auto', p: isMobile ? 1 : 3 }}>
@@ -34,7 +56,7 @@ const VideoCarousel: React.FC = () => {
           <Box sx={{ width: isMobile ? 280 : 480, height: isMobile ? 158 : 270, mx: 'auto', overflow: 'hidden', borderRadius: 2 }}>
             <AnimatePresence initial={false} mode="wait">
               <motion.div
-                key={featuredVideosTyped[index].id}
+                key={videos[index].id}
                 initial={{ x: 100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -100, opacity: 0 }}
@@ -44,8 +66,8 @@ const VideoCarousel: React.FC = () => {
                 <iframe
                   width="100%"
                   height="100%"
-                  src={`https://www.youtube.com/embed/${featuredVideosTyped[index].id}`}
-                  title={featuredVideosTyped[index].title}
+                  src={`https://www.youtube.com/embed/${videos[index].id}`}
+                  title={videos[index].title}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -59,11 +81,16 @@ const VideoCarousel: React.FC = () => {
           </IconButton>
         </Box>
         <Typography variant={isMobile ? 'body1' : 'h6'} align="center" sx={{ mt: 2, color: 'white' }}>
-          {featuredVideosTyped[index].title}
+          {videos[index].title}
         </Typography>
+        {videos[index].description && (
+          <Typography variant="body2" align="center" sx={{ color: 'rgba(255,255,255,0.7)', mt: 1 }}>
+            {videos[index].description}
+          </Typography>
+        )}
       </Paper>
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, gap: 1 }}>
-        {featuredVideosTyped.map((video: FeaturedVideo, i: number) => (
+        {videos.map((video, i) => (
           <Box
             key={video.id}
             sx={{
