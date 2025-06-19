@@ -9,7 +9,7 @@ interface CalendarImage {
   username?: string;
 }
 
-const CalendarGallery: React.FC = () => {
+const StoicPhotos: React.FC = () => {
   const [images, setImages] = useState<CalendarImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -85,14 +85,14 @@ const CalendarGallery: React.FC = () => {
   return (
     <Box sx={{ maxWidth: 1100, mx: 'auto', p: 2 }}>
       <Typography variant="h4" align="center" sx={{ mb: 3, color: '#9B2C2C', fontWeight: 700 }}>
-        Memento Mori Calendar Gallery
+        Stoic Photos Gallery
       </Typography>
       <Typography align="center" sx={{ mb: 3, color: 'rgba(255,255,255,0.7)' }}>
-        See how others are tracking their days. Upload your own calendar!
+        See how others are living stoically. Upload your own calendar, quote wall, or any photo that inspires your practice!
       </Typography>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
         <Button variant="contained" color="primary" onClick={() => setUploadOpen(true)}>
-          Upload Your Calendar
+          Upload Your Photo
         </Button>
       </Box>
       {loading ? (
@@ -168,4 +168,4 @@ const CalendarGallery: React.FC = () => {
   );
 };
 
-export default CalendarGallery; 
+export default StoicPhotos; 
