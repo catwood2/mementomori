@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 console.log('airtable-videos function loaded');
 
 exports.handler = async function(event, context) {
