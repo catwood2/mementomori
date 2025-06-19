@@ -5,6 +5,7 @@ import QuoteForm from './components/QuoteForm';
 import LiveFeed from './components/LiveFeed';
 import DayIDieButton from './components/DayIDieButton';
 import StoicAdvisor from './components/StoicAdvisor';
+import VideoCarousel from './components/VideoCarousel';
 
 const darkTheme = createTheme({
   palette: {
@@ -186,6 +187,7 @@ function App() {
             <Tab label="Find Quotes" />
             <Tab label="Add Quote" />
             <Tab label="Stoic Advisor" />
+            <Tab label="Featured Videos" />
           </Tabs>
         </Box>
 
@@ -251,6 +253,9 @@ function App() {
           </TabPanel>
           <TabPanel value={tabValue} index={3}>
             <StoicAdvisor />
+          </TabPanel>
+          <TabPanel value={tabValue} index={4}>
+            <VideoCarousel />
           </TabPanel>
         </Box>
 
