@@ -1,6 +1,9 @@
 const fetch = require('node-fetch');
 
+console.log('airtable-videos function loaded');
+
 exports.handler = async function(event, context) {
+  console.log('airtable-videos function invoked');
   const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
   const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
   const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_VIDEOS_TABLE || 'Featured Videos';
