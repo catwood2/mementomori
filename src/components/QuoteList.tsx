@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Card,
@@ -13,7 +13,7 @@ import {
   Snackbar,
   Skeleton,
 } from '@mui/material';
-import { Favorite, FavoriteBorder } from '@mui/icons-material';
+import { Favorite, FavoriteBorder, Bookmark, BookmarkBorder } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -71,6 +71,7 @@ export default function QuoteList() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [likedQuotes, setLikedQuotes] = useState<Record<string, boolean>>({});
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
@@ -164,6 +165,11 @@ export default function QuoteList() {
   const filteredQuotes = quotes.filter(quote => {
     const matchesSearch = !searchTerm || 
       quote.fields.Quote.toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (showFavorites) {
+      return matchesSearch && likedQuotes[quote.id];
+    }
+    
     const matchesCategory = !filterCategory || 
       quote.fields.Category === filterCategory;
     return matchesSearch && matchesCategory;
@@ -181,6 +187,20 @@ export default function QuoteList() {
     'Emotions',
     'Community & Relationships'
   ];
+
+  const categoryCounts = useMemo(() => {
+    return quotes.reduce((acc, quote) => {
+      const category = quote.fields.Category;
+      if (category) {
+        acc[category] = (acc[category] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+  }, [quotes]);
+  
+  const favoritesCount = useMemo(() => {
+    return quotes.filter(q => likedQuotes[q.id]).length;
+  }, [quotes, likedQuotes]);
 
   if (loading) {
     return <LoadingSkeleton />;
@@ -209,22 +229,31 @@ export default function QuoteList() {
         />
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
           <MotionButton
-            variant={!filterCategory ? 'contained' : 'outlined'}
-            onClick={() => setFilterCategory(null)}
+            variant={!filterCategory && !showFavorites ? 'contained' : 'outlined'}
+            onClick={() => { setFilterCategory(null); setShowFavorites(false); }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            All Categories
+            All Categories ({quotes.length})
+          </MotionButton>
+          <MotionButton
+            variant={showFavorites ? 'contained' : 'outlined'}
+            onClick={() => { setShowFavorites(true); setFilterCategory(null); }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            startIcon={<Bookmark />}
+          >
+            My Favorites ({favoritesCount})
           </MotionButton>
           {categories.map((category) => (
             <MotionButton
               key={category}
-              variant={filterCategory === category ? 'contained' : 'outlined'}
-              onClick={() => setFilterCategory(category)}
+              variant={!showFavorites && filterCategory === category ? 'contained' : 'outlined'}
+              onClick={() => { setFilterCategory(category); setShowFavorites(false); }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {category}
+              {category} ({categoryCounts[category] || 0})
             </MotionButton>
           ))}
         </Box>
@@ -293,7 +322,7 @@ export default function QuoteList() {
                           damping: 15
                         }}
                       >
-                        {likedQuotes[quote.id] ? <Favorite /> : <FavoriteBorder />}
+                        {likedQuotes[quote.id] ? <Favorite sx={{ color: '#B83280' }} /> : <FavoriteBorder />}
                       </MotionIconButton>
                       <motion.div
                         key={quote.fields.Likes}
