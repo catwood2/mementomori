@@ -18,6 +18,10 @@ const StoicPhotos: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [cloudinaryReady, setCloudinaryReady] = useState(false);
 
+  // DEBUG: Log Vite env variables explicitly
+  console.log('DEBUG VITE_CLOUDINARY_CLOUD_NAME:', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+  console.log('DEBUG VITE_CLOUDINARY_UPLOAD_PRESET:', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+
   // Helper to check for required Cloudinary env vars
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
