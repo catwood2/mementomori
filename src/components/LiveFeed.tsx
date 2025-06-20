@@ -11,7 +11,7 @@ import {
   Snackbar,
   Button,
 } from '@mui/material';
-import { Favorite, FavoriteBorder, Share, ChatBubbleOutline, Refresh } from '@mui/icons-material';
+import { Favorite, FavoriteBorder, Refresh } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Quote {
@@ -110,23 +110,6 @@ export default function LiveFeed() {
       setSnackbar({
         open: true,
         message: 'Failed to update likes',
-        severity: 'error'
-      });
-    }
-  };
-
-  const handleShare = async (quote: Quote) => {
-    try {
-      await navigator.clipboard.writeText(quote.fields.Quote);
-      setSnackbar({
-        open: true,
-        message: 'Quote copied to clipboard!',
-        severity: 'success'
-      });
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: 'Failed to copy quote',
         severity: 'error'
       });
     }
@@ -238,53 +221,14 @@ export default function LiveFeed() {
                 </Typography>
               )}
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <IconButton
+                  onClick={() => handleLike(quote.id)}
+                  sx={{ color: likedQuotes[quote.id] ? '#B83280' : 'rgba(255,255,255,0.7)' }}
                 >
-                  <IconButton
-                    onClick={() => handleLike(quote.id)}
-                    color="primary"
-                    size="small"
-                  >
-                    {likedQuotes[quote.id] ? <Favorite /> : <FavoriteBorder />}
-                  </IconButton>
-                </motion.div>
-                <Typography variant="body2" color="text.secondary">
-                  {quote.fields.Likes || 0}
-                </Typography>
-
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <IconButton
-                    onClick={() => handleShare(quote)}
-                    color="primary"
-                    size="small"
-                  >
-                    <Share />
-                  </IconButton>
-                </motion.div>
-                <Typography variant="body2" color="text.secondary">
-                  {quote.fields.Retweets || 0}
-                </Typography>
-
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <IconButton
-                    color="primary"
-                    size="small"
-                  >
-                    <ChatBubbleOutline />
-                  </IconButton>
-                </motion.div>
-                <Typography variant="body2" color="text.secondary">
-                  {quote.fields.Replies || 0}
-                </Typography>
+                  {likedQuotes[quote.id] ? <Favorite /> : <FavoriteBorder />}
+                </IconButton>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>{quote.fields.Likes || 0}</Typography>
               </Box>
             </CardContent>
           </MotionCard>
