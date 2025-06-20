@@ -111,6 +111,25 @@ const StoicPhotos: React.FC = () => {
     }
   };
 
+  // Minimal Cloudinary widget test
+  const openMinimalCloudinaryWidget = () => {
+    if (!(window as any).cloudinary) {
+      alert('Cloudinary widget not loaded');
+      return;
+    }
+    try {
+      (window as any).cloudinary.openUploadWidget({
+        cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
+      }, (error: any, result: any) => {
+        console.log('Minimal widget callback', { error, result });
+        if (error) alert('Widget error: ' + error.message);
+      });
+    } catch (err) {
+      alert('Exception: ' + err);
+    }
+  };
+
   return (
     <Box sx={{ maxWidth: 1100, mx: 'auto', p: 2 }}>
       <Typography variant="h4" align="center" sx={{ mb: 3, color: '#9B2C2C', fontWeight: 700 }}>
@@ -122,6 +141,11 @@ const StoicPhotos: React.FC = () => {
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
         <Button variant="contained" color="primary" onClick={() => setUploadOpen(true)}>
           Upload Your Photo
+        </Button>
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+        <Button variant="outlined" color="secondary" onClick={openMinimalCloudinaryWidget}>
+          TEST: Minimal Cloudinary Widget
         </Button>
       </Box>
       {loading ? (
