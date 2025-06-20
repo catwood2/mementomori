@@ -164,37 +164,16 @@ const StoicPhotos: React.FC = () => {
           Upload Your Photo
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-        <Button variant="outlined" color="secondary" onClick={openMinimalCloudinaryWidget} disabled={cloudinaryConfigMissing}>
-          TEST: Minimal Cloudinary Widget
-        </Button>
-      </Box>
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
           <CircularProgress />
         </Box>
+      ) : images.length === 0 ? (
+        <Typography align="center" sx={{ color: 'rgba(255,255,255,0.7)', mt: 4 }}>
+          No photos have been shared yet. Be the first to upload!
+        </Typography>
       ) : (
-        <Grid container spacing={3} justifyContent="center">
-          {images.map((img) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={img.id}>
-              <Paper elevation={3} sx={{ p: 1, bgcolor: 'rgba(30,30,30,0.95)', borderRadius: 2 }}>
-                <Box sx={{ width: '100%', aspectRatio: '1/1', mb: 1, overflow: 'hidden', borderRadius: 2 }}>
-                  <img src={img.url} alt={img.caption || 'Calendar'} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, background: '#000' }} />
-                </Box>
-                {img.caption && (
-                  <Typography variant="body2" sx={{ color: 'white', mb: 0.5 }}>
-                    {img.caption}
-                  </Typography>
-                )}
-                {img.username && (
-                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-                    by {img.username}
-                  </Typography>
-                )}
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
+        <PhotoCarousel images={images} />
       )}
       <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
         <DialogTitle>Upload Your Calendar</DialogTitle>
@@ -238,6 +217,52 @@ const StoicPhotos: React.FC = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+    </Box>
+  );
+};
+
+// Simple photo carousel component
+import { useState as useCarouselState } from 'react';
+interface PhotoCarouselProps {
+  images: CalendarImage[];
+}
+const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ images }) => {
+  const [index, setIndex] = useCarouselState(0);
+  const prev = () => setIndex(i => (i === 0 ? images.length - 1 : i - 1));
+  const next = () => setIndex(i => (i === images.length - 1 ? 0 : i + 1));
+  const img = images[index];
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+      <Box sx={{ position: 'relative', width: { xs: '90vw', sm: 400, md: 500 }, height: { xs: 320, sm: 400, md: 500 }, mb: 2 }}>
+        <img
+          src={img.url}
+          alt={img.caption || 'Stoic Photo'}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 16, background: '#000' }}
+        />
+        {images.length > 1 && (
+          <>
+            <Button onClick={prev} sx={{ position: 'absolute', top: '50%', left: 0, transform: 'translateY(-50%)', minWidth: 0, bgcolor: 'rgba(30,30,30,0.7)', color: 'white', borderRadius: '50%' }}>
+              &#8592;
+            </Button>
+            <Button onClick={next} sx={{ position: 'absolute', top: '50%', right: 0, transform: 'translateY(-50%)', minWidth: 0, bgcolor: 'rgba(30,30,30,0.7)', color: 'white', borderRadius: '50%' }}>
+              &#8594;
+            </Button>
+          </>
+        )}
+      </Box>
+      {img.caption && (
+        <Typography variant="h6" sx={{ color: 'white', mb: 1, textAlign: 'center' }}>{img.caption}</Typography>
+      )}
+      {img.username && (
+        <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>by {img.username}</Typography>
+      )}
+      {images.length > 1 && (
+        <Box sx={{ mt: 1 }}>
+          {images.map((_, i) => (
+            <Box key={i} sx={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', bgcolor: i === index ? '#9B2C2C' : 'rgba(255,255,255,0.3)', mx: 0.5 }} />
+          ))}
+        </Box>
+      )}
     </Box>
   );
 };
