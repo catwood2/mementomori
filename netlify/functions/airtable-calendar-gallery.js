@@ -1,7 +1,7 @@
 exports.handler = async function(event) {
   const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
   const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
-  const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_CALENDAR_TABLE || 'Calendars';
+  const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_PHOTOS_TABLE || 'Calendars';
 
   if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
     return {
