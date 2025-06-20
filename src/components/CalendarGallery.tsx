@@ -38,48 +38,55 @@ const StoicPhotos: React.FC = () => {
   // Cloudinary upload widget
   const openCloudinaryWidget = () => {
     // @ts-ignore
-    if (window.cloudinary) {
-      // @ts-ignore
-      window.cloudinary.openUploadWidget(
-        {
-          cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
-          uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
-          sources: ['local', 'url', 'camera'],
-          cropping: false,
-          multiple: false,
-          folder: 'mementomori-calendars',
-          maxFileSize: 10 * 1024 * 1024, // 10MB
-          resourceType: 'image',
-        },
-        async (error: any, result: any) => {
-          if (!error && result && result.event === 'success') {
-            setUploading(true);
-            try {
-              // Send to Netlify function to save in Airtable
-              const res = await fetch('/.netlify/functions/airtable-calendar-gallery', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  url: result.info.secure_url,
-                  caption: form.caption,
-                  username: form.username,
-                }),
-              });
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.error || 'Failed to save image');
-              setSnackbar({ open: true, message: 'Image uploaded!', severity: 'success' });
-              setUploadOpen(false);
-              setForm({ caption: '', username: '' });
-              fetchImages();
-            } catch (err: any) {
-              setSnackbar({ open: true, message: err.message, severity: 'error' });
-            } finally {
-              setUploading(false);
-            }
+    const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+    // Debug log
+    console.log('Cloudinary cloudName:', cloudName);
+    console.log('Cloudinary uploadPreset:', uploadPreset);
+    if (!(window as any).cloudinary) {
+      alert('Cloudinary widget failed to load. Please refresh the page or try again later.');
+      console.error('Cloudinary widget script not loaded.');
+      return;
+    }
+    (window as any).cloudinary.openUploadWidget(
+      {
+        cloudName,
+        uploadPreset,
+        sources: ['local', 'url', 'camera'],
+        cropping: false,
+        multiple: false,
+        folder: 'mementomori-calendars',
+        maxFileSize: 10 * 1024 * 1024, // 10MB
+        resourceType: 'image',
+      },
+      async (error: any, result: any) => {
+        if (!error && result && result.event === 'success') {
+          setUploading(true);
+          try {
+            // Send to Netlify function to save in Airtable
+            const res = await fetch('/.netlify/functions/airtable-calendar-gallery', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                url: result.info.secure_url,
+                caption: form.caption,
+                username: form.username,
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to save image');
+            setSnackbar({ open: true, message: 'Image uploaded!', severity: 'success' });
+            setUploadOpen(false);
+            setForm({ caption: '', username: '' });
+            fetchImages();
+          } catch (err: any) {
+            setSnackbar({ open: true, message: err.message, severity: 'error' });
+          } finally {
+            setUploading(false);
           }
         }
-      );
-    }
+      }
+    );
   };
 
   return (
