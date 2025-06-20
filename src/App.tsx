@@ -10,6 +10,7 @@ import DayIDieButton from './components/DayIDieButton';
 import StoicAdvisor from './components/StoicAdvisor';
 import VideoCarousel from './components/VideoCarousel';
 import Home from './components/Home';
+import StoicPhotos from './components/CalendarGallery';
 
 const drawerWidth = 220;
 const menuItems = [
@@ -19,6 +20,7 @@ const menuItems = [
   { label: 'Add Quote', component: <QuoteForm onQuoteAdded={() => {}} /> },
   { label: 'Stoic Advisor', component: <StoicAdvisor /> },
   { label: 'Featured Videos', component: <VideoCarousel /> },
+  { label: 'Stoic Photos', component: <StoicPhotos /> },
 ];
 
 const darkTheme = createTheme({
