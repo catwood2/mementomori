@@ -23,7 +23,7 @@ const StoicAdvisor: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' | 'warning' });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -73,7 +73,16 @@ const StoicAdvisor: React.FC = () => {
   ];
 
   // System prompt for category assignment
-  const categoryPrompt = `Given the following quote, assign it to the most appropriate category from this list:\n- ${categories.join('\n- ')}\nRespond with only the category name.`;
+  const categoryPrompt = `Given the following quote, assign it to the most appropriate category from this list. Respond with only the exact category name as written, no extra words:\n- ${categories.join('\n- ')}`;
+
+  function normalizeCategory(cat: string): string {
+    return cat.trim()
+      .replace(/&/g, 'and')
+      .replace(/\band\b/gi, '&')
+      .replace(/\s+/g, ' ')
+      .replace(/[^\w& ]/g, '')
+      .toLowerCase();
+  }
 
   const getCategoryForQuote = async (quote: string): Promise<string> => {
     const response = await fetch('/.netlify/functions/stoic-advisor', {
@@ -83,9 +92,17 @@ const StoicAdvisor: React.FC = () => {
     });
     if (!response.ok) throw new Error('Failed to get category from Stoic Advisor');
     const data = await response.json();
-    const category = data.category || data.response || '';
-    if (!categories.includes(category)) throw new Error('Invalid category detected');
-    return category;
+    let category = (data.category || data.response || '').trim();
+    // Try to match normalized category
+    const normalized = normalizeCategory(category);
+    const match = categories.find(c => normalizeCategory(c) === normalized);
+    if (match) return match;
+    // Fallback: try partial match
+    const partial = categories.find(c => normalizeCategory(c).includes(normalized) || normalized.includes(normalizeCategory(c)));
+    if (partial) return partial;
+    // Fallback: Perception
+    setSnackbar({ open: true, message: `Warning: Could not match category "${category}". Defaulted to Perception.`, severity: 'warning' });
+    return 'Perception';
   };
 
   const addQuoteToAirtable = async (quote: string) => {
