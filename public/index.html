@@ -10,6 +10,8 @@
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+    <script>alert('index loaded');</script>
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript" onload="console.log('Cloudinary widget script loaded');"></script>
+    <script>console.log('Cloudinary script tag present in HTML');</script>
   </body>
 </html> 
