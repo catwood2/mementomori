@@ -101,9 +101,10 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
           mb: 3,
           textAlign: 'center',
           fontWeight: 400,
+          whiteSpace: 'pre-line',
         }}
       >
-        Remember you must die. Live with intention.
+        {'Remember you must die.\nLive with intention.'}
       </Typography>
       <Button
         variant="contained"
