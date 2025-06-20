@@ -58,19 +58,50 @@ const StoicAdvisor: React.FC = () => {
     }))];
   };
 
+  // Locked-in categories
+  const categories = [
+    'Virtue',
+    'Control',
+    'Perception',
+    'Action',
+    'Acceptance',
+    'Resilience',
+    'Death & Mortality',
+    'Desire & Aversion',
+    'Emotions',
+    'Community & Relationships'
+  ];
+
+  // System prompt for category assignment
+  const categoryPrompt = `Given the following quote, assign it to the most appropriate category from this list:\n- ${categories.join('\n- ')}\nRespond with only the category name.`;
+
+  const getCategoryForQuote = async (quote: string): Promise<string> => {
+    const response = await fetch('/.netlify/functions/stoic-advisor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: quote, mode: 'category', systemPrompt: categoryPrompt }),
+    });
+    if (!response.ok) throw new Error('Failed to get category from Stoic Advisor');
+    const data = await response.json();
+    const category = data.category || data.response || '';
+    if (!categories.includes(category)) throw new Error('Invalid category detected');
+    return category;
+  };
+
   const addQuoteToAirtable = async (quote: string) => {
     try {
+      // Get category from Stoic Advisor
+      const category = await getCategoryForQuote(quote);
       const payload = {
         fields: {
           Quote: quote,
-          Category: 'Life',
+          Category: category,
           Likes: 0,
           Replies: 0,
           Retweets: 0
         }
       };
       console.log('Sending payload to Airtable:', payload);
-      
       const response = await fetch('/.netlify/functions/airtable', {
         method: 'POST',
         headers: {
@@ -78,16 +109,14 @@ const StoicAdvisor: React.FC = () => {
         },
         body: JSON.stringify(payload),
       });
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error('Airtable error response:', errorData);
         throw new Error('Failed to add quote to Airtable');
       }
-
       setSnackbar({
         open: true,
-        message: 'Quote added to collection',
+        message: `Quote added to collection (Category: ${category})`,
         severity: 'success'
       });
     } catch (error) {

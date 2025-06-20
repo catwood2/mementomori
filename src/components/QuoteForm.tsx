@@ -20,14 +20,25 @@ interface QuoteFormProps {
   onQuoteAdded: () => void;
 }
 
-const categories = ['Life', 'Death', 'Humor', 'Motivation'];
+const categories = [
+  'Virtue',
+  'Control',
+  'Perception',
+  'Action',
+  'Acceptance',
+  'Resilience',
+  'Death & Mortality',
+  'Desire & Aversion',
+  'Emotions',
+  'Community & Relationships'
+];
 
 export default function QuoteForm({ onQuoteAdded }: QuoteFormProps) {
   const [formData, setFormData] = useState({
     quote: '',
-    category: '',
     sourceLink: '',
   });
+  const [detectedCategory, setDetectedCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -38,15 +49,27 @@ export default function QuoteForm({ onQuoteAdded }: QuoteFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
+      // Get category from Stoic Advisor
+      const advisorRes = await fetch('/.netlify/functions/stoic-advisor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: formData.quote, mode: 'category' }),
+      });
+      if (!advisorRes.ok) throw new Error('Failed to get category from Stoic Advisor');
+      const advisorData = await advisorRes.json();
+      const category = advisorData.category || advisorData.response || '';
+      setDetectedCategory(category);
+      if (!categories.includes(category)) throw new Error('Invalid category detected');
+
+      // Submit to Airtable
       const response = await fetch('/.netlify/functions/airtable', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fields: {
             Quote: formData.quote,
-            Category: formData.category,
+            Category: category,
             SourceLink: formData.sourceLink,
             Likes: 0,
             Replies: 0,
@@ -54,12 +77,11 @@ export default function QuoteForm({ onQuoteAdded }: QuoteFormProps) {
           },
         }),
       });
-
       if (!response.ok) {
         throw new Error('Failed to add quote');
       }
-
-      setFormData({ quote: '', category: '', sourceLink: '' });
+      setFormData({ quote: '', sourceLink: '' });
+      setDetectedCategory(null);
       setSnackbar({
         open: true,
         message: 'Quote added successfully!',
@@ -81,6 +103,7 @@ export default function QuoteForm({ onQuoteAdded }: QuoteFormProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'quote') setDetectedCategory(null);
   };
 
   return (
@@ -113,22 +136,11 @@ export default function QuoteForm({ onQuoteAdded }: QuoteFormProps) {
             sx={{ mb: 2 }}
             placeholder="Enter your quote here..."
           />
-          <TextField
-            fullWidth
-            select
-            name="category"
-            label="Category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-            sx={{ mb: 2 }}
-          >
-            {categories.map((category) => (
-              <MenuItem key={category} value={category}>
-                {category}
-              </MenuItem>
-            ))}
-          </TextField>
+          {detectedCategory && (
+            <Box sx={{ mb: 2 }}>
+              <Alert severity="info">Detected Category: <b>{detectedCategory}</b></Alert>
+            </Box>
+          )}
           <TextField
             fullWidth
             name="sourceLink"

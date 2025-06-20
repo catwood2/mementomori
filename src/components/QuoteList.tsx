@@ -169,7 +169,18 @@ export default function QuoteList() {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = ['Life', 'Death', 'Humor', 'Motivation'];
+  const categories = [
+    'Virtue',
+    'Control',
+    'Perception',
+    'Action',
+    'Acceptance',
+    'Resilience',
+    'Death & Mortality',
+    'Desire & Aversion',
+    'Emotions',
+    'Community & Relationships'
+  ];
 
   if (loading) {
     return <LoadingSkeleton />;
