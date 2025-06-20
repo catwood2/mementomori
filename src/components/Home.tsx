@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat } from '@mui/icons-material';
+import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera } from '@mui/icons-material';
 
 const features = [
   {
@@ -32,6 +32,12 @@ const features = [
     label: 'Stoic Advisor',
     description: 'Ask the Stoic AI for advice.',
     tabIndex: 4,
+  },
+  {
+    icon: <PhotoCamera fontSize="large" sx={{ color: '#FFD700' }} />,
+    label: 'Stoic Photos',
+    description: 'Share and browse inspiring images.',
+    tabIndex: 6,
   },
 ];
 
