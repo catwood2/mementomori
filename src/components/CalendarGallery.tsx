@@ -18,6 +18,11 @@ const StoicPhotos: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [cloudinaryReady, setCloudinaryReady] = useState(false);
 
+  // Helper to check for required Cloudinary env vars
+  const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+  const cloudinaryConfigMissing = !cloudName || !uploadPreset;
+
   // Dynamically load Cloudinary widget script
   useEffect(() => {
     if (!document.querySelector('script[src="https://widget.cloudinary.com/v2.0/global/all.js"]')) {
@@ -54,10 +59,10 @@ const StoicPhotos: React.FC = () => {
 
   // Cloudinary upload widget
   const openCloudinaryWidget = () => {
-    const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
-    console.log('Cloudinary cloudName:', cloudName);
-    console.log('Cloudinary uploadPreset:', uploadPreset);
+    if (cloudinaryConfigMissing) {
+      alert('Cloudinary configuration missing. Please contact the site administrator.');
+      return;
+    }
     if (!(window as any).cloudinary) {
       alert('Cloudinary widget failed to load. Please refresh the page or try again later.');
       console.error('Cloudinary widget script not loaded.');
@@ -113,14 +118,18 @@ const StoicPhotos: React.FC = () => {
 
   // Minimal Cloudinary widget test
   const openMinimalCloudinaryWidget = () => {
+    if (cloudinaryConfigMissing) {
+      alert('Cloudinary configuration missing. Please contact the site administrator.');
+      return;
+    }
     if (!(window as any).cloudinary) {
       alert('Cloudinary widget not loaded');
       return;
     }
     try {
       (window as any).cloudinary.openUploadWidget({
-        cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
+        cloudName,
+        uploadPreset,
       }, (error: any, result: any) => {
         console.log('Minimal widget callback', { error, result });
         if (error) alert('Widget error: ' + error.message);
@@ -144,7 +153,7 @@ const StoicPhotos: React.FC = () => {
         </Button>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-        <Button variant="outlined" color="secondary" onClick={openMinimalCloudinaryWidget}>
+        <Button variant="outlined" color="secondary" onClick={openMinimalCloudinaryWidget} disabled={cloudinaryConfigMissing}>
           TEST: Minimal Cloudinary Widget
         </Button>
       </Box>
@@ -194,7 +203,7 @@ const StoicPhotos: React.FC = () => {
             variant="contained"
             color="primary"
             onClick={openCloudinaryWidget}
-            disabled={uploading || !cloudinaryReady}
+            disabled={uploading || !cloudinaryReady || cloudinaryConfigMissing}
             sx={{ mt: 2 }}
           >
             {uploading ? <CircularProgress size={20} /> : 'Select Image & Upload'}
