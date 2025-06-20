@@ -22,10 +22,17 @@ const StoicPhotos: React.FC = () => {
   console.log('DEBUG VITE_CLOUDINARY_CLOUD_NAME:', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
   console.log('DEBUG VITE_CLOUDINARY_UPLOAD_PRESET:', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
 
-  // Helper to check for required Cloudinary env vars
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  // Dual-mode env variable support for Vite and Node/CRA
+  const cloudName =
+    import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ||
+    (typeof process !== 'undefined' && process.env.REACT_APP_CLOUDINARY_CLOUD_NAME);
+
+  const uploadPreset =
+    import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET ||
+    (typeof process !== 'undefined' && process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+
   const cloudinaryConfigMissing = !cloudName || !uploadPreset;
+
   console.log('Cloudinary env:', { cloudName, uploadPreset, cloudinaryConfigMissing });
 
   // Dynamically load Cloudinary widget script
