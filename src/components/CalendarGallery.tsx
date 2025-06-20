@@ -19,9 +19,10 @@ const StoicPhotos: React.FC = () => {
   const [cloudinaryReady, setCloudinaryReady] = useState(false);
 
   // Helper to check for required Cloudinary env vars
-  const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
   const cloudinaryConfigMissing = !cloudName || !uploadPreset;
+  console.log('Cloudinary env:', { cloudName, uploadPreset, cloudinaryConfigMissing });
 
   // Dynamically load Cloudinary widget script
   useEffect(() => {
