@@ -14,10 +14,12 @@ exports.handler = async function(event) {
     // Fetch all images
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
     try {
+      console.log('[AirtableGallery] GET url:', url);
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
       });
       const data = await res.json();
+      console.log('[AirtableGallery] GET response:', JSON.stringify(data, null, 2));
       const images = (data.records || []).map(rec => ({
         id: rec.id,
         url: rec.fields['Image'] && rec.fields['Image'][0]?.url,
@@ -29,6 +31,7 @@ exports.handler = async function(event) {
         body: JSON.stringify({ images })
       };
     } catch (err) {
+      console.error('[AirtableGallery] GET error:', err);
       return {
         statusCode: 500,
         body: JSON.stringify({ error: err.message })
@@ -40,7 +43,9 @@ exports.handler = async function(event) {
     let payload;
     try {
       payload = JSON.parse(event.body);
+      console.log('[AirtableGallery] POST payload:', payload);
     } catch (e) {
+      console.error('[AirtableGallery] POST invalid JSON:', event.body);
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'Invalid JSON payload' })
@@ -48,6 +53,7 @@ exports.handler = async function(event) {
     }
     const { url, caption, username } = payload;
     if (!url) {
+      console.error('[AirtableGallery] POST missing image URL');
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'Image URL required' })
@@ -60,6 +66,8 @@ exports.handler = async function(event) {
     };
     const apiUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
     try {
+      console.log('[AirtableGallery] POST apiUrl:', apiUrl);
+      console.log('[AirtableGallery] POST fields:', fields);
       const res = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -68,19 +76,21 @@ exports.handler = async function(event) {
         },
         body: JSON.stringify({ fields })
       });
+      const data = await res.json();
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
+        console.error('[AirtableGallery] POST Airtable error:', data);
         return {
           statusCode: res.status,
-          body: JSON.stringify({ error: 'Airtable API error', details: errorData })
+          body: JSON.stringify({ error: 'Airtable API error', details: data })
         };
       }
-      const data = await res.json();
+      console.log('[AirtableGallery] POST success:', data);
       return {
         statusCode: 200,
         body: JSON.stringify({ success: true, record: data })
       };
     } catch (err) {
+      console.error('[AirtableGallery] POST error:', err);
       return {
         statusCode: 500,
         body: JSON.stringify({ error: err.message })
