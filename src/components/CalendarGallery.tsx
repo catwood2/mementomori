@@ -17,6 +17,19 @@ const StoicPhotos: React.FC = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
   const [uploading, setUploading] = useState(false);
 
+  // Dynamically load Cloudinary widget script
+  useEffect(() => {
+    if (!document.querySelector('script[src="https://widget.cloudinary.com/v2.0/global/all.js"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://widget.cloudinary.com/v2.0/global/all.js';
+      script.async = true;
+      script.onload = () => {
+        console.log('Cloudinary widget script loaded (dynamically)');
+      };
+      document.body.appendChild(script);
+    }
+  }, []);
+
   // Fetch images from Airtable
   const fetchImages = async () => {
     setLoading(true);
