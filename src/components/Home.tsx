@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera, HourglassEmpty } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import HourglassAnimation from './HourglassAnimation';
 
 interface Feature {
   icon: React.ReactElement;
@@ -41,6 +42,24 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
   
   const baseFeatures: Feature[] = [
     {
+      icon: <AddCircleOutline fontSize="large" sx={{ color: '#9B2C2C' }} />,
+      label: 'Add Quote',
+      description: 'Share your own insight.',
+      tabIndex: 3,
+    },
+    {
+      icon: <FormatQuote fontSize="large" sx={{ color: '#9B2C2C' }} />,
+      label: 'Live Feed',
+      description: 'See the latest Stoic quotes.',
+      tabIndex: 1,
+    },
+    {
+      icon: <Chat fontSize="large" sx={{ color: '#FFD700' }} />,
+      label: 'Stoic Advisor',
+      description: 'Ask the Stoic AI for advice.',
+      tabIndex: 4,
+    },
+    {
       icon: <PlayCircleOutline fontSize="large" sx={{ color: '#FFD700' }} />,
       label: 'Featured Videos',
       description: 'Watch Stoic talks and interviews.',
@@ -52,38 +71,14 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
       description: 'Share and browse inspiring images.',
       tabIndex: 6,
     },
-    {
-      icon: <FormatQuote fontSize="large" sx={{ color: '#9B2C2C' }} />,
-      label: 'Live Feed',
-      description: 'See the latest Stoic quotes.',
-      tabIndex: 1,
-    },
-    {
-      icon: <Search fontSize="large" sx={{ color: '#FFD700' }} />,
-      label: 'Find Quotes',
-      description: 'Search timeless wisdom.',
-      tabIndex: 2,
-    },
-    {
-      icon: <AddCircleOutline fontSize="large" sx={{ color: '#9B2C2C' }} />,
-      label: 'Add Quote',
-      description: 'Share your own insight.',
-      tabIndex: 3,
-    },
-    {
-      icon: <Chat fontSize="large" sx={{ color: '#FFD700' }} />,
-      label: 'Stoic Advisor',
-      description: 'Ask the Stoic AI for advice.',
-      tabIndex: 4,
-    },
   ];
 
   const features = [...baseFeatures];
   if (!deathDate) {
-    features.push({
+    features.splice(3, 0, {
       icon: <HourglassEmpty fontSize="large" sx={{ color: '#9B2C2C' }} />,
-      label: 'Create Your Calendar',
-      description: 'Determine your day you die and create your Memento Mori calendar.',
+      label: 'When I Die',
+      description: 'Calculated Day of Death\nCreate Calendar',
       action: onGoToCalendar
     });
   }
@@ -166,6 +161,8 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
         Begin Your Stoic Journey
       </Button>
 
+      <HourglassAnimation />
+
       {/* Quote of the Day */}
       <Paper
         elevation={4}
@@ -227,7 +224,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
               <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 700, color: '#9B2C2C' }}>
                 {feature.label}
               </Typography>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', textAlign: 'center', mt: 0.5 }}>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', textAlign: 'center', mt: 0.5, whiteSpace: 'pre-line' }}>
                 {feature.description}
               </Typography>
             </Paper>
