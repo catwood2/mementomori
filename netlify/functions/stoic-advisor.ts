@@ -36,6 +36,8 @@ Style Guidelines:
 
 Keep responses under 200 words and focus on practical application of Stoic philosophy in today's world.`;
 
+const ATTRIBUTION_PROMPT = `Given the following quote, return ONLY the name of the author or source, and nothing else. If unknown, return "Unknown".\nQuote: `;
+
 const handler: Handler = async (event) => {
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
@@ -46,7 +48,7 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const { message } = JSON.parse(event.body || '{}');
+    const { message, mode, systemPrompt } = JSON.parse(event.body || '{}');
 
     if (!message) {
       return {
@@ -59,21 +61,40 @@ const handler: Handler = async (event) => {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
+    let prompt = STOIC_SYSTEM_PROMPT;
+    let userPrompt = message;
+    let extractAttribution = false;
+
+    if (mode === 'attribution') {
+      prompt = ATTRIBUTION_PROMPT + message;
+      userPrompt = '';
+      extractAttribution = true;
+    } else if (mode === 'category' && systemPrompt) {
+      prompt = systemPrompt;
+    }
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
-        { role: 'system', content: STOIC_SYSTEM_PROMPT },
-        { role: 'user', content: message },
+        { role: 'system' as const, content: prompt },
+        ...(userPrompt ? [{ role: 'user' as const, content: userPrompt }] : []),
       ],
-      max_tokens: 300,
-      temperature: 0.3,
+      max_tokens: 100,
+      temperature: 0.1,
     });
 
-    const response = completion.choices[0]?.message?.content || 'I apologize, but I am unable to provide a response at this moment.';
+    const aiResponse = completion.choices[0]?.message?.content?.trim() || 'Unknown';
+
+    if (extractAttribution) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ attribution: aiResponse }),
+      };
+    }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ response }),
+      body: JSON.stringify({ response: aiResponse }),
     };
   } catch (error) {
     console.error('Error:', error);

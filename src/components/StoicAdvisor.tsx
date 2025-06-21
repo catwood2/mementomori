@@ -119,13 +119,28 @@ const StoicAdvisor: React.FC = () => {
     return 'Life';
   };
 
+  // Add this helper to get attribution from AI
+  const getAttributionForQuote = async (quote: string): Promise<string> => {
+    const response = await fetch('/.netlify/functions/stoic-advisor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: quote, mode: 'attribution' }),
+    });
+    if (!response.ok) throw new Error('Failed to get attribution from Stoic Advisor');
+    const data = await response.json();
+    return (data.attribution || data.response || 'Unknown').trim();
+  };
+
   const addQuoteToAirtable = async (quote: string) => {
     try {
       // Get category from Stoic Advisor
       const category = await getCategoryForQuote(quote);
+      // Get attribution from Stoic Advisor
+      const attribution = await getAttributionForQuote(quote);
       const payload = {
         fields: {
           Quote: quote,
+          Attribution: attribution,
           Category: category,
           Likes: 0,
           Replies: 0,
@@ -147,7 +162,7 @@ const StoicAdvisor: React.FC = () => {
       }
       setSnackbar({
         open: true,
-        message: `Quote added to collection (Category: ${category})`,
+        message: `Quote added to collection (Category: ${category}, Attribution: ${attribution})`,
         severity: 'success'
       });
     } catch (error) {
