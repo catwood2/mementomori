@@ -233,36 +233,34 @@ const StoicAdvisor: React.FC = () => {
           maxWidth: 600,
           mx: 'auto',
           mt: 4,
-          borderRadius: 3,
+          borderRadius: 4,
           overflow: 'hidden',
           position: 'relative',
-          backgroundColor: 'rgba(42, 42, 42, 0.6)', // Glassy dark grey
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)', // Safari support
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+          backgroundColor: '#fff', // White background for the chat area
+          border: '1px solid #E0E0E0',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
         }}
       >
         {/* Chat Header with actions */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(0, 0, 0, 0.3)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', px: 2, py: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F5F5F5', borderBottom: '1px solid #E0E0E0', px: 2, py: 1 }}>
           <Typography variant="h6" sx={{ color: '#9B2C2C', fontWeight: 700 }}>
             Stoic Advisor
           </Typography>
           <Box>
             <Tooltip title="Copy chat history">
-              <IconButton size="small" onClick={handleCopyHistory}>
+              <IconButton size="small" onClick={handleCopyHistory} sx={{ color: 'text.secondary' }}>
                 <ContentCopy fontSize="small" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Clear chat history">
-              <IconButton size="small" onClick={handleClearHistory}>
+              <IconButton size="small" onClick={handleClearHistory} sx={{ color: 'text.secondary' }}>
                 <DeleteOutline fontSize="small" />
               </IconButton>
             </Tooltip>
           </Box>
         </Box>
         {/* Chat Body */}
-        <Box sx={{ p: 2, minHeight: 320, maxHeight: isMobile ? 350 : 400, overflowY: 'auto', backgroundColor: 'transparent' }}>
+        <Box sx={{ p: 2, minHeight: 320, maxHeight: isMobile ? 350 : 400, overflowY: 'auto', backgroundColor: '#fff' }}>
           <AnimatePresence>
             {messages.map((msg, idx) => (
               <motion.div
@@ -277,8 +275,8 @@ const StoicAdvisor: React.FC = () => {
                     elevation={1}
                     sx={{
                       p: 1.5,
-                      bgcolor: msg.role === 'user' ? 'rgba(155,44,44,0.3)' : 'rgba(255,215,0,0.2)',
-                      color: msg.role === 'user' ? '#FFD700' : 'text.primary',
+                      bgcolor: msg.role === 'user' ? '#0B93F6' : '#E9E9EB',
+                      color: msg.role === 'user' ? '#fff' : '#000',
                       borderRadius: 2,
                       maxWidth: '80%',
                       ml: msg.role === 'user' ? 2 : 0,
@@ -295,33 +293,39 @@ const StoicAdvisor: React.FC = () => {
           </AnimatePresence>
           {/* Typing indicator */}
           {isLoading && (
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 2 }}>
-              <Box sx={{ width: 24, height: 24, mr: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 2, ml: 2 }}>
+              <Paper
+                elevation={1}
+                sx={{
+                  p: 1.5,
+                  bgcolor: '#E9E9EB',
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
                 <motion.span
-                  style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#FFD700', marginRight: 2 }}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{ duration: 1, repeat: Infinity, repeatType: 'loop' }}
+                  style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#B0B0B0', marginRight: 4 }}
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 <motion.span
-                  style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#FFD700', marginRight: 2 }}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{ duration: 1, repeat: Infinity, repeatType: 'loop', delay: 0.2 }}
+                  style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#B0B0B0', marginRight: 4 }}
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut', delay: 0.15 }}
                 />
                 <motion.span
-                  style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#FFD700' }}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{ duration: 1, repeat: Infinity, repeatType: 'loop', delay: 0.4 }}
+                  style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#B0B0B0' }}
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
                 />
-              </Box>
-              <Typography variant="body2" sx={{ color: '#FFD700', fontStyle: 'italic' }}>
-                Stoic Advisor is typing…
-              </Typography>
+              </Paper>
             </Box>
           )}
           <div ref={messagesEndRef} />
         </Box>
         {/* Chat Input */}
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', p: 2, backgroundColor: 'rgba(0, 0, 0, 0.2)', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', p: 1.5, backgroundColor: '#F5F5F5', borderTop: '1px solid #E0E0E0' }}>
           <TextField
             fullWidth
             variant="outlined"
@@ -330,7 +334,22 @@ const StoicAdvisor: React.FC = () => {
             value={input}
             onChange={e => setInput(e.target.value)}
             disabled={isLoading}
-            sx={{ mr: 2 }}
+            sx={{
+              mr: 1.5,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '20px',
+                backgroundColor: '#fff',
+                '& fieldset': {
+                  borderColor: '#E0E0E0',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#BDBDBD',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0B93F6',
+                },
+              },
+            }}
             onKeyDown={e => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 handleSubmit(e as any);
@@ -341,11 +360,19 @@ const StoicAdvisor: React.FC = () => {
             type="submit"
             variant="contained"
             color="primary"
-            endIcon={<SendIcon />}
             disabled={!input.trim() || isLoading}
-            sx={{ minWidth: 44, minHeight: 44, borderRadius: 2 }}
+            sx={{
+              minWidth: 40,
+              minHeight: 40,
+              p: 0,
+              borderRadius: '50%',
+              backgroundColor: '#0B93F6',
+              '&:hover': {
+                backgroundColor: '#0072C7'
+              }
+            }}
           >
-            Send
+            <SendIcon />
           </Button>
         </Box>
         <Snackbar
