@@ -18,8 +18,8 @@ import { format, differenceInDays, addYears } from "date-fns";
 
 // Life expectancy data from SSA actuarial tables
 const LIFE_EXPECTANCY = {
-  male: 80, // years
-  female: 80, // years
+  male: 76.1, // years
+  female: 81.1, // years
 };
 
 interface DayIDieButtonProps {

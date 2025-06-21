@@ -40,7 +40,15 @@ const LifeCalendarPage: React.FC<LifeCalendarPageProps> = ({ onNavigateHome }) =
       </Typography>
 
       {deathDate ? (
-        <LifeCalendar deathDate={deathDate} />
+        <>
+          <Typography align="center" sx={{ mb: 1, color: 'text.secondary', fontStyle: 'italic' }}>
+            Your calculated day of death is {deathDate}.
+          </Typography>
+          <Typography align="center" sx={{ mb: 3, color: 'text.secondary', fontStyle: 'italic' }}>
+            Below is your Memento Mori calendar based on an 80-year lifespan.
+          </Typography>
+          <LifeCalendar deathDate={deathDate} />
+        </>
       ) : (
         <DayIDieButton 
           isOpen={isDialogOpen}

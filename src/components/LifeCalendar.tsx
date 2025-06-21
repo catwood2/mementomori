@@ -94,8 +94,10 @@ const LifeCalendar: React.FC<LifeCalendarProps> = ({ deathDate }) => {
   };
 
   const birthDate = getBirthDate();
-  const deathDateObj = new Date(deathDate);
-  const totalWeeks = Math.ceil((deathDateObj.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
+  const calendarEndDate = new Date(birthDate);
+  calendarEndDate.setFullYear(calendarEndDate.getFullYear() + 80);
+
+  const totalWeeks = Math.ceil((calendarEndDate.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
   const weeksLived = Math.max(0, Math.ceil((currentTime.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 7)));
   const weeksRemaining = Math.max(0, totalWeeks - weeksLived);
 

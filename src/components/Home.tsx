@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera, HourglassEmpty } from '@mui/icons-material';
 import { motion } from 'framer-motion';
-import HourglassAnimation from './HourglassAnimation';
+import RipplesAnimation from './RipplesAnimation';
 
 interface Feature {
   icon: React.ReactElement;
@@ -161,7 +161,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
         Begin Your Stoic Journey
       </Button>
 
-      <HourglassAnimation />
+      <RipplesAnimation />
 
       {/* Quote of the Day */}
       <Paper
