@@ -227,9 +227,24 @@ const StoicAdvisor: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Paper elevation={3} sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 0, borderRadius: 3, overflow: 'hidden', position: 'relative' }}>
+      <Paper
+        elevation={3}
+        sx={{
+          maxWidth: 600,
+          mx: 'auto',
+          mt: 4,
+          borderRadius: 3,
+          overflow: 'hidden',
+          position: 'relative',
+          backgroundColor: 'rgba(42, 42, 42, 0.6)', // Glassy dark grey
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        }}
+      >
         {/* Chat Header with actions */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'rgba(30,30,30,0.95)', px: 2, py: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(0, 0, 0, 0.3)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', px: 2, py: 1 }}>
           <Typography variant="h6" sx={{ color: '#9B2C2C', fontWeight: 700 }}>
             Stoic Advisor
           </Typography>
@@ -247,7 +262,7 @@ const StoicAdvisor: React.FC = () => {
           </Box>
         </Box>
         {/* Chat Body */}
-        <Box sx={{ p: 2, minHeight: 320, maxHeight: isMobile ? 350 : 400, overflowY: 'auto', bgcolor: 'background.default' }}>
+        <Box sx={{ p: 2, minHeight: 320, maxHeight: isMobile ? 350 : 400, overflowY: 'auto', backgroundColor: 'transparent' }}>
           <AnimatePresence>
             {messages.map((msg, idx) => (
               <motion.div
@@ -262,7 +277,7 @@ const StoicAdvisor: React.FC = () => {
                     elevation={1}
                     sx={{
                       p: 1.5,
-                      bgcolor: msg.role === 'user' ? 'rgba(155,44,44,0.15)' : 'rgba(255,215,0,0.08)',
+                      bgcolor: msg.role === 'user' ? 'rgba(155,44,44,0.3)' : 'rgba(255,215,0,0.2)',
                       color: msg.role === 'user' ? '#FFD700' : 'text.primary',
                       borderRadius: 2,
                       maxWidth: '80%',
@@ -306,7 +321,7 @@ const StoicAdvisor: React.FC = () => {
           <div ref={messagesEndRef} />
         </Box>
         {/* Chat Input */}
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', p: 2, borderTop: '1px solid #222', bgcolor: 'background.paper' }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', p: 2, backgroundColor: 'rgba(0, 0, 0, 0.2)', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <TextField
             fullWidth
             variant="outlined"
