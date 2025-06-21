@@ -115,9 +115,8 @@ const StoicAdvisor: React.FC = () => {
     // Fallback: try partial match
     const partial = categories.find(c => normalizeCategory(c).includes(normalized) || normalized.includes(normalizeCategory(c)));
     if (partial) return partial;
-    // Fallback: Perception
-    setSnackbar({ open: true, message: `Warning: Could not match category "${category}". Defaulted to Perception.`, severity: 'warning' });
-    return 'Perception';
+    // Fallback: Life
+    return 'Life';
   };
 
   const addQuoteToAirtable = async (quote: string) => {
@@ -233,27 +232,29 @@ const StoicAdvisor: React.FC = () => {
           maxWidth: 600,
           mx: 'auto',
           mt: 4,
-          borderRadius: 4,
+          borderRadius: 3,
           overflow: 'hidden',
           position: 'relative',
-          backgroundColor: '#fff', // White background for the chat area
-          border: '1px solid #E0E0E0',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          backgroundColor: 'rgba(42, 42, 42, 0.6)', // Glassy dark grey
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
         }}
       >
         {/* Chat Header with actions */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F5F5F5', borderBottom: '1px solid #E0E0E0', px: 2, py: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'rgba(30,30,30,0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', px: 2, py: 1 }}>
           <Typography variant="h6" sx={{ color: '#9B2C2C', fontWeight: 700 }}>
             Stoic Advisor
           </Typography>
           <Box>
             <Tooltip title="Copy chat history">
-              <IconButton size="small" onClick={handleCopyHistory} sx={{ color: 'text.secondary' }}>
+              <IconButton size="small" onClick={handleCopyHistory}>
                 <ContentCopy fontSize="small" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Clear chat history">
-              <IconButton size="small" onClick={handleClearHistory} sx={{ color: 'text.secondary' }}>
+              <IconButton size="small" onClick={handleClearHistory}>
                 <DeleteOutline fontSize="small" />
               </IconButton>
             </Tooltip>
@@ -325,7 +326,7 @@ const StoicAdvisor: React.FC = () => {
           <div ref={messagesEndRef} />
         </Box>
         {/* Chat Input */}
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', p: 1.5, backgroundColor: '#F5F5F5', borderTop: '1px solid #E0E0E0' }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', p: 1.5, backgroundColor: 'rgba(0, 0, 0, 0.2)', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <TextField
             fullWidth
             variant="outlined"
@@ -339,6 +340,10 @@ const StoicAdvisor: React.FC = () => {
               '& .MuiOutlinedInput-root': {
                 borderRadius: '20px',
                 backgroundColor: '#fff',
+                color: '#222', // Ensure input text is dark
+                '& input': {
+                  color: '#222',
+                },
                 '& fieldset': {
                   borderColor: '#E0E0E0',
                 },
