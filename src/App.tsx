@@ -44,7 +44,7 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [deathDate, setDeathDate] = useState<string | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
+  const [showDeathDateDialog, setShowDeathDateDialog] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -61,7 +61,7 @@ function App() {
   const handleQuoteAdded = () => setRefreshTrigger(prev => prev + 1);
   const handleDeathDateSet = (date: string) => {
     setDeathDate(date);
-    setShowDialog(false);
+    setShowDeathDateDialog(false);
   };
   const handleFeatureSelect = (tabIndex: number) => {
     setSelectedIndex(tabIndex);
@@ -168,7 +168,7 @@ function App() {
             ) : (
               <Button
                 variant="outlined"
-                onClick={() => setShowDialog(true)}
+                onClick={() => setShowDeathDateDialog(true)}
                 size={isMobile ? 'small' : 'medium'}
                 sx={{
                   color: 'rgba(255, 255, 255, 0.7)',
@@ -190,8 +190,8 @@ function App() {
           <Box sx={{ flex: 1, width: '100%', mt: isMobile ? 2 : 0 }}>
             {selectedIndex === 0 ? <Home onFeatureSelect={handleFeatureSelect} /> : menuItems[selectedIndex].component}
           </Box>
-          {showDialog && (
-            <DayIDieButton onDeathDateSet={handleDeathDateSet} onClose={() => setShowDialog(false)} />
+          {showDeathDateDialog && (
+            <DayIDieButton onDeathDateSet={handleDeathDateSet} onClose={() => setShowDeathDateDialog(false)} />
           )}
         </Box>
       </Box>
