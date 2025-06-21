@@ -40,6 +40,7 @@ const DayIDieButton: React.FC<DayIDieButtonProps> = ({ onDeathDateSet, onClose }
     const formattedDeathDate = format(death, "MMMM d, yyyy");
     
     localStorage.setItem("deathDate", formattedDeathDate);
+    localStorage.setItem("birthDate", birthDate);
     onDeathDateSet(formattedDeathDate);
   };
 
