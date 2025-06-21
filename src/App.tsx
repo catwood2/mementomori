@@ -11,6 +11,7 @@ import StoicAdvisor from './components/StoicAdvisor';
 import VideoCarousel from './components/VideoCarousel';
 import Home from './components/Home';
 import StoicPhotos from './components/CalendarGallery';
+import LifeCalendarPage from './components/LifeCalendarPage';
 
 const drawerWidth = 220;
 
@@ -48,15 +49,20 @@ const darkTheme = createTheme({
 function App() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [deathDate, setDeathDate] = useState<string | null>(null);
-  const [showDeathDateDialog, setShowDeathDateDialog] = useState(false);
+  const [calendarUnlocked, setCalendarUnlocked] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const savedDeathDate = localStorage.getItem('deathDate');
-    if (savedDeathDate) setDeathDate(savedDeathDate);
+    if (savedDeathDate) {
+      setDeathDate(savedDeathDate);
+    }
+    const isCalendarUnlocked = localStorage.getItem('calendarUnlocked') === 'true';
+    if (isCalendarUnlocked) {
+      setCalendarUnlocked(true);
+    }
   }, []);
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
@@ -64,15 +70,35 @@ function App() {
     setSelectedIndex(idx);
     setMobileOpen(false);
   };
-  const handleQuoteAdded = () => setRefreshTrigger(prev => prev + 1);
-  const handleDeathDateSet = (date: string) => {
-    setDeathDate(date);
-    setShowDeathDateDialog(false);
-  };
-  const handleFeatureSelect = (tabIndex: number) => {
-    setSelectedIndex(tabIndex);
+
+  const handleUnlockAndGoToCalendar = () => {
+    if (!calendarUnlocked) {
+      localStorage.setItem('calendarUnlocked', 'true');
+      setCalendarUnlocked(true);
+    }
+    // Find the new index of the calendar page to navigate to it
+    const calendarIndex = menuItems.length; // It will be the last item
+    setSelectedIndex(calendarIndex);
     setMobileOpen(false);
   };
+
+  const handleNavigateHome = () => {
+    setSelectedIndex(0);
+  };
+
+  const menuItems: MenuItem[] = [
+    { label: 'Home' },
+    { label: 'Live Feed', component: <LiveFeed /> },
+    { label: 'Find Quotes', component: <QuoteList /> },
+    { label: 'Add Quote', component: <QuoteForm onQuoteAdded={() => {}} /> },
+    { label: 'Stoic Advisor', component: <StoicAdvisor /> },
+    { label: 'Featured Videos', component: <VideoCarousel /> },
+    { label: 'Stoic Photos', component: <StoicPhotos /> },
+  ];
+
+  if (calendarUnlocked) {
+    menuItems.push({ label: 'Calendar', component: <LifeCalendarPage onNavigateHome={handleNavigateHome} /> });
+  }
 
   const drawer = (
     <Box sx={{ width: drawerWidth, bgcolor: 'background.paper', height: '100%', pt: 2 }}>
@@ -175,11 +201,12 @@ function App() {
           </Box>
           {/* Main content area */}
           <Box sx={{ flex: 1, width: '100%', mt: isMobile ? 2 : 0 }}>
-            {selectedIndex === 0 ? <Home onFeatureSelect={handleFeatureSelect} deathDate={deathDate} onSetDeathDate={() => setShowDeathDateDialog(true)} /> : menuItems[selectedIndex].component}
+            {selectedIndex === 0 ? (
+              <Home onFeatureSelect={handleMenuClick} deathDate={deathDate} onGoToCalendar={handleUnlockAndGoToCalendar} />
+            ) : (
+              menuItems[selectedIndex]?.component
+            )}
           </Box>
-          {showDeathDateDialog && (
-            <DayIDieButton onDeathDateSet={handleDeathDateSet} onClose={() => setShowDeathDateDialog(false)} />
-          )}
         </Box>
       </Box>
     </ThemeProvider>

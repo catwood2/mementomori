@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera, HourglassEmpty } from '@mui/icons-material';
-import LifeCalendar from './LifeCalendar';
 
 interface Feature {
   icon: React.ReactElement;
@@ -26,10 +25,10 @@ const getRandomQuote = () => {
 interface HomeProps {
   onFeatureSelect?: (tabIndex: number) => void;
   deathDate: string | null;
-  onSetDeathDate: () => void;
+  onGoToCalendar: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onSetDeathDate }) => {
+const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [quote, setQuote] = useState('');
@@ -84,7 +83,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onSetDeathDate 
       icon: <HourglassEmpty fontSize="large" sx={{ color: '#9B2C2C' }} />,
       label: 'When I Die',
       description: 'Calculate and contemplate your final day.',
-      action: onSetDeathDate
+      action: onGoToCalendar
     });
   }
 
@@ -147,9 +146,6 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onSetDeathDate 
       >
         Begin Your Stoic Journey
       </Button>
-
-      {/* Life Calendar */}
-      <LifeCalendar deathDate={deathDate} />
 
       {/* Quote of the Day */}
       <Paper

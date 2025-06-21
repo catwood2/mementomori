@@ -18,16 +18,17 @@ import { format, differenceInDays, addYears } from "date-fns";
 
 // Life expectancy data from SSA actuarial tables
 const LIFE_EXPECTANCY = {
-  male: 76.1, // years
-  female: 81.1, // years
+  male: 80, // years
+  female: 80, // years
 };
 
 interface DayIDieButtonProps {
   onDeathDateSet: (date: string) => void;
   onClose: () => void;
+  isOpen: boolean;
 }
 
-const DayIDieButton: React.FC<DayIDieButtonProps> = ({ onDeathDateSet, onClose }) => {
+const DayIDieButton: React.FC<DayIDieButtonProps> = ({ onDeathDateSet, onClose, isOpen }) => {
   const [birthDate, setBirthDate] = useState<string>("");
   const [gender, setGender] = useState<"male" | "female">("male");
 
@@ -46,7 +47,7 @@ const DayIDieButton: React.FC<DayIDieButtonProps> = ({ onDeathDateSet, onClose }
 
   return (
     <Dialog
-      open={true}
+      open={isOpen}
       onClose={onClose}
       maxWidth="sm"
       fullWidth

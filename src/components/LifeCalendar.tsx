@@ -148,22 +148,32 @@ const LifeCalendar: React.FC<LifeCalendarProps> = ({ deathDate }) => {
               key={index}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ 
-                opacity: isPast ? 1 : 0.2,
+                opacity: 1,
                 scale: isCurrent ? 1.3 : 1,
-                backgroundColor: isPast ? '#9B2C2C' : isCurrent ? '#FFD700' : 'rgba(255,255,255,0.05)'
               }}
               transition={{ 
                 duration: 0.3,
-                delay: index * 0.0005 // Faster stagger for better performance
+                delay: index * 0.0005
               }}
               style={{
                 width: isMobile ? 5 : 7,
                 height: isMobile ? 5 : 7,
                 borderRadius: '50%',
+                backgroundColor: isPast ? 'white' : isCurrent ? '#FFD700' : 'rgba(255,255,255,0.05)',
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 border: isCurrent ? '1px solid #FFD700' : 'none',
                 boxShadow: isCurrent ? '0 0 8px rgba(255, 215, 0, 0.6)' : 'none',
               }}
-            />
+            >
+              {isPast && (
+                <Typography variant="caption" sx={{ color: '#444', lineHeight: 1, userSelect: 'none' }}>
+                  x
+                </Typography>
+              )}
+            </motion.div>
           );
         })}
       </Box>
