@@ -10,8 +10,10 @@ import {
   useMediaQuery,
   Snackbar,
   Alert,
+  IconButton,
+  Tooltip
 } from '@mui/material';
-import { Send as SendIcon } from '@mui/icons-material';
+import { Send as SendIcon, ContentCopy, DeleteOutline } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
@@ -28,13 +30,26 @@ const StoicAdvisor: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // Load chat history from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('stoicAdvisorHistory');
+    if (stored) {
+      setMessages(JSON.parse(stored));
+    }
+  }, []);
+
+  // Save chat history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('stoicAdvisorHistory', JSON.stringify(messages));
+  }, [messages]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const extractQuotes = (text: string): string[] => {
     // Match text between quotation marks
@@ -192,241 +207,146 @@ const StoicAdvisor: React.FC = () => {
     }
   };
 
+  // Clear chat history
+  const handleClearHistory = () => {
+    setMessages([]);
+    localStorage.removeItem('stoicAdvisorHistory');
+    setSnackbar({ open: true, message: 'Chat history cleared.', severity: 'success' });
+  };
+
+  // Copy chat history
+  const handleCopyHistory = () => {
+    const text = messages.map(m => `${m.role === 'user' ? 'You' : 'Stoic Advisor'}: ${m.content}`).join('\n\n');
+    navigator.clipboard.writeText(text);
+    setSnackbar({ open: true, message: 'Chat history copied!', severity: 'success' });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Box sx={{ 
-        height: '100%', 
-        display: 'flex', 
-        flexDirection: 'column',
-        maxWidth: '800px',
-        margin: '0 auto',
-        p: isMobile ? 1 : 2,
-        gap: isMobile ? 1 : 2,
-        width: '100%'
-      }}>
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              flex: 1, 
-              p: isMobile ? 2 : 3, 
-              overflow: 'auto',
-              backgroundColor: 'rgba(30, 30, 30, 0.95)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: isMobile ? 1 : 2
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Typography 
-                variant={isMobile ? "h6" : "h5"} 
-                gutterBottom 
-                align="center" 
-                color="white"
-                sx={{ mb: isMobile ? 1 : 2 }}
+      <Paper elevation={3} sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 0, borderRadius: 3, overflow: 'hidden', position: 'relative' }}>
+        {/* Chat Header with actions */}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'rgba(30,30,30,0.95)', px: 2, py: 1 }}>
+          <Typography variant="h6" sx={{ color: '#9B2C2C', fontWeight: 700 }}>
+            Stoic Advisor
+          </Typography>
+          <Box>
+            <Tooltip title="Copy chat history">
+              <IconButton size="small" onClick={handleCopyHistory}>
+                <ContentCopy fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Clear chat history">
+              <IconButton size="small" onClick={handleClearHistory}>
+                <DeleteOutline fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+        {/* Chat Body */}
+        <Box sx={{ p: 2, minHeight: 320, maxHeight: isMobile ? 350 : 400, overflowY: 'auto', bgcolor: 'background.default' }}>
+          <AnimatePresence>
+            {messages.map((msg, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: idx * 0.04 }}
               >
-                Stoic Advisor
-              </Typography>
-            </motion.div>
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  mb: isMobile ? 2 : 3, 
-                  textAlign: 'center', 
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  px: isMobile ? 1 : 2,
-                  fontSize: isMobile ? '0.875rem' : '1rem'
-                }}
-              >
-                Share your challenge and receive wisdom from Stoic philosophy. How can we apply ancient principles to your modern situation?
-              </Typography>
-            </motion.div>
-
-            <Box sx={{ 
-              flex: 1, 
-              overflowY: 'auto', 
-              mb: isMobile ? 1 : 2,
-              px: isMobile ? 0.5 : 1
-            }}>
-              <AnimatePresence mode="popLayout">
-                {messages.map((message, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    transition={{ 
-                      duration: 0.3,
-                      type: "spring",
-                      stiffness: 100
+                <Box sx={{ mb: 2, display: 'flex', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row', alignItems: 'flex-end' }}>
+                  <Paper
+                    elevation={1}
+                    sx={{
+                      p: 1.5,
+                      bgcolor: msg.role === 'user' ? 'rgba(155,44,44,0.15)' : 'rgba(255,215,0,0.08)',
+                      color: msg.role === 'user' ? '#FFD700' : 'text.primary',
+                      borderRadius: 2,
+                      maxWidth: '80%',
+                      ml: msg.role === 'user' ? 2 : 0,
+                      mr: msg.role === 'assistant' ? 2 : 0,
+                      fontSize: isMobile ? '1rem' : '1.05rem',
+                      whiteSpace: 'pre-line',
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                        mb: isMobile ? 1 : 2
-                      }}
-                    >
-                      <Paper
-                        elevation={1}
-                        sx={{
-                          p: isMobile ? 1.5 : 2,
-                          maxWidth: isMobile ? '85%' : '60%',
-                          backgroundColor: message.role === 'user' 
-                            ? 'rgba(155, 44, 44, 0.1)' 
-                            : 'rgba(184, 50, 128, 0.1)',
-                          borderRadius: 2,
-                          border: '1px solid rgba(255, 255, 255, 0.1)'
-                        }}
-                      >
-                        <Typography 
-                          variant="body1" 
-                          color="white"
-                          sx={{ 
-                            fontSize: isMobile ? '0.9rem' : '1rem',
-                            lineHeight: 1.5
-                          }}
-                        >
-                          {message.content}
-                        </Typography>
-                      </Paper>
-                    </Box>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Box sx={{ display: 'flex', justifyContent: 'center', my: isMobile ? 1 : 2 }}>
-                    <CircularProgress 
-                      size={isMobile ? 20 : 24} 
-                      sx={{ 
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        animation: 'pulse 1.5s ease-in-out infinite'
-                      }} 
-                    />
-                  </Box>
-                </motion.div>
-              )}
-              <div ref={messagesEndRef} />
+                    {msg.content}
+                  </Paper>
+                </Box>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {/* Typing indicator */}
+          {isLoading && (
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 2 }}>
+              <Box sx={{ width: 24, height: 24, mr: 1 }}>
+                <motion.span
+                  style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#FFD700', marginRight: 2 }}
+                  animate={{ opacity: [0.2, 1, 0.2] }}
+                  transition={{ duration: 1, repeat: Infinity, repeatType: 'loop' }}
+                />
+                <motion.span
+                  style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#FFD700', marginRight: 2 }}
+                  animate={{ opacity: [0.2, 1, 0.2] }}
+                  transition={{ duration: 1, repeat: Infinity, repeatType: 'loop', delay: 0.2 }}
+                />
+                <motion.span
+                  style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#FFD700' }}
+                  animate={{ opacity: [0.2, 1, 0.2] }}
+                  transition={{ duration: 1, repeat: Infinity, repeatType: 'loop', delay: 0.4 }}
+                />
+              </Box>
+              <Typography variant="body2" sx={{ color: '#FFD700', fontStyle: 'italic' }}>
+                Stoic Advisor is typing…
+              </Typography>
             </Box>
-          </Paper>
-        </motion.div>
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Paper 
-            component="form" 
-            onSubmit={handleSubmit}
-            sx={{ 
-              p: isMobile ? 1 : 2, 
-              display: 'flex', 
-              gap: 1,
-              backgroundColor: 'rgba(30, 30, 30, 0.95)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              position: 'sticky',
-              bottom: 0,
-              zIndex: 1
+          )}
+          <div ref={messagesEndRef} />
+        </Box>
+        {/* Chat Input */}
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', p: 2, borderTop: '1px solid #222', bgcolor: 'background.paper' }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            size="small"
+            placeholder="Ask the Stoic Advisor…"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            disabled={isLoading}
+            sx={{ mr: 2 }}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                handleSubmit(e as any);
+              }
             }}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            endIcon={<SendIcon />}
+            disabled={!input.trim() || isLoading}
+            sx={{ minWidth: 44, minHeight: 44, borderRadius: 2 }}
           >
-            <TextField
-              fullWidth
-              multiline
-              maxRows={4}
-              minRows={1}
-              variant="outlined"
-              placeholder="Share your challenge..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              disabled={isLoading}
-              size={isMobile ? "small" : "medium"}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  color: 'white',
-                  transition: 'all 0.3s ease',
-                  '& fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
-                    transition: 'border-color 0.3s ease',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.7)',
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  maxHeight: isMobile ? '120px' : '160px',
-                  overflowY: 'auto',
-                  transition: 'all 0.3s ease',
-                },
-              }}
-            />
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={isLoading || !input.trim()}
-                sx={{
-                  minWidth: isMobile ? 40 : 48,
-                  height: isMobile ? 40 : 48,
-                  background: "linear-gradient(45deg, #9B2C2C 30%, #B83280 90%)",
-                  "&:hover": {
-                    background: "linear-gradient(45deg, #B83280 30%, #9B2C2C 90%)",
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                <SendIcon sx={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }} />
-              </Button>
-            </motion.div>
-          </Paper>
-        </motion.div>
-
+            Send
+          </Button>
+        </Box>
         <Snackbar
           open={snackbar.open}
           autoHideDuration={3000}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         >
-          <Alert 
-            onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          <Alert
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
             severity={snackbar.severity}
             sx={{ width: '100%' }}
           >
             {snackbar.message}
           </Alert>
         </Snackbar>
-      </Box>
+      </Paper>
     </motion.div>
   );
 };
