@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface Quote {
   id: string;
+  createdTime: string;
   fields: {
     Quote: string;
     Category: string;
@@ -185,7 +186,7 @@ export default function LiveFeed() {
                     {quote.fields.Category}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {new Date().toLocaleDateString()}
+                    {new Date(quote.createdTime).toLocaleString()}
                   </Typography>
                 </Box>
               </Box>
