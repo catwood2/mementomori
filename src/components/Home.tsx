@@ -1,45 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera } from '@mui/icons-material';
+import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera, HourglassEmpty } from '@mui/icons-material';
 
-const features = [
-  {
-    icon: <PlayCircleOutline fontSize="large" sx={{ color: '#FFD700' }} />,
-    label: 'Featured Videos',
-    description: 'Watch Stoic talks and interviews.',
-    tabIndex: 5,
-  },
-  {
-    icon: <FormatQuote fontSize="large" sx={{ color: '#9B2C2C' }} />,
-    label: 'Live Feed',
-    description: 'See the latest Stoic quotes.',
-    tabIndex: 1,
-  },
-  {
-    icon: <Search fontSize="large" sx={{ color: '#FFD700' }} />,
-    label: 'Find Quotes',
-    description: 'Search timeless wisdom.',
-    tabIndex: 2,
-  },
-  {
-    icon: <AddCircleOutline fontSize="large" sx={{ color: '#9B2C2C' }} />,
-    label: 'Add Quote',
-    description: 'Share your own insight.',
-    tabIndex: 3,
-  },
-  {
-    icon: <Chat fontSize="large" sx={{ color: '#FFD700' }} />,
-    label: 'Stoic Advisor',
-    description: 'Ask the Stoic AI for advice.',
-    tabIndex: 4,
-  },
-  {
-    icon: <PhotoCamera fontSize="large" sx={{ color: '#FFD700' }} />,
-    label: 'Stoic Photos',
-    description: 'Share and browse inspiring images.',
-    tabIndex: 6,
-  },
-];
+interface Feature {
+  icon: React.ReactElement;
+  label: string;
+  description: string;
+  tabIndex?: number;
+  action?: () => void;
+}
 
 const fallbackQuotes = [
   '"The obstacle is the way. - Marcus Aurelius"',
@@ -55,9 +24,11 @@ const getRandomQuote = () => {
 
 interface HomeProps {
   onFeatureSelect?: (tabIndex: number) => void;
+  deathDate: string | null;
+  onSetDeathDate: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
+const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onSetDeathDate }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [quote, setQuote] = useState('');
@@ -66,6 +37,55 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
   useEffect(() => {
     setQuote(getRandomQuote());
   }, []);
+  
+  const baseFeatures: Feature[] = [
+    {
+      icon: <PlayCircleOutline fontSize="large" sx={{ color: '#FFD700' }} />,
+      label: 'Featured Videos',
+      description: 'Watch Stoic talks and interviews.',
+      tabIndex: 5,
+    },
+    {
+      icon: <PhotoCamera fontSize="large" sx={{ color: '#FFD700' }} />,
+      label: 'Stoic Photos',
+      description: 'Share and browse inspiring images.',
+      tabIndex: 6,
+    },
+    {
+      icon: <FormatQuote fontSize="large" sx={{ color: '#9B2C2C' }} />,
+      label: 'Live Feed',
+      description: 'See the latest Stoic quotes.',
+      tabIndex: 1,
+    },
+    {
+      icon: <Search fontSize="large" sx={{ color: '#FFD700' }} />,
+      label: 'Find Quotes',
+      description: 'Search timeless wisdom.',
+      tabIndex: 2,
+    },
+    {
+      icon: <AddCircleOutline fontSize="large" sx={{ color: '#9B2C2C' }} />,
+      label: 'Add Quote',
+      description: 'Share your own insight.',
+      tabIndex: 3,
+    },
+    {
+      icon: <Chat fontSize="large" sx={{ color: '#FFD700' }} />,
+      label: 'Stoic Advisor',
+      description: 'Ask the Stoic AI for advice.',
+      tabIndex: 4,
+    },
+  ];
+
+  const features = [...baseFeatures];
+  if (!deathDate) {
+    features.push({
+      icon: <HourglassEmpty fontSize="large" sx={{ color: '#9B2C2C' }} />,
+      label: 'When I Die',
+      description: 'Calculate and contemplate your final day.',
+      action: onSetDeathDate
+    });
+  }
 
   return (
     <Box
@@ -153,7 +173,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
       </Paper>
 
       {/* Feature Previews */}
-      <Grid container spacing={isMobile ? 2 : 4} justifyContent="center" sx={{ mb: 6, maxWidth: 900 }}>
+      <Grid container spacing={isMobile ? 2 : 4} justifyContent="center" sx={{ mb: 6, maxWidth: 1000 }}>
         {features.map((feature) => (
           <Grid item xs={6} sm={4} md={2.4} key={feature.label}>
             <Paper
@@ -173,7 +193,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect }) => {
                   bgcolor: 'rgba(155,44,44,0.15)',
                 },
               }}
-              onClick={() => onFeatureSelect?.(feature.tabIndex)}
+              onClick={() => feature.action ? feature.action() : onFeatureSelect?.(feature.tabIndex!)}
             >
               {feature.icon}
               <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 700, color: '#9B2C2C' }}>

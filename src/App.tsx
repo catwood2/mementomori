@@ -152,7 +152,7 @@ function App() {
         >
           {/* Floating death date button or info */}
           <Box sx={{ position: 'fixed', top: isMobile ? 8 : 8, left: isMobile ? drawerWidth + 8 : drawerWidth + 20, zIndex: 1000 }}>
-            {deathDate ? (
+            {deathDate && (
               <Typography
                 variant={isMobile ? 'body2' : 'body1'}
                 sx={{
@@ -165,30 +165,11 @@ function App() {
               >
                 My number is up: {deathDate}
               </Typography>
-            ) : (
-              <Button
-                variant="outlined"
-                onClick={() => setShowDeathDateDialog(true)}
-                size={isMobile ? 'small' : 'medium'}
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                  '&:hover': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  },
-                  fontSize: isMobile ? '0.875rem' : '1rem',
-                  padding: isMobile ? '4px 8px' : '6px 16px',
-                  backgroundColor: 'rgba(18, 18, 18, 0.8)',
-                }}
-              >
-                when i die
-              </Button>
             )}
           </Box>
           {/* Main content area */}
           <Box sx={{ flex: 1, width: '100%', mt: isMobile ? 2 : 0 }}>
-            {selectedIndex === 0 ? <Home onFeatureSelect={handleFeatureSelect} /> : menuItems[selectedIndex].component}
+            {selectedIndex === 0 ? <Home onFeatureSelect={handleFeatureSelect} deathDate={deathDate} onSetDeathDate={() => setShowDeathDateDialog(true)} /> : menuItems[selectedIndex].component}
           </Box>
           {showDeathDateDialog && (
             <DayIDieButton onDeathDateSet={handleDeathDateSet} onClose={() => setShowDeathDateDialog(false)} />
