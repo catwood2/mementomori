@@ -150,7 +150,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
           px: 4,
           py: 1.5,
           borderRadius: 3,
-          mb: 5,
+          mb: 3,
           boxShadow: 3,
           '&:hover': {
             background: 'linear-gradient(45deg, #FFD700 30%, #9B2C2C 90%)',
@@ -161,8 +161,6 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
         Begin Your Stoic Journey
       </Button>
 
-      <RipplesAnimation />
-
       {/* Quote of the Day */}
       <Paper
         elevation={4}
@@ -171,7 +169,7 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
           borderRadius: 3,
           px: isMobile ? 2 : 5,
           py: isMobile ? 2 : 3,
-          mb: 5,
+          mb: 0,
           maxWidth: 600,
           textAlign: 'center',
         }}
@@ -187,6 +185,8 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
           Quote of the Day
         </Typography>
       </Paper>
+
+      <RipplesAnimation />
 
       {/* Feature Previews */}
       <Grid 
