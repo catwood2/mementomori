@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Typography, Paper, useTheme, useMediaQuery } from '@mui/material';
 import { motion } from 'framer-motion';
 
@@ -9,14 +9,6 @@ interface LifeCalendarProps {
 const LifeCalendar: React.FC<LifeCalendarProps> = ({ deathDate }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   if (!deathDate) {
     // Show animated hourglass when no death date is set
@@ -85,6 +77,7 @@ const LifeCalendar: React.FC<LifeCalendarProps> = ({ deathDate }) => {
   }
 
   // Calculate life calendar when death date is set
+  const currentTime = new Date();
   const getBirthDate = () => {
     const savedBirthDate = localStorage.getItem('birthDate');
     if (savedBirthDate) {
@@ -108,7 +101,6 @@ const LifeCalendar: React.FC<LifeCalendarProps> = ({ deathDate }) => {
 
   // Create grid of dots (52 weeks per row for a year)
   const weeksPerRow = 52;
-  const rows = Math.ceil(totalWeeks / weeksPerRow);
 
   return (
     <Paper
