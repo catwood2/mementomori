@@ -36,7 +36,7 @@ Style Guidelines:
 
 Keep responses under 200 words and focus on practical application of Stoic philosophy in today's world.`;
 
-const ATTRIBUTION_PROMPT = `Given the following quote, return ONLY the name of the author or source, and nothing else. If unknown, return "Unknown".\nQuote: `;
+const ATTRIBUTION_PROMPT = `Given the following quote, return ONLY the full name of the author or source (e.g., 'Marcus Aurelius', not just 'Marcus'). If unknown, return "Unknown".\nQuote: `;
 
 const handler: Handler = async (event) => {
   // Only allow POST requests

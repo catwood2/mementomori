@@ -49,7 +49,11 @@ const StoicAdvisor: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+    // Hide typing indicator as soon as a new assistant message is added
+    if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
+      setIsLoading(false);
+    }
+  }, [messages]);
 
   const extractQuotes = (text: string): string[] => {
     // Match text between quotation marks
