@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera, HourglassEmpty } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 
 interface Feature {
   icon: React.ReactElement;
@@ -81,11 +82,29 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
   if (!deathDate) {
     features.push({
       icon: <HourglassEmpty fontSize="large" sx={{ color: '#9B2C2C' }} />,
-      label: 'When I Die',
-      description: 'Calculate and contemplate your final day.',
+      label: 'Create Your Calendar',
+      description: 'Determine your day you die and create your Memento Mori calendar.',
       action: onGoToCalendar
     });
   }
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
 
   return (
     <Box
@@ -173,9 +192,18 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onGoToCalendar 
       </Paper>
 
       {/* Feature Previews */}
-      <Grid container spacing={isMobile ? 2 : 4} justifyContent="center" sx={{ mb: 6, maxWidth: 1000 }}>
+      <Grid 
+        container 
+        spacing={isMobile ? 2 : 4} 
+        justifyContent="center" 
+        sx={{ mb: 6, maxWidth: 1000 }}
+        component={motion.div}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {features.map((feature) => (
-          <Grid item xs={6} sm={4} md={2.4} key={feature.label}>
+          <Grid item xs={6} sm={4} md={2.4} key={feature.label} component={motion.div} variants={itemVariants}>
             <Paper
               elevation={2}
               sx={{
