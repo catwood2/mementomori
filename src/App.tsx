@@ -13,8 +13,14 @@ import Home from './components/Home';
 import StoicPhotos from './components/CalendarGallery';
 
 const drawerWidth = 220;
-const menuItems = [
-  { label: 'Home', component: <Home /> },
+
+interface MenuItem {
+  label: string;
+  component?: JSX.Element;
+}
+
+const menuItems: MenuItem[] = [
+  { label: 'Home' },
   { label: 'Live Feed', component: <LiveFeed /> },
   { label: 'Find Quotes', component: <QuoteList /> },
   { label: 'Add Quote', component: <QuoteForm onQuoteAdded={() => {}} /> },

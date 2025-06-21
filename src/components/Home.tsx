@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Grid, useTheme, useMediaQuery, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { PlayCircleOutline, FormatQuote, AddCircleOutline, Search, Chat, PhotoCamera, HourglassEmpty } from '@mui/icons-material';
+import LifeCalendar from './LifeCalendar';
 
 interface Feature {
   icon: React.ReactElement;
@@ -146,6 +147,9 @@ const Home: React.FC<HomeProps> = ({ onFeatureSelect, deathDate, onSetDeathDate 
       >
         Begin Your Stoic Journey
       </Button>
+
+      {/* Life Calendar */}
+      <LifeCalendar deathDate={deathDate} />
 
       {/* Quote of the Day */}
       <Paper
