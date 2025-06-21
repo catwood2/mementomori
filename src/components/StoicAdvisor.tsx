@@ -230,8 +230,9 @@ const StoicAdvisor: React.FC = () => {
         elevation={3}
         sx={{
           maxWidth: 600,
+          width: '100%',
           mx: 'auto',
-          mt: 4,
+          mt: { xs: 1, sm: 4 },
           borderRadius: 3,
           overflow: 'hidden',
           position: 'relative',
@@ -240,6 +241,7 @@ const StoicAdvisor: React.FC = () => {
           WebkitBackdropFilter: 'blur(12px)', // Safari support
           border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+          px: { xs: 1, sm: 0 },
         }}
       >
         {/* Chat Header with actions */}
